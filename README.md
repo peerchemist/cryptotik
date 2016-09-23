@@ -3,7 +3,7 @@ Standardized common API for several cryptocurrency exchanges
 
 ## Examples
 
-`from cryptotik import Btce`
+`from cryptotik import Btce, Bittrex, Poloniex`
 
 `Btce.get_market_ticker("ppc-btc")`
 
