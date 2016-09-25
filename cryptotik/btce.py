@@ -59,7 +59,7 @@ class Btce:
         return cls.api("depth" + "/" + pair + "/?limit={0}".format(depth))[pair]
     
     @classmethod
-    def get_trade_history(cls, pair, limit=1000):
+    def get_market_trade_history(cls, pair, limit=1000):
         """get market trade history"""
         
         pair = cls.format_pair(pair)
