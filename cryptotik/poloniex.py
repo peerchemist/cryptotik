@@ -47,7 +47,7 @@ class Poloniex:
                 "markets": markets}
     
     @classmethod
-    def get_market_ticker(cls, pair=None):
+    def get_markets_ticker(cls, pair=None):
         '''Returns the ticker for all markets'''
         if pair:
             return cls.api({"command": 'returnTicker'})[cls.format_pair(pair)]
