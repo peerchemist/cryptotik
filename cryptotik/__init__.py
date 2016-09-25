@@ -1,3 +1,3 @@
-from exchanges.poloniex import Poloniex
-from exchanges.bittrex import Bittrex
-from exchanges.btce import Btce
+from cryptotik.poloniex import Poloniex
+from cryptotik.bittrex import Bittrex
+from cryptotik.btce import Btce

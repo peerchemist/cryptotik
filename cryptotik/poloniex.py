@@ -9,7 +9,6 @@ class Poloniex:
     time_limit = datetime.timedelta(days=365) # Poloniex will provide just 1 year of data
     delimiter = "_"
     case = "upper"
-
     headers = headers
 
     @classmethod
@@ -38,7 +37,7 @@ class Poloniex:
                 print("Error!", e)
     
     @classmethod
-    def get_pairs(cls):
+    def get_markets(cls):
 
         markets = [i for i in cls.get_market_ticker()]
         base_pairs = set([i.split(cls.delimiter)[0] for i in markets])

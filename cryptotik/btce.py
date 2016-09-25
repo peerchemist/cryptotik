@@ -28,7 +28,7 @@ class Btce:
         return r.json()
         
     @classmethod
-    def get_all_markets(cls):
+    def get_markets(cls):
         q = cls.api("info")
         return tuple(q['pairs'].keys())
     

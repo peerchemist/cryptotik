@@ -7,9 +7,9 @@ Standardized common API for several cryptocurrency exchanges
 
 `Btce.get_market_ticker("ppc-btc")`
 
-`Bittrex.get_pairs`
+`Bittrex.get_pairs()`
 
-`Poloniex.get_pairs`
+`Poloniex.get_pairs()`
 
 You should get quite similar results from methods that are named the same.
 
