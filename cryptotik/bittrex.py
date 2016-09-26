@@ -86,7 +86,7 @@ class Bittrex:
         return Decimal(d["Ask"]) - Decimal(d["Bid"])
 
     @classmethod
-    def get_markets_by_volume(cls, n=10):
+    def sort_markets_by_volume(cls, n=10):
         """returns list of >n< markets sorted by daily volume expressed in base pair"""
         
         r = cls.get_markets_summaries()

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='cryptotik',
-      version='0.1',
+      version='0.11',
       description='Standardized common API for several cryptocurrency exchanges.',
       url='https://github.com/peerchemist/cryptotik',
       author='Peerchemist',

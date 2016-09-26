@@ -30,20 +30,22 @@ class Btce:
     @classmethod
     def get_markets(cls):
         q = cls.api("info")
-        return tuple(q['pairs'].keys())
+        return list(q['pairs'].keys())
     
     @classmethod
-    def get_market_ticker(cls, pair=None):
+    def get_market_ticker(cls, pair):
+        """return ticker for market"""
         
         pair = cls.format_pair(pair)
+        return cls.api("ticker" + "/" + pair)
+    
+    @classmethod
+    def get_markets_ticker(cls):
+        """return ticker for all pairs"""
 
-        if pair == None: ## default is get all
-            pair = "-".join(cls.getPairs())
-            return cls.api("ticker" + "/" + pair)
-        
-        else:
-            return cls.api("ticker" + "/" + pair)
-            
+        pair = "-".join(cls.get_markets())
+        return cls.api("ticker" + "/" + pair)
+
     @classmethod
     def get_market_orders(cls, pair, depth=None):
         """returns market depth on selected pair"""
@@ -71,7 +73,7 @@ class Btce:
             return cls.api("trades" + "/" + pair + "/?limit={0}".format(limit))[pair]
 
         if pair == "all": ## returns market history for all pairs with default history size.
-            return cls.api("trades" + "/" + "-".join(cls.get_all_markets() + "/?limit={0}".format(limit)))
+            return cls.api("trades" + "/" + "-".join(cls.get_markets() + "/?limit={0}".format(limit)))
 
         else: ## simply concat pairs in the list
             return cls.api("trades" + "/" + "-".join(pair) + "/?limit={0}".format(limit))
@@ -97,3 +99,4 @@ class Btce:
         order_book = cls.get_market_orders(pair, 1)
         return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
 
+        
