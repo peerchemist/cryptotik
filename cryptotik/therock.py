@@ -18,9 +18,12 @@ class TheRock:
     def api(cls, url):
         '''call api'''
 
-        result = requests.get(url, headers=cls.headers, timeout=3)
-        assert result.status_code == 200
-        return result.json()
+        try:
+            result = requests.get(url, headers=cls.headers, timeout=3)
+            assert result.status_code == 200
+            return result.json()
+        except requests.exceptions.RequestException as e:
+            print("Error!", e)
 
     @classmethod
     def get_market_ticker(cls, pair):
