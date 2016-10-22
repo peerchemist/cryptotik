@@ -100,10 +100,10 @@ class Poloniex:
     def get_market_ticker(cls, pair):
         '''Returns the ticker for all markets'''
 
-        if pair is not "all":
-            return cls.api({"command": 'returnTicker', "currencyPair": cls.format_pair(pair)})
+        if pair.lower() != "all":
+            return cls.api({"command": 'returnTicker'})[cls.format_pair(pair)]
         else:
-            return cls.api({"command": 'returnTicker', "currencyPair": "all"})
+            return cls.api({"command": 'returnTicker', "currencyPair": pair.lower()})
 
     @classmethod
     def get_market_trade_history(cls, pair, since=None, until=int(time.time())):
