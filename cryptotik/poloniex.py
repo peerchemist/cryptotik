@@ -129,13 +129,13 @@ class Poloniex:
                                 Earilest data we can get is since {0} UTC'''.format((datetime.datetime.now() - cls.time_limit).isoformat())
                                     )
 
-    @classmethod    
+    @classmethod
     def get_full_market_trade_history(cls, pair):
         """get full (maximium) trade history for this pair from one year ago until now, or last 50k trades - whichever comes first."""
-        
+
         start = (datetime.datetime.now() - cls.time_limit).timestamp() + 1
-        return cls.get_market_trade_history(cls.format_pair(pair), int(start))  
-    
+        return cls.get_market_trade_history(cls.format_pair(pair), int(start))
+
     @classmethod
     def get_loans(cls, coin):
         '''return loan offers for coin'''
@@ -208,15 +208,31 @@ class Poloniex:
 
     ### Private methods ##
 
-    '''
-    def get_trade_history(self, pair):
-        """Returns the past 200 trades for a given market, or up to 50,000 trades
+    def get_account_trade_history(self, pair, since=None, until=int(time.time())):
+        """Returns the past 200 trades, or up to 50,000 trades
          between a range specified in UNIX timestamps by the "start" and "end" GET parameters."""
-        if pair:
-            return self.private_api({'command': 'returnTradeHistory', 'currencyPair': self.format_pair(pair)
-                                })
-        return self.private_api({'command': 'returnTradeHistory'})
-    '''
+
+        if pair is not "all":
+            query = {"command": "returnTradeHistory", "currencyPair": cls.format_pair(pair)}
+        else:
+            query = {"command": "returnTradeHistory", "currencyPair": 'all'}
+
+        if since is None: # default, return 200 last trades
+            return cls.private_api(query)
+
+        if since > time.time():
+            raise APIError("AYYY LMAO start time is in the future, take it easy.")
+
+        if (datetime.datetime.now() - cls.time_limit).timestamp() <= since:
+            query.update({"start": str(since),
+                            "end": str(until)}
+                            )
+            return cls.private_api(query)
+
+        else:
+            raise APIError('''Poloniex API does no support queries for data older than a year.\n
+                                Earilest data we can get is since {0} UTC'''.format((datetime.datetime.now() - cls.time_limit).isoformat())
+                                    )
 
     def get_balances(self, pair):
         '''get balances of my account'''
@@ -272,7 +288,7 @@ class Poloniex:
     def get_fee_info(self):
         """If you are enrolled in the maker-taker fee schedule,
         returns your current trading fees and trailing 30-day volume in BTC.
-        This information is updated once every 24 hours. """
+        This information is updated once every 24 hours."""
         return self.private_api({'command': 'returnFeeInfo'})
 
     '''
@@ -285,11 +301,9 @@ class Poloniex:
         return self.private_api('returnLendingHistory', args)
     '''
 
-    '''
-    def returnOrderTrades(self, orderId):
-        """ Returns any trades made from <orderId> """
-        return self.private_api('returnOrderTrades', {'orderNumber': str(orderId)})
-    '''
+    def get_order_trades(self, order_id):
+        """Returns any trades made from <orderId>"""
+        return self.private_api({'command': 'returnOrderTrades', 'orderNumber': order_id})
 
     def create_loan_offfer(self, coin, amount, rate, auto_renew=0):
         """Creates a loan offer for <coin> for <amount> at <rate>"""
