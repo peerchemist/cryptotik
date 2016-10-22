@@ -6,7 +6,7 @@ class Bittrex:
     url = 'https://bittrex.com/api/v1.1/'
     delimiter = "-"
     headers = headers
-    
+
     @classmethod
     def format_pair(cls, pair):
         """format the pair argument to format understood by remote API."""
@@ -21,41 +21,44 @@ class Bittrex:
     @classmethod
     def api(cls, url, params):
         """call api"""
-        
-        return requests.get(url, params, headers=cls.headers, timeout=3).json()
-    
+
+        result = requests.get(url, params, headers=cls.headers, timeout=3).json()
+
+        assert result["success"] is True
+
+        return result
+
     @classmethod
     def get_markets(cls):
         '''find out supported markets on this exhange.'''
-        
+
         r = cls.api(cls.url + "public" + "/getmarkets", params={})["result"]
         pairs = [i["MarketName"].lower() for i in r]
-        
+
         return {
             "base_pairs": set([i.split("-")[0] for i in pairs]),
             "market_pairs": set([i.split("-")[1] for i in pairs]),
             "markets": pairs
         }
-    
+
     @classmethod
     def get_market_ticker(cls, pair):
         '''returns simple current market status report'''
-        
-        return cls.api(cls.url + "public" + "/getticker", params={"market": cls.format_pair(pair)})
-    
+
+        return cls.api(cls.url + "public" + "/getticker", params={"market": cls.format_pair(pair)})["result"]
+
     @classmethod
     def get_market_trade_history(cls, pair, depth=200):
         '''returns last 200 trades for the pair'''
 
         return cls.api(cls.url + "public" + "/getmarkethistory", params={"market": cls.format_pair(pair),
                                                             "count": depth})["result"]
-    
+
     @classmethod
     def get_market_depth(cls, pair, depth=999999):
         '''returns market depth'''
-        
         from decimal import Decimal
-        
+
         order_book = cls.api(cls.url + "public" + "/getorderbook", params={'market': cls.format_pair(pair), 
                                                         'type': 'both', 
                                                         'depth': depth})["result"]
