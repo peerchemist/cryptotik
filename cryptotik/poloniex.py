@@ -89,7 +89,7 @@ class Poloniex:
     def get_markets(cls):
         '''return all supported markets.'''
 
-        markets = [i for i in cls.get_markets_ticker()]
+        markets = [i for i in cls.get_market_ticker("all")]
         base_pairs = set([i.split(cls.delimiter)[0] for i in markets])
         market_pairs = set([i.split(cls.delimiter)[1] for i in markets])
 
@@ -97,12 +97,13 @@ class Poloniex:
                 "markets": markets}
 
     @classmethod
-    def get_markets_ticker(cls, pair=None):
+    def get_market_ticker(cls, pair):
         '''Returns the ticker for all markets'''
-        if pair:
-            return cls.api({"command": 'returnTicker'})[cls.format_pair(pair)]
 
-        return cls.api({"command": 'returnTicker'})
+        if pair is not "all":
+            return cls.api({"command": 'returnTicker', "currencyPair": cls.format_pair(pair)})
+        else:
+            return cls.api({"command": 'returnTicker', "currencyPair": "all"})
 
     @classmethod
     def get_market_trade_history(cls, pair, since=None, until=int(time.time())):
@@ -361,7 +362,7 @@ class Poloniex:
 
     def cancel_order(self, order_id):
         """Cancels order <orderId>"""
-        return self.private_api('cancelOrder', {'orderNumber': str(orderId)})
+        return self.private_api('cancelOrder', {'orderNumber': order_id})
 
     def move_order(self, order_id, rate, amount):
         """Cancels an order and places a new one of the same type in a single atomic transaction,
