@@ -1,11 +1,17 @@
 import requests
 from .common import APIError, headers
+import time
 
 class Bittrex:
 
     url = 'https://bittrex.com/api/v1.1/'
     delimiter = "-"
     headers = headers
+
+    def __init__(self, key, secret):
+        self.key = key
+        self.secret = secret
+        self.nonce = int(time.time())
 
     @classmethod
     def format_pair(cls, pair):
