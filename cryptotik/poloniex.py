@@ -144,13 +144,12 @@ class Poloniex:
                          "currency": cls.format_pair(coin)
                         })
         return {"demands": loans["demands"], "offers": loans["offers"]}
-    
+
     @classmethod
     def get_loan_depth(cls, coin):
         """return loans depth"""
-
         from decimal import Decimal
-        
+
         loans = cls.get_loans(coin)
         return {"offers": sum([Decimal(i["amount"]) for i in loans["offers"]]),
                 "demands": sum([Decimal(i["amount"]) for i in loans["demands"]])
@@ -164,13 +163,13 @@ class Poloniex:
                         "currencyPair": cls.format_pair(pair),
                         "depth": depth
                         })
-    
+
     @classmethod
     def get_market_depth(cls, pair):
         '''return sum of all bids and asks'''
 
         from decimal import Decimal
-        
+
         order_book = cls.get_market_order_book(cls.format_pair(pair))
         asks = sum([Decimal(i[1]) for i in order_book["asks"]])
         bid = sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]])
@@ -213,25 +212,25 @@ class Poloniex:
          between a range specified in UNIX timestamps by the "start" and "end" GET parameters."""
 
         if pair is not "all":
-            query = {"command": "returnTradeHistory", "currencyPair": cls.format_pair(pair)}
+            query = {"command": "returnTradeHistory", "currencyPair": self.format_pair(pair)}
         else:
             query = {"command": "returnTradeHistory", "currencyPair": 'all'}
 
         if since is None: # default, return 200 last trades
-            return cls.private_api(query)
+            return self.private_api(query)
 
         if since > time.time():
             raise APIError("AYYY LMAO start time is in the future, take it easy.")
 
-        if (datetime.datetime.now() - cls.time_limit).timestamp() <= since:
+        if (datetime.datetime.now() - self.time_limit).timestamp() <= since:
             query.update({"start": str(since),
                             "end": str(until)}
                             )
-            return cls.private_api(query)
+            return self.private_api(query)
 
         else:
             raise APIError('''Poloniex API does no support queries for data older than a year.\n
-                                Earilest data we can get is since {0} UTC'''.format((datetime.datetime.now() - cls.time_limit).isoformat())
+                                Earilest data we can get is since {0} UTC'''.format((datetime.datetime.now() - self.time_limit).isoformat())
                                     )
 
     def get_balances(self, pair):
