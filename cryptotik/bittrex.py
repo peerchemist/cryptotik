@@ -61,18 +61,26 @@ class Bittrex:
                                                             "count": depth})["result"]
 
     @classmethod
-    def get_market_depth(cls, pair, depth=999999):
+    def get_market_order_book(cls, pair, depth=200):
+        '''return market order book, default <depth> is 200'''
+
+        order_book = cls.api(cls.url + "public" + "/getorderbook",
+                             params={'market': cls.format_pair(pair), 'type': 'both',
+                                     'depth': depth})["result"]
+
+        return order_book
+
+    @classmethod
+    def get_market_depth(cls, pair):
         '''returns market depth'''
+
         from decimal import Decimal
 
-        order_book = cls.api(cls.url + "public" + "/getorderbook", params={'market': cls.format_pair(pair), 
-                                                        'type': 'both', 
-                                                        'depth': depth})["result"]
-        
-        return {"bids": sum([Decimal(i["Quantity"]) * Decimal(i["Rate"]) for i in order_book["buy"]]), 
-                    "asks": sum([Decimal(i["Quantity"]) for i in order_book["sell"]])
-                    }
-    
+        order_book = cls.get_market_order_book(cls.format_pair(pair))
+        return {"bids": sum([Decimal(i["Quantity"]) * Decimal(i["Rate"]) for i in order_book["buy"]]),
+                "asks": sum([Decimal(i["Quantity"]) for i in order_book["sell"]])
+               }
+
     @classmethod
     def get_markets_summaries(cls):
         '''return basic market information for all supported pairs'''
