@@ -27,6 +27,10 @@ class Poloniex:
     delimiter = "_"
     case = "upper"
     headers = headers
+    try:
+        fee = self.get_fee_info()["takerFee"]
+    except:
+        fee = "0.0025"
 
     @property
     def get_nonce(self):
