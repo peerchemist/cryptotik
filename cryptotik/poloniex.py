@@ -2,7 +2,6 @@ from .common import APIError, headers
 import datetime, time
 import requests
 import hmac, hashlib
-from random import randint
 
 class Poloniex:
 
@@ -19,15 +18,15 @@ class Poloniex:
                         'transferBalance', 'returnMarginAccountSummary', 'marginBuy', 'marginSell',
                         'getMarginPosition', 'closeMarginPosition']
 
+    def __init__(self, key, secret):
+        self.key = key.encode("utf-8")
+        self.secret = secret.encode("utf-8")
+        self.nonce = int(time.time())
+
     time_limit = datetime.timedelta(days=365) # Poloniex will provide just 1 year of data
     delimiter = "_"
     case = "upper"
     headers = headers
-
-    def __init__(self, key, secret):
-        self.key = key.encode("utf-8")
-        self.secret = secret.encode("utf-8")
-        self.nonce = randint(40191, 9999999) # Nonce must be greater than 40190.
 
     @property
     def get_nonce(self):
