@@ -7,6 +7,7 @@ class Btce:
     delimiter = "_"
     case = "lower"
     headers = headers
+    fee = "0.002"
 
     @classmethod
     def format_pair(cls, pair):
@@ -14,7 +15,7 @@ class Btce:
 
         if isinstance(pair, list):
             return pair
-            
+
         pair = pair.replace("-", cls.delimiter)
 
         if not pair.islower():
