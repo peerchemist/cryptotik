@@ -7,6 +7,7 @@ class Bittrex:
     url = 'https://bittrex.com/api/v1.1/'
     delimiter = "-"
     headers = headers
+    fee = "0.0025"
 
     def __init__(self, key, secret):
         self.key = key
@@ -33,6 +34,17 @@ class Bittrex:
         assert result["success"] is True
 
         return result
+
+    def private_api(self, data): # private methods api
+        '''        if method in MARKET_SET:
+            method_set = 'market'
+        elif method in ACCOUNT_SET:
+            method_set = 'account'
+
+request_url = (BASE_URL % method_set) + method + '?'''
+        #if method_set != 'public':
+            #request_url += 'apikey=' + self.api_key + "&nonce=" + nonce + '&'
+        # headers={"apisign": hmac.new(self.api_secret.encode(), request_url.encode(), hashlib.sha512).hexdigest()}
 
     @classmethod
     def get_markets(cls):
