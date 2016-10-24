@@ -28,9 +28,9 @@ class Poloniex:
     case = "upper"
     headers = headers
     try:
-        fee = self.get_fee_info()["takerFee"]
+        taker_fee, maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
     except:
-        fee = "0.0025"
+        taker_fee, maker_fee = "0.0025", "0.0025"
 
     @property
     def get_nonce(self):
