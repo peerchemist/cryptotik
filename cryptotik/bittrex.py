@@ -1,18 +1,28 @@
 import requests
 from .common import APIError, headers
 import time
+import hmac, hashlib
 
 class Bittrex:
 
     url = 'https://bittrex.com/api/v1.1/'
     delimiter = "-"
     headers = headers
-    fee = "0.0025"
+    taker_fee, maker_fee = 0.0025, 0.0025
+    private_commands = ('getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit')
+    public_commands = ('getbalances', 'getbalance', 'getdepositaddress', 'withdraw')
 
-    def __init__(self, key, secret):
-        self.key = key
-        self.secret = secret
+    def __init__(self, apikey, secret):
+        self.apikey = apikey.encode("utf-8")
+        self.secret = secret.encode("utf-8")
         self.nonce = int(time.time())
+
+    @property
+    def get_nonce(self):
+        '''return nonce integer'''
+
+        self.nonce += 1
+        return self.nonce
 
     @classmethod
     def format_pair(cls, pair):
@@ -35,16 +45,23 @@ class Bittrex:
 
         return result
 
-    def private_api(self, data): # private methods api
-        '''        if method in MARKET_SET:
-            method_set = 'market'
-        elif method in ACCOUNT_SET:
-            method_set = 'account'
+    def private_api(self, url, params):
+        '''handles private api methods'''
 
-request_url = (BASE_URL % method_set) + method + '?'''
-        #if method_set != 'public':
-            #request_url += 'apikey=' + self.api_key + "&nonce=" + nonce + '&'
-        # headers={"apisign": hmac.new(self.api_secret.encode(), request_url.encode(), hashlib.sha512).hexdigest()}
+        if not self.apikey or not self.secret:
+            raise ValueError("A Key and Secret needed!")
+
+        params.update({"apikey": self.apikey, "nonce": self.get_nonce})
+        url += "?" + requests.compat.urlencode(params)
+        self.headers.update({"apisign": hmac.new(self.secret, url.
+                                                 encode(), hashlib.sha512).hexdigest()
+                            })
+
+        result = requests.get(url, headers=self.headers, timeout=3)
+
+        assert result["success"] is True
+
+        return result.json()
 
     @classmethod
     def get_markets(cls):
@@ -96,28 +113,29 @@ request_url = (BASE_URL % method_set) + method + '?'''
     @classmethod
     def get_markets_summaries(cls):
         '''return basic market information for all supported pairs'''
-    
+
         return cls.api(cls.url + "public" + "/getmarketsummaries", params={})["result"]
-    
+
     @classmethod
     def get_market_summary(cls, pair):
         '''return basic market information'''
-    
-        return cls.api(cls.url + "public" + "/getmarketsummary", params={"market": cls.format_pair(pair)})["result"][0]
-    
+
+        return cls.api(cls.url + "public" + "/getmarketsummary",
+                       params={"market": cls.format_pair(pair)})["result"][0]
+
     @classmethod
     def get_market_spread(cls, pair):
         '''return first buy order and first sell order'''
-        
+
         from decimal import Decimal
-        
+
         d = cls.get_market_summary(cls.format_pair(pair))
         return Decimal(d["Ask"]) - Decimal(d["Bid"])
 
     @classmethod
     def sort_markets_by_volume(cls, n=10):
         """returns list of >n< markets sorted by daily volume expressed in base pair"""
-        
+
         r = cls.get_markets_summaries()
         markets = sorted(r, key=lambda k: k['BaseVolume'])
         markets.reverse()
@@ -125,4 +143,52 @@ request_url = (BASE_URL % method_set) + method + '?'''
         name = [i["MarketName"].lower() for i in markets[:n]]
 
         return zip(name, volume)
+
+    def buy(self, pair, rate, amount): ## buy_limit as default
+        """creates buy order for <pair> at <rate> for <amount>"""
+
+        return self.private_api(self.url + "market" + "/buylimit",
+                                params={"market": self.format_pair(pair),
+                                        "quantity": amount,
+                                        "rate": rate})["result"]
+
+    def sell(self, pair, rate, amount): ## sell_limit as default
+        """creates sell order for <pair> at <rate> for <amount>"""
+
+        return self.private_api(self.url + "market" + "/selllimit",
+                                params={"market": self.format_pair(pair),
+                                        "quantity": amount,
+                                        "rate": rate})["result"]
+
+    def cancel_order(self, order_id):
+        """cancel order <id>"""
+
+        return self.private_api(self.url + "market" + "/cancel",
+                                params={"uuid": order_id})["result"]
+
+    def get_open_orders(self, market=None):
+        """get open orders for <market> or all"""
+
+        return self.private_api(self.url + "market" + "/getopenorders",
+                                params={"market": self.format_pair(market)})["result"]
+
+    def get_balances(self):
+        """get all balances from your account"""
+
+        return self.private_api(self.url + "account" + "/getbalances", params={})["result"]
+
+    def get_deposit_addresses(self, coin):
+        """retrieve or generate an address for a specific currency.
+        If one does not exist, the call will fail and return ADDRESS_GENERATING until one is available."""
+
+        return self.private_api(self.url + "account" + "/getdepositaddress",
+                                params={"currency": coin.upper()})["result"]
+
+    def withdraw(self, coin, amount, address):
+        """withdraw <coin> <amount> to <address>"""
+
+        return self.private_api(self.url + "account" + "/withdraw",
+                                params={"currency": coin.upper(),
+                                        "quantity": amount,
+                                        "address": address})["result"]
 
