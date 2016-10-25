@@ -23,7 +23,7 @@ class Livecoin:
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
-            print("Error!", e)
+            raise APIError(e)
 
     @classmethod
     def get_market_ticker(cls, pair):
@@ -34,11 +34,8 @@ class Livecoin:
     @classmethod
     def get_market_trade_history(cls, pair, since=None):
         '''get market trade history'''
-
-        if since:
-            return cls.api(cls.url + "/exchange/last_trades?currencyPair=" + cls.format_pair(pair))[0]
-        else:
-            return cls.api(cls.url + "/exchange/last_trades?currencyPair=" + cls.format_pair(pair))[0]
+        
+        return cls.api(cls.url + "/exchange/last_trades?currencyPair=" + cls.format_pair(pair))[0]     
 
     @classmethod
     def get_market_order_book(cls, pair):
