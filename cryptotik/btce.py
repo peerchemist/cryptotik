@@ -1,5 +1,6 @@
 import requests
 from .common import APIError, headers
+import time
 
 class Btce:
 
@@ -7,7 +8,19 @@ class Btce:
     delimiter = "_"
     case = "lower"
     headers = headers
-    fee = "0.002"
+    maker_fee, taker_fee = 0.002, 0.002
+
+    def __init__(self, key, secret):
+        self.key = key.encode("utf-8")
+        self.secret = secret.encode("utf-8")
+        self.nonce = int(time.time())
+
+    @property
+    def get_nonce(self):
+        '''return nonce integer'''
+
+        self.nonce += 1
+        return self.nonce
 
     @classmethod
     def format_pair(cls, pair):
@@ -25,9 +38,12 @@ class Btce:
 
     @classmethod
     def api(cls, command):
-        r = requests.get(cls.url + command, headers=cls.headers)
-        return r.json()
-        
+        """call remote API"""
+
+        result = requests.get(cls.url + command, headers=cls.headers).json()
+
+        return result
+
     @classmethod
     def get_markets(cls):
         q = cls.api("info")
@@ -49,7 +65,7 @@ class Btce:
 
     @classmethod
     def get_market_orders(cls, pair, depth=None):
-        """returns market depth on selected pair"""
+        """returns market order book on selected pair"""
         
         pair = cls.format_pair(pair)
 
