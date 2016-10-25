@@ -35,7 +35,7 @@ class Livecoin:
     def get_market_trade_history(cls, pair, since=None):
         '''get market trade history'''
         
-        return cls.api(cls.url + "/exchange/last_trades?currencyPair=" + cls.format_pair(pair))[0]     
+        return cls.api(cls.url + "/exchange/last_trades?currencyPair=" + cls.format_pair(pair))     
 
     @classmethod
     def get_market_order_book(cls, pair):
