@@ -27,10 +27,10 @@ class Poloniex:
     delimiter = "_"
     case = "upper"
     headers = headers
-    try:
+    try: # at Poloniex, fees may vary per user (https://poloniex.com/fees/)
         taker_fee, maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
     except:
-        taker_fee, maker_fee = "0.0025", "0.0025"
+        taker_fee, maker_fee = "0.0025", "0.0015"
 
     @property
     def get_nonce(self):
