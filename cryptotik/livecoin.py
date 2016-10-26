@@ -1,6 +1,5 @@
 import requests
 from .common import APIError, headers
-from re import findall
 
 class Livecoin:
 
