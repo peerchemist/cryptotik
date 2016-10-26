@@ -62,7 +62,7 @@ class Poloniex:
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
-            print("Error!", e)
+            raise APIError(e)
 
     def private_api(self, data):
         '''private API methods which require authentication'''
@@ -74,17 +74,18 @@ class Poloniex:
 
         data["nonce"] = self.get_nonce ## add nonce to post data
         pdata = requests.compat.urlencode(data).encode("utf-8")
-        _headers = self.headers
-        _headers["Sign"] = hmac.new(self.secret, pdata, hashlib.sha512).hexdigest()
-        _headers["Key"] = self.key
+        self.headers.update(
+            {"Sign": hmac.new(self.secret, pdata, hashlib.sha512).hexdigest(),
+             "Key": self.key
+            })
 
         try:
             result = requests.post(self.url + "tradingApi", data=data,
-                                headers=_headers, timeout=3)
+                                   headers=self.headers, timeout=3)
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
-            print("Error!", e)
+            raise APIError(e)
 
     ### Public methods ##
 
