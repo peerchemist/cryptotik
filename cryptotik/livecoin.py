@@ -1,6 +1,5 @@
 import requests
 from .common import APIError, headers
-from re import findall
 
 class Livecoin:
 
@@ -34,8 +33,8 @@ class Livecoin:
     @classmethod
     def get_market_trade_history(cls, pair, since=None):
         '''get market trade history'''
-        
-        return cls.api(cls.url + "/exchange/last_trades?currencyPair=" + cls.format_pair(pair))     
+
+        return cls.api(cls.url + "/exchange/last_trades?currencyPair=" + cls.format_pair(pair))
 
     @classmethod
     def get_market_order_book(cls, pair):
