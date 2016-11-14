@@ -31,7 +31,7 @@ class Hitbtc:
         return cls.api(cls.url + cls.format_pair(pair) + "/ticker")
 
     @classmethod
-    def get_market_trade_history(cls, pair, since=None):
+    def get_market_trade_history(cls, pair):
         '''get market trade history'''
 
         return cls.api(cls.url + cls.format_pair(pair) \
