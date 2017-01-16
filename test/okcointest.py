@@ -1,5 +1,6 @@
 import unittest
 from cryptotik.okcoin import OKcoin
+from decimal import Decimal
 
 class OKcoinTestCase(unittest.TestCase):
 
@@ -26,6 +27,11 @@ class OKcoinTestCase(unittest.TestCase):
         '''test getting the market depth'''
 
         self.assertIsInstance(OKcoin.get_market_depth("usd-ltc"), dict)
+
+    def test_get_market_spread(self):
+        '''test get market spread'''
+
+        self.assertIsInstance(OKcoin.get_market_spread("usd-btc"), Decimal)
 
     def test_get_market_trade_history(self):
         '''test getting the market history'''

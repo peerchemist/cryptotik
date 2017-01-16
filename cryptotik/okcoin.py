@@ -91,6 +91,19 @@ class OKcoin:
                }
 
     @classmethod
+    def get_market_spread(cls, pair):
+        '''get market spread'''
+
+        from decimal import Decimal
+
+        order_book = cls.get_market_order_book(pair)
+
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)
+
+    @classmethod
     def get_market_trade_history(cls, pair):
         '''get market trade history for last <depth> trades'''
 
