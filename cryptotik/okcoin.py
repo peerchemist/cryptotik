@@ -3,12 +3,13 @@ from .common import APIError, headers
 
 class OKcoin:
 
-    url = 'https://www.okcoin.com/api/'
+    url = 'https://www.okcoin.com/api/v1/'
     delimiter = "_"
     headers = headers
     taker_fee, maker_fee = 0, 0
     #private_commands = ('getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit')
     public_commands = ('ticker.do', 'depth.do', 'trades.do')
+    futures_public_commands = ('future_ticker.do', 'future_depth', 'future_trades', 'future_index')
 
     error_codes = {10000: 'Required parameter can not be null',
                    10001: 'Requests are too frequent',
@@ -51,25 +52,16 @@ class OKcoin:
 
         assert result.status_code == 200
 
-        try:
-            if result.json()["result"] is False:
-                raise APIError(cls.error_codes.get(result.json()["errorCode"]))
-        except:
-            return result.json()
+        if result.json().get("errorCode"):
+            raise APIError(cls.error_codes.get(result.json()["errorCode"]))
+
+        return result.json()
 
     @classmethod
     def get_market_ticker(cls, pair):
         '''returns simple current market status report'''
 
         return cls.api("ticker.do", {"symbol": cls.format_pair(pair)})["ticker"]
-
-    """
-    @classmethod
-    def get_futures_ticker(cls, pair, contract):
-        '''returns simple current market status report - futures market'''
-
-        return cls.api("future_ticker.do", {"symbol": pair, "contract": contract})["ticker"]
-    """
 
     @classmethod
     def get_market_order_book(cls, pair, depth=200):
@@ -108,3 +100,12 @@ class OKcoin:
         '''get market trade history for last <depth> trades'''
 
         return cls.api("trades.do", {"symbol": cls.format_pair(pair)})
+
+    @classmethod
+    def get_futures_ticker(cls, pair, contract="this_week"):
+        '''
+        returns simple current market status report - futures market
+        <contract> can be this_week|next_week|quarter
+        '''
+
+        return cls.api("future_ticker.do", {"symbol": pair, "contract_type": contract})["ticker"]
