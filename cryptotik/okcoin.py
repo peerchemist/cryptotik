@@ -28,7 +28,8 @@ class OKcoin:
                    10014: 'Order price must be between 0 and 1,000,000',
                    10015: 'Order price differs from current market price too much',
                    10016: 'Insufficient coins balance',
-                   20006: 'Required field missing'
+                   20006: 'Required field missing',
+                   20007: 'Illegal parameter'
                   }
 
     @classmethod
