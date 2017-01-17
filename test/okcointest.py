@@ -19,7 +19,7 @@ class OKcoinTestCase(unittest.TestCase):
         self.assertIsInstance(OKcoin.get_market_ticker("btc-usd"), dict)
         self.assertIn("buy", OKcoin.get_market_ticker("btc-cny"))
 
-    def test_get_market_orders(self):
+    def test_get_market_order_book(self):
         '''test getting the market orders'''
 
         self.assertIsInstance(OKcoin.get_market_order_book("btc-usd"), dict)
