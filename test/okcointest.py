@@ -17,16 +17,19 @@ class OKcoinTestCase(unittest.TestCase):
         '''tests get_market_ticker>'''
 
         self.assertIsInstance(OKcoin.get_market_ticker("btc-usd"), dict)
+        self.assertIn("buy", OKcoin.get_market_ticker("btc-cny"))
 
     def test_get_market_orders(self):
         '''test getting the market orders'''
 
         self.assertIsInstance(OKcoin.get_market_order_book("btc-usd"), dict)
+        self.assertIn("asks", OKcoin.get_market_depth("ltc-cny"))
 
     def test_get_market_depth(self):
         '''test getting the market depth'''
 
         self.assertIsInstance(OKcoin.get_market_depth("ltc-usd"), dict)
+        self.assertIn("asks", OKcoin.get_market_depth("ltc-cny"))
 
     def test_get_market_spread(self):
         '''test get market spread'''
