@@ -3,7 +3,7 @@ from .common import APIError, headers
 
 class OKcoin:
 
-    url = 'https://www.okcoin.com/api/v1/'
+    url = 'https://www.okcoin.$/api/v1/' # OKcoin cny and usd markets do no use the same domain
     delimiter = "_"
     headers = headers
     taker_fee, maker_fee = 0, 0
@@ -48,13 +48,20 @@ class OKcoin:
     def api(cls, command, params):
         """call api"""
 
-        result = requests.get(cls.url + command, params=params, headers=cls.headers,
-                              timeout=3)
+        if "usd" in params["symbol"]:
+            result = requests.get(cls.url.replace("$", "com") + command, params=params,
+                                  headers=cls.headers, timeout=3)
+        else:
+            result = requests.get(cls.url.replace("$", "cn") + command, params=params,
+                                  headers=cls.headers, timeout=3)
 
         assert result.status_code == 200
 
-        if result.json().get("errorCode"):
-            raise APIError(cls.error_codes.get(result.json()["errorCode"]))
+        try: ## try to get the error
+            if result.json().get("errorCode"):
+                raise APIError(cls.error_codes.get(result.json()["errorCode"]))
+        except AttributeError:
+            pass
 
         return result.json()
 
