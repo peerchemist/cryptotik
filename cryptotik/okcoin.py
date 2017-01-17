@@ -48,18 +48,23 @@ class OKcoin:
     def api(cls, command, params):
         """call api"""
 
-        if "usd" in params["symbol"]:
+        if "usd" in params["symbol"]: # OKcoin API uses .com domain for USD pairs
             result = requests.get(cls.url.replace("$", "com") + command, params=params,
                                   headers=cls.headers, timeout=3)
-        else:
+        if "cny" in params["symbol"]: # OKcoin API uses .cn domain for CNY pairs
             result = requests.get(cls.url.replace("$", "cn") + command, params=params,
                                   headers=cls.headers, timeout=3)
 
         assert result.status_code == 200
 
         try: ## try to get the error
-            if result.json().get("errorCode"):
-                raise APIError(cls.error_codes.get(result.json()["errorCode"]))
+            if result.json().get("result") is False:
+
+                try: # API is not consistant about naming error field
+                    raise APIError(cls.error_codes.get(result.json()["errorCode"]))
+                except KeyError:
+                    raise APIError(cls.error_codes.get(result.json()["error_code"]))
+
         except AttributeError:
             pass
 
@@ -105,15 +110,75 @@ class OKcoin:
 
     @classmethod
     def get_market_trade_history(cls, pair):
-        '''get market trade history for last <depth> trades'''
+        '''get market trade history'''
 
         return cls.api("trades.do", {"symbol": cls.format_pair(pair)})
 
     @classmethod
-    def get_futures_ticker(cls, pair, contract="this_week"):
+    def get_futures_market_ticker(cls, pair, contract="this_week"):
         '''
         returns simple current market status report - futures market
         <contract> can be this_week|next_week|quarter
         '''
 
-        return cls.api("future_ticker.do", {"symbol": pair, "contract_type": contract})["ticker"]
+        return cls.api("future_ticker.do", {"symbol": cls.format_pair(pair),
+                                            "contract_type": contract})["ticker"]
+
+    @classmethod
+    def get_futures_market_order_book(cls, pair, depth=200, contract="this_week"):
+        '''
+        get futures market depth up to 200
+        <contract> can be this_week|next_week|quarter
+        '''
+
+        assert depth <= 200, "maximum depth is 200"
+
+        return cls.api("depth.do", {"symbol": cls.format_pair(pair), "size": depth,
+                                    "contract_type": contract})
+
+    @classmethod
+    def get_futures_market_depth(cls, pair, contract="this_week"):
+        '''
+        get market depth
+        <contract> can be this_week|next_week|quarter
+        '''
+
+        from decimal import Decimal
+
+        order_book = cls.get_futures_market_order_book(cls.format_pair(pair), contract=contract)
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+               }
+
+    @classmethod
+    def get_futures_market_spread(cls, pair, contract="this_week"):
+        '''
+        get market spread
+        <contract> can be this_week|next_week|quarter
+        '''
+
+        from decimal import Decimal
+
+        order_book = cls.get_futures_market_order_book(pair, contract=contract)
+
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)
+
+    @classmethod
+    def get_futures_market_trade_history(cls, pair, contract="this_week"):
+        '''
+        get futures market trade history
+        <contract> can be this_week|next_week|quarter
+        '''
+
+        return cls.api("trades.do", {"symbol": cls.format_pair(pair),
+                                     "contract_type": contract})
+
+    @classmethod
+    def get_futures_market_index(cls, pair):
+        '''get futures index price'''
+
+        return cls.api("future_index.do", {"symbol": cls.format_pair(pair)})
+
