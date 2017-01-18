@@ -1,5 +1,5 @@
 # cryptotik
-Standardized common API for several cryptocurrency exchanges
+Standardized common API for several cryptocurrency exchanges.
 
 ## Install
 
@@ -7,7 +7,7 @@ Standardized common API for several cryptocurrency exchanges
 
 ## Examples
 
-Right now library supports: Btce, Poloniex, Bittrex, TheRockTrading
+Right now library supports: Btce, Poloniex, Bittrex, TheRockTrading, HitBtc, Livecoin and OKcoin.
 
 `from cryptotik import Btce, Bittrex, Poloniex, TheRock`
 
