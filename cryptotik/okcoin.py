@@ -7,7 +7,9 @@ class OKcoin:
     delimiter = "_"
     headers = headers
     taker_fee, maker_fee = 0, 0
-    #private_commands = ('getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit')
+    private_commands = ('userinfo.do', 'trade', 'trade_histroy', 'batch_trade', 'cancel_order', 'order_book',
+                        'order_info', 'orders_info', 'order_history', 'withdraw', 'cancel_withdraw', 'withdraw_info',
+                        'order_fee')
     public_commands = ('ticker.do', 'depth.do', 'trades.do')
     futures_public_commands = ('future_ticker.do', 'future_depth', 'future_trades', 'future_index')
 
