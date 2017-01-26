@@ -5,6 +5,18 @@ import hmac, hashlib
 
 class Poloniex:
 
+    def __init__(self, key=None, secret=None):
+        '''
+        Initialize class when you want to use private commands.
+        '''
+
+        if key is not None and secret is not None:
+            self.key = key.encode("utf-8")
+            self.secret = secret.encode("utf-8")
+            self.nonce = int(time.time())
+        self.base_pairs = self.get_markets()["base"]
+        self.markets = self.get_markets()["markets"]
+
     url = 'https://poloniex.com/'
     public_commands = ['returnTicker', 'returnOrderBook', 'returnTradeHistory', 'returnChartData',
                         'return24hVolume', 'returnLoanOrders']
@@ -17,15 +29,6 @@ class Poloniex:
                         'buy', 'sell', 'cancelOrder', 'moveOrder', 'withdraw', 'returnFeeInfo',
                         'transferBalance', 'returnMarginAccountSummary', 'marginBuy', 'marginSell',
                         'getMarginPosition', 'closeMarginPosition']
-
-    def __init__(self, key=None, secret=None):
-
-        if key is not None and secret is not None:
-            self.key = key.encode("utf-8")
-            self.secret = secret.encode("utf-8")
-            self.nonce = int(time.time())
-        self.base_pairs = self.get_markets()["base"]
-        self.markets = self.get_markets()["markets"]
 
     time_limit = datetime.timedelta(days=365) # Poloniex will provide just 1 year of data
     delimiter = "_"
