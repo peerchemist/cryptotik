@@ -18,10 +18,14 @@ class Poloniex:
                         'transferBalance', 'returnMarginAccountSummary', 'marginBuy', 'marginSell',
                         'getMarginPosition', 'closeMarginPosition']
 
-    def __init__(self, key, secret):
-        self.key = key.encode("utf-8")
-        self.secret = secret.encode("utf-8")
-        self.nonce = int(time.time())
+    def __init__(self, key=None, secret=None):
+
+        if key is not None and secret is not None:
+            self.key = key.encode("utf-8")
+            self.secret = secret.encode("utf-8")
+            self.nonce = int(time.time())
+        self.base_pairs = self.get_markets()["base"]
+        self.markets = self.get_markets()["markets"]
 
     time_limit = datetime.timedelta(days=365) # Poloniex will provide just 1 year of data
     delimiter = "_"
@@ -47,9 +51,9 @@ class Poloniex:
             pair = pair.replace("-", cls.delimiter)
 
         if not pair.isupper():
-            return pair.upper()
-        else:
-            return pair
+            pair = pair.upper()
+
+        return pair
 
     @classmethod
     def api(cls, params):
