@@ -4,16 +4,20 @@ import time
 
 class Btce:
 
+    def __init__(self, key, secret):
+        self.key = key.encode("utf-8")
+        self.secret = secret.encode("utf-8")
+        self.nonce = 1
+
+    public_commands = ("info", "ticker", "depth", "trades")
+    private_commands = ("getInfo", "Trade", "ActiveOrders", "OrderInfo", "CancelOrder", "TradeHistory",
+                        "TransHistory", "WithdrawCoin", "CreateCuopon", "RedeemCuopon")
+
     url = 'https://btc-e.com/api/3/'
     delimiter = "_"
     case = "lower"
     headers = headers
     maker_fee, taker_fee = 0.002, 0.002
-
-    def __init__(self, key, secret):
-        self.key = key.encode("utf-8")
-        self.secret = secret.encode("utf-8")
-        self.nonce = int(time.time())
 
     @property
     def get_nonce(self):
