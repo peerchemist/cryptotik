@@ -1,11 +1,12 @@
 import requests
 from .common import APIError, headers
-import time
+import hmac, hashlib
 
 class Btce:
 
-    def __init__(self, key, secret):
-        self.key = key.encode("utf-8")
+    def __init__(self, apikey=None, secret=None):
+
+        self.apikey = key.encode("utf-8")
         self.secret = secret.encode("utf-8")
         self.nonce = 1
 
@@ -14,6 +15,7 @@ class Btce:
                         "TransHistory", "WithdrawCoin", "CreateCuopon", "RedeemCuopon")
 
     url = 'https://btc-e.com/api/3/'
+    trade_url = 'https://btc-e.com/tapi/'
     delimiter = "_"
     case = "lower"
     headers = headers
@@ -44,9 +46,34 @@ class Btce:
     def api(cls, command):
         """call remote API"""
 
-        result = requests.get(cls.url + command, headers=cls.headers).json()
+        result = requests.get(cls.url + command, headers=cls.headers)
 
-        return result
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+
+        return result.json()
+
+    def private_api(self, params):
+        '''handles private api methods'''
+
+        if not self.apikey or not self.secret:
+            raise ValueError("A Key and Secret needed!")
+
+        params["nonce"] = self.get_nonce
+        encoded_params = requests.compat.urlencode(params)
+
+        sig = hmac.new(self.secret,
+                       encoded_params.encode("utf-8"),
+                       hashlib.sha512)
+
+        self.headers.update({
+            "Key": self.apikey,
+            "Sign": sig.hexdigest()
+        })
+
+        result = requests.post(self.trade_url, data=params, headers=headers, timeout=2)
+
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+        return result.json()
 
     @classmethod
     def get_markets(cls):
