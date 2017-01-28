@@ -1,4 +1,5 @@
 import requests
+from decimal import Decimal
 from .common import APIError, headers
 import hmac, hashlib
 
@@ -132,8 +133,6 @@ class Btce:
     def get_market_depth(cls, pair):
         """get market order book depth"""
 
-        from decimal import Decimal
-
         pair = cls.format_pair(pair)
         order_book = cls.get_market_orders(pair, 2000)
         return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
@@ -143,9 +142,100 @@ class Btce:
     def get_market_spread(cls, pair):
         """get market spread"""
 
-        from decimal import Decimal
         pair = cls.format_pair(pair)
 
         order_book = cls.get_market_orders(pair, 1)
         return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
 
+    ####################
+    ## Private commands
+    ####################
+
+    def get_balances(self):
+        '''
+        Returns information about the user’s current balance, API-key privileges, the number of open orders and Server Time.
+        '''
+
+        return self.private_api({"method": "getInfo"})
+
+    def buy(self, pair, rate, amount):
+        '''submit spot buy order
+        Expected result:
+
+        * received: The amount of currency bought/sold.
+        * remains: The remaining amount of currency to be bought/sold (and the initial order amount).
+        * order_id: Is equal to 0 if the request was fully “matched” by the opposite orders, otherwise the ID of the executed order will be returned.
+        * funds: Balance after the request.
+        '''
+
+        return self.private_api({"method": "Trade",
+                                 "type": "buy",
+                                 "pair": self.format_pair(pair),
+                                 "amount": amount,
+                                 "rate": rate
+                                })
+
+    def sell(self, pair, rate, amount):
+        '''submit spot sell order
+        Expected result:
+
+        * received: The amount of currency bought/sold.
+        * remains: The remaining amount of currency to be bought/sold (and the initial order amount).
+        * order_id: Is equal to 0 if the request was fully “matched” by the opposite orders, otherwise the ID of the executed order will be returned.
+        * funds: Balance after the request.
+        '''
+
+        return self.private_api({"method": "Trade",
+                                 "type": "sell",
+                                 "pair": self.format_pair(pair),
+                                 "amount": amount,
+                                 "rate": rate
+                                })
+
+    def cancel_order(self, order_id):
+        '''cancel order by <order_id>
+        Expected result:
+
+        * order_id: The ID of canceled order.
+        * funds: Balance upon request.
+        '''
+
+        return self.private_api({"method": "CancelOrder",
+                                 "order_id": order_id
+                                })
+
+    def get_open_orders(self, pair=None):
+        '''get open orders
+        Expected result:
+
+        Array key : Order ID.
+        pair: The pair on which the order was created.
+        type: Order type, buy/sell.
+        amount: The amount of currency to be bought/sold.
+        rate: Sell/Buy price.
+        timestamp_created: The time when the order was created.
+        '''
+
+        if pair:
+            return self.private_api({"method": "ActiveOrders", "pair": self.format_pair(pair)})
+        else:
+            return self.private_api({"method": "ActiveOrders"})
+
+    def get_order_info(self, order_id):
+        '''get order information'''
+
+        return self.private_api({"method": "OrderInfo", "order_id": order_id})
+
+    def withdraw(self, coin, amount, address):
+        '''withdraw cryptocurrency
+        Expected result:
+
+        tId: Transaction ID.
+        amountSent: The amount sent including commission.
+        funds: Balance after the request.
+        '''
+
+        return self.private_api({"method": "WithdrawCoin",
+                                 "coinName": coin.upper(),
+                                 "amount": amount,
+                                 "address": address})
