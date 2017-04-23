@@ -11,6 +11,7 @@ class Bittrex:
     taker_fee, maker_fee = 0.0025, 0.0025
     private_commands = ('getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit')
     public_commands = ('getbalances', 'getbalance', 'getdepositaddress', 'withdraw')
+    api_session = requests.Session()
 
     def __init__(self, apikey, secret):
         self.apikey = apikey.encode("utf-8")
@@ -39,7 +40,7 @@ class Bittrex:
     def api(cls, url, params):
         """call api"""
 
-        result = requests.get(url, params, headers=cls.headers, timeout=3).json()
+        result = cls.api_session.get(url, params, headers=cls.headers, timeout=3).json()
 
         assert result["success"] is True
 
