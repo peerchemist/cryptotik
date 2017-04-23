@@ -5,15 +5,13 @@ import hmac, hashlib
 
 class Btce:
 
-    def __init__(self, apikey=None, secret=None, timeout=5):
+    def __init__(self, apikey=None, secret=None):
 
         if apikey:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
         self.nonce = 1
-        self.timeout = timeout
 
-    timeout = 5
     api_session = requests.Session()
 
     public_commands = ("info", "ticker", "depth", "trades")
@@ -53,7 +51,7 @@ class Btce:
         """call remote API"""
 
         result = cls.api_session.get(cls.url + command, headers=cls.headers,
-                                     timeout=cls.timeout)
+                                     timeout=(3, 5))
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
