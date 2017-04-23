@@ -67,7 +67,7 @@ class Poloniex:
 
         try:
             result = cls.api_session.get(cls.url + "public?", params=params,
-                                         headers=cls.headers, timeout=3)
+                                         headers=cls.headers, timeout=(3, 5))
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
