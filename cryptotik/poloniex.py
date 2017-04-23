@@ -38,6 +38,7 @@ class Poloniex:
         taker_fee, maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
     except:
         taker_fee, maker_fee = "0.0025", "0.0015"
+    api_session = requests.Session()
 
     @property
     def get_nonce(self):
@@ -65,7 +66,8 @@ class Poloniex:
         assert params["command"] in cls.public_commands
 
         try:
-            result = requests.get(cls.url + "public?", params=params, headers=cls.headers, timeout=3)
+            result = cls.api_session.get(cls.url + "public?", params=params,
+                                         headers=cls.headers, timeout=3)
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
