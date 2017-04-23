@@ -40,7 +40,8 @@ class Bittrex:
     def api(cls, url, params):
         """call api"""
 
-        result = cls.api_session.get(url, params, headers=cls.headers, timeout=3).json()
+        result = cls.api_session.get(url, params, headers=cls.headers,
+                                     timeout=(3, 5)).json()
 
         assert result["success"] is True
 
