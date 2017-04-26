@@ -110,8 +110,8 @@ class Btce:
         if depth == None:
             return cls.api("depth" + "/" + pair)[pair]
 
-        if depth > 2000:
-            raise ValueError("Btce API allows maximum depth of 2000 orders")
+        if depth > 5000:
+            raise ValueError("Btce API allows maximum depth of 5000 orders")
 
         return cls.api("depth" + "/" + pair + "/?limit={0}".format(depth))[pair]
 
@@ -138,7 +138,7 @@ class Btce:
         """get market order book depth"""
 
         pair = cls.format_pair(pair)
-        order_book = cls.get_market_orders(pair, 2000)
+        order_book = cls.get_market_orders(pair, 5000)
         return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
                 "asks": sum([Decimal(i[1]) for i in order_book["asks"]])}
 
