@@ -1,7 +1,8 @@
 import requests
 from decimal import Decimal
 from .common import APIError, headers
-import hmac, hashlib
+import hmac
+import hashlib
 
 class Btce:
 
@@ -15,8 +16,9 @@ class Btce:
     api_session = requests.Session()
 
     public_commands = ("info", "ticker", "depth", "trades")
-    private_commands = ("getInfo", "Trade", "ActiveOrders", "OrderInfo", "CancelOrder", "TradeHistory",
-                        "TransHistory", "WithdrawCoin", "CreateCuopon", "RedeemCuopon")
+    private_commands = ("getInfo", "Trade", "ActiveOrders", "OrderInfo",
+                        "CancelOrder", "TradeHistory", "TransHistory",
+                        "WithdrawCoin", "CreateCuopon", "RedeemCuopon")
 
     url = 'https://btc-e.com/api/3/'
     trade_url = 'https://btc-e.com/tapi/'
@@ -127,10 +129,10 @@ class Btce:
         if not isinstance(pair, list):
             return cls.api("trades" + "/" + pair + "/?limit={0}".format(limit))[pair]
 
-        if pair == "all": ## returns market history for all pairs with default history size.
+        if pair == "all": # returns market history for all pairs with default history size.
             return cls.api("trades" + "/" + "-".join(cls.get_markets() + "/?limit={0}".format(limit)))
 
-        else: ## simply concat pairs in the list
+        else: # simply concat pairs in the list
             return cls.api("trades" + "/" + "-".join(pair) + "/?limit={0}".format(limit))
 
     @classmethod
@@ -152,12 +154,13 @@ class Btce:
         return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
 
     ####################
-    ## Private commands
+    # Private commands
     ####################
 
     def get_balances(self):
         '''
-        Returns information about the user’s current balance, API-key privileges, the number of open orders and Server Time.
+        Returns information about the user’s current balance, API-key privileges,
+        the number of open orders and Server Time.
         '''
 
         return self.private_api({"method": "getInfo"})
