@@ -117,15 +117,15 @@ class Btce:
         pair = cls.format_pair(pair)
 
         if limit > 2000:
-            raise APIError("Btc-e API can return only 2000 last trades.")
+            raise APIError("Btc-e API can only return last 2000 trades.")
 
         if not isinstance(pair, list):
             return cls.api("trades" + "/" + pair + "/?limit={0}".format(limit))[pair]
 
-        if pair == "all": # returns market history for all pairs with default history size.
+        if pair == "all":  # returns market history for all pairs with default history size.
             return cls.api("trades" + "/" + "-".join(cls.get_markets() + "/?limit={0}".format(limit)))
 
-        else: # simply concat pairs in the list
+        else:  # simply concat pairs in the list
             return cls.api("trades" + "/" + "-".join(pair) + "/?limit={0}".format(limit))
 
     @classmethod
