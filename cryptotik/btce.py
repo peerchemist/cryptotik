@@ -97,13 +97,6 @@ class Btce:
         return cls.api("ticker" + "/" + pair)
 
     @classmethod
-    def get_markets_ticker(cls):
-        """return ticker for all pairs"""
-
-        pair = "-".join(cls.get_markets())
-        return cls.api("ticker" + "/" + pair)
-
-    @classmethod
     def get_market_orders(cls, pair, depth=None):
         """returns market order book on selected pair"""
 
