@@ -2,6 +2,11 @@ import pytest
 from cryptotik import Bittrex
 from decimal import Decimal
 
+private = pytest.mark.skipif(
+    not pytest.config.getoption("--apikey"),
+    reason="needs --apikey option to run."
+)
+
 
 def test_format_pair():
     '''test string formating to match API expectations'''
@@ -61,4 +66,16 @@ def test_get_market_spread():
     '''test get_market spread'''
 
     assert isinstance(Bittrex.get_market_spread("btc-vtc"), Decimal)
+
+
+@private
+def test_get_balance(apikey, secret):
+    '''test get_balances'''
+
+    btrx = Bittrex(apikey, secret)
+    balances = btrx.get_balances()
+
+    assert isinstance(balances, list)
+    assert list(balances[0].keys()) == ['Currency', 'Balance', 'Available',
+                                        'Pending', 'CryptoAddress']
 
