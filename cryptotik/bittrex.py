@@ -42,11 +42,10 @@ class Bittrex:
     def api(cls, url, params):
         """call api"""
 
-        result = cls.api_session.get(url, params, headers=cls.headers,
+        result = cls.api_session.get(url, params=params, headers=cls.headers,
                                      timeout=(3, 5)).json()
 
         assert result["success"] is True
-
         return result
 
     def private_api(self, url, params):
