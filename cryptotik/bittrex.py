@@ -84,11 +84,14 @@ class Bittrex:
 
     @classmethod
     def get_market_trade_history(cls, pair, depth=200):
-        '''returns last 200 trades for the pair'''
+        '''returns last <n> trades for the pair'''
+
+        if depth > 200:
+            raise ValueError("Bittrex API allows maximum history of last 200 trades.")
 
         return cls.api(cls.url + "public" + "/getmarkethistory",
-                       params={"market": cls.format_pair(pair),
-                               "count": depth})["result"]
+                       params={"market": cls.format_pair(pair)}
+                       )["result"][-depth:]
 
     @classmethod
     def get_market_orders(cls, pair, depth=200):
