@@ -107,7 +107,7 @@ class Bittrex:
 
         from decimal import Decimal
 
-        order_book = cls.get_market_order_book(cls.format_pair(pair))
+        order_book = cls.get_market_orders(cls.format_pair(pair))
         return {"bids": sum([Decimal(i["Quantity"]) * Decimal(i["Rate"]) for i in order_book["buy"]]),
                 "asks": sum([Decimal(i["Quantity"]) for i in order_book["sell"]])
                }
