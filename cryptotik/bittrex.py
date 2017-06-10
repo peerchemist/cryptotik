@@ -176,12 +176,14 @@ class Bittrex:
 
         return [i for i in balances if i["Balance"] > 0]
 
-    def get_deposit_addresses(self, coin):
-        """retrieve or generate an address for a specific currency.
-        If one does not exist, the call will fail and return ADDRESS_GENERATING until one is available."""
+    def get_deposit_address(self, coin):
+        """retrieve or generate an address for <coin>.
+        If there is none, call will return empty, call again to get it."""
 
-        return self.private_api(self.url + "account" + "/getdepositaddress",
+        addr = self.private_api(self.url + "account" + "/getdepositaddress",
                                 params={"currency": coin.upper()})["result"]
+
+        return addr["Address"]
 
     def withdraw(self, coin, amount, address):
         """withdraw <coin> <amount> to <address>"""
