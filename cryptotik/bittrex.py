@@ -157,10 +157,16 @@ class Bittrex:
                                 params={"uuid": order_id})["result"]
 
     def get_open_orders(self, market=None):
-        """get open orders for <market> or all"""
+        """get open orders for <market>
+           or all open orders if called without an argument."""
+
+        if market:
+            params = {"market": self.format_pair(market)}
+        else:
+            params = {}
 
         return self.private_api(self.url + "market" + "/getopenorders",
-                                params={"market": self.format_pair(market)})["result"]
+                                params=params)["result"]
 
     def get_balances(self):
         """get all balances from your account"""
