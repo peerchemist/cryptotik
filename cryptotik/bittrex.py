@@ -134,18 +134,6 @@ class Bittrex:
         d = cls.get_market_summary(cls.format_pair(pair))
         return Decimal(d["Ask"]) - Decimal(d["Bid"])
 
-    @classmethod
-    def sort_markets_by_volume(cls, n=10):
-        """returns list of >n< markets sorted by daily volume expressed in base pair"""
-
-        r = cls.get_markets_summaries()
-        markets = sorted(r, key=lambda k: k['BaseVolume'])
-        markets.reverse()
-        volume = [i["BaseVolume"] for i in markets[:n]]
-        name = [i["MarketName"].lower() for i in markets[:n]]
-
-        return zip(name, volume)
-
     def buy(self, pair, rate, amount):  # buy_limit as default
         """creates buy order for <pair> at <rate> for <amount>"""
 
