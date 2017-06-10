@@ -27,7 +27,7 @@ def test_get_market_ticker():
 def test_get_market_orders():
     '''test get_market_orderbook'''
 
-    market_orders = Bittrex.get_market_orders("btc-ppc")
+    market_orders = Bittrex.get_market_orders("btc-ppc", 20)
 
     assert isinstance(market_orders, dict)
     assert isinstance(market_orders["buy"], list)
