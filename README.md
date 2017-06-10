@@ -51,3 +51,11 @@ Same goes for Bittrex:
 `btrx.withdraw(<coin>, <amount>, <address>)`
 
 ----------------------------------------------------------
+
+# Running tests
+
+`cd tests`
+
+## Bittrex
+`pytest bittrex_test.py --apikey=<APIKEY> --secret=<APISECRET>
+
