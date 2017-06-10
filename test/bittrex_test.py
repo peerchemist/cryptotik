@@ -98,3 +98,13 @@ def test_get_open_orders(apikey, secret):
                                           'IsConditional', 'Condition',
                                           'ConditionTarget']
 
+
+@private
+@pytest.mark.xfail
+def test_get_deposit_address(apikey, secret):
+    '''test get_deposit_address'''
+
+    btrx = Bittrex(apikey, secret)
+
+    assert isinstance(btrx.get_deposit_address("btc"), str)
+
