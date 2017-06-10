@@ -9,8 +9,10 @@ class Bittrex:
     delimiter = "-"
     headers = headers
     taker_fee, maker_fee = 0.0025, 0.0025
-    private_commands = ('getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit')
-    public_commands = ('getbalances', 'getbalance', 'getdepositaddress', 'withdraw')
+    private_commands = ('getopenorders', 'cancel', 'sellmarket', 'selllimit',
+                        'buymarket', 'buylimit')
+    public_commands = ('getbalances', 'getbalance', 'getdepositaddress',
+                        'withdraw')
     api_session = requests.Session()
 
     def __init__(self, apikey, secret):
