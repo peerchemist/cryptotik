@@ -165,8 +165,10 @@ class Bittrex:
     def get_balances(self):
         """get all balances from your account"""
 
-        return self.private_api(self.url + "account" + "/getbalances",
-                                params={})["result"]
+        balances = self.private_api(self.url + "account" + "/getbalances",
+                                    params={})["result"]
+
+        return [i for i in balances if i["Balance"] > 0]
 
     def get_deposit_addresses(self, coin):
         """retrieve or generate an address for a specific currency.
