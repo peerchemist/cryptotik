@@ -73,11 +73,7 @@ class Bittrex:
         r = cls.api(cls.url + "public" + "/getmarkets", params={})["result"]
         pairs = [i["MarketName"].lower() for i in r]
 
-        return {
-            "base_pairs": set([i.split("-")[0] for i in pairs]),
-            "market_pairs": set([i.split("-")[1] for i in pairs]),
-            "markets": pairs
-        }
+        return pairs
 
     @classmethod
     def get_market_ticker(cls, pair):
