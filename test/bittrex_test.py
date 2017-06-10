@@ -1,3 +1,4 @@
+import pytest
 from cryptotik import Bittrex
 from decimal import Decimal
 
@@ -24,10 +25,11 @@ def test_get_market_ticker():
     assert list(ticker.keys()) == ['Bid', 'Ask', 'Last']
 
 
-def test_get_market_orders():
+@pytest.mark.parametrize("depth", [10, 20, 50])
+def test_get_market_orders(depth):
     '''test get_market_orderbook'''
 
-    market_orders = Bittrex.get_market_orders("btc-ppc", 20)
+    market_orders = Bittrex.get_market_orders("btc-ppc", depth)
 
     assert isinstance(market_orders, dict)
     assert isinstance(market_orders["buy"], list)
