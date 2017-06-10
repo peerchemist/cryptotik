@@ -12,7 +12,7 @@ class Bittrex:
     private_commands = ('getopenorders', 'cancel', 'sellmarket', 'selllimit',
                         'buymarket', 'buylimit')
     public_commands = ('getbalances', 'getbalance', 'getdepositaddress',
-                        'withdraw')
+                       'withdraw')
     api_session = requests.Session()
 
     def __init__(self, apikey, secret):
@@ -84,21 +84,24 @@ class Bittrex:
     def get_market_ticker(cls, pair):
         '''returns simple current market status report'''
 
-        return cls.api(cls.url + "public" + "/getticker", params={"market": cls.format_pair(pair)})["result"]
+        return cls.api(cls.url + "public" + "/getticker",
+                       params={"market": cls.format_pair(pair)})["result"]
 
     @classmethod
     def get_market_trade_history(cls, pair, depth=200):
         '''returns last 200 trades for the pair'''
 
-        return cls.api(cls.url + "public" + "/getmarkethistory", params={"market": cls.format_pair(pair),
-                                                            "count": depth})["result"]
+        return cls.api(cls.url + "public" + "/getmarkethistory",
+                       params={"market": cls.format_pair(pair),
+                               "count": depth})["result"]
 
     @classmethod
     def get_market_order_book(cls, pair, depth=200):
         '''return market order book, default <depth> is 200'''
 
         order_book = cls.api(cls.url + "public" + "/getorderbook",
-                             params={'market': cls.format_pair(pair), 'type': 'both',
+                             params={'market': cls.format_pair(pair),
+                                     'type': 'both',
                                      'depth': depth})["result"]
 
         return order_book
@@ -118,7 +121,8 @@ class Bittrex:
     def get_markets_summaries(cls):
         '''return basic market information for all supported pairs'''
 
-        return cls.api(cls.url + "public" + "/getmarketsummaries", params={})["result"]
+        return cls.api(cls.url + "public" + "/getmarketsummaries",
+                       params={})["result"]
 
     @classmethod
     def get_market_summary(cls, pair):
@@ -148,7 +152,7 @@ class Bittrex:
 
         return zip(name, volume)
 
-    def buy(self, pair, rate, amount): ## buy_limit as default
+    def buy(self, pair, rate, amount):  # buy_limit as default
         """creates buy order for <pair> at <rate> for <amount>"""
 
         return self.private_api(self.url + "market" + "/buylimit",
@@ -156,7 +160,7 @@ class Bittrex:
                                         "quantity": amount,
                                         "rate": rate})["result"]
 
-    def sell(self, pair, rate, amount): ## sell_limit as default
+    def sell(self, pair, rate, amount):  # sell_limit as default
         """creates sell order for <pair> at <rate> for <amount>"""
 
         return self.private_api(self.url + "market" + "/selllimit",
@@ -179,7 +183,8 @@ class Bittrex:
     def get_balances(self):
         """get all balances from your account"""
 
-        return self.private_api(self.url + "account" + "/getbalances", params={})["result"]
+        return self.private_api(self.url + "account" + "/getbalances",
+                                params={})["result"]
 
     def get_deposit_addresses(self, coin):
         """retrieve or generate an address for a specific currency.
@@ -195,4 +200,5 @@ class Bittrex:
                                 params={"currency": coin.upper(),
                                         "quantity": amount,
                                         "address": address})["result"]
+
 
