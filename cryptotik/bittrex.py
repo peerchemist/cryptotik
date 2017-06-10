@@ -116,14 +116,7 @@ class Bittrex:
         order_book = cls.get_market_orders(cls.format_pair(pair))
         return {"bids": sum([Decimal(i["Quantity"]) * Decimal(i["Rate"]) for i in order_book["buy"]]),
                 "asks": sum([Decimal(i["Quantity"]) for i in order_book["sell"]])
-               }
-
-    @classmethod
-    def get_markets_summaries(cls):
-        '''return basic market information for all supported pairs'''
-
-        return cls.api(cls.url + "public" + "/getmarketsummaries",
-                       params={})["result"]
+                }
 
     @classmethod
     def get_market_summary(cls, pair):
