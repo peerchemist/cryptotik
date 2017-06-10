@@ -94,8 +94,11 @@ class Bittrex:
                        )["result"][-depth:]
 
     @classmethod
-    def get_market_orders(cls, pair, depth=200):
-        '''return market order book, default <depth> is 200'''
+    def get_market_orders(cls, pair, depth=50):
+        '''return market order book, default <depth> is 50'''
+
+        if depth > 50:
+            raise ValueError("Bittrex API allows maximum depth of last 50 offers.")
 
         order_book = cls.api(cls.url + "public" + "/getorderbook",
                              params={'market': cls.format_pair(pair),
