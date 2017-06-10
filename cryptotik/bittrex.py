@@ -91,7 +91,7 @@ class Bittrex:
                                "count": depth})["result"]
 
     @classmethod
-    def get_market_order_book(cls, pair, depth=200):
+    def get_market_orders(cls, pair, depth=200):
         '''return market order book, default <depth> is 200'''
 
         order_book = cls.api(cls.url + "public" + "/getorderbook",
