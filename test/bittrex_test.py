@@ -79,3 +79,22 @@ def test_get_balance(apikey, secret):
     assert list(balances[0].keys()) == ['Currency', 'Balance', 'Available',
                                         'Pending', 'CryptoAddress']
 
+
+@private
+def test_get_open_orders(apikey, secret):
+    '''test get_balances'''
+
+    btrx = Bittrex(apikey, secret)
+    orders = btrx.get_open_orders()
+
+    if orders:
+        assert isinstance(orders, list)
+        assert list(orders[0].keys()) == ['Uuid', 'OrderUuid',
+                                          'Exchange', 'OrderType',
+                                          'Quantity', 'QuantityRemaining',
+                                          'Limit', 'CommissionPaid', 'Price',
+                                          'PricePerUnit', 'Opened', 'Closed',
+                                          'CancelInitiated', 'ImmediateOrCancel',
+                                          'IsConditional', 'Condition',
+                                          'ConditionTarget']
+
