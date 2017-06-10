@@ -57,13 +57,13 @@ class Bittrex:
         params.update({"apikey": self.apikey, "nonce": self.get_nonce})
         url += "?" + requests.compat.urlencode(params)
         self.headers.update({"apisign": hmac.new(self.secret, url.
-                                                 encode(), hashlib.sha512).hexdigest()
-                            })
+                                                 encode(), hashlib.sha512
+                                                 ).hexdigest()
+                             })
 
         result = requests.get(url, headers=self.headers, timeout=3)
 
-        assert result["success"] is True
-
+        assert result.status_code == 200
         return result.json()
 
     @classmethod
