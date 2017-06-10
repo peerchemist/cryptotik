@@ -1,4 +1,4 @@
-from cryptotik.btce import Btce
+from cryptotik import Btce
 from decimal import Decimal
 
 
