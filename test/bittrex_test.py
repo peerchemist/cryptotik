@@ -134,3 +134,21 @@ def test_sell(apikey, secret):
                     'success': False
                     }
 
+
+@private
+@pytest.mark.xfail
+def test_get_order_history(apikey, secret):
+    '''test get_order_history'''
+
+    btrx = Bittrex(apikey, secret)
+    order_history = btrx.get_order_history()
+
+    assert isinstance(order_history, list)
+    assert list(order_history[0].keys()) == ['OrderUuid', 'Exchange',
+                                             'TimeStamp', 'OrderType',
+                                             'Limit', 'Quantity',
+                                             'QuantityRemaining', 'Commission',
+                                             'Price', 'PricePerUnit', 'IsConditional',
+                                             'Condition', 'ConditionTarget',
+                                             'ImmediateOrCancel', 'Closed']
+
