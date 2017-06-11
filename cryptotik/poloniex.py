@@ -98,7 +98,7 @@ class Poloniex:
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
-            raise APIError(e)
+            return APIError(e)
 
     ### Public methods ##
 
