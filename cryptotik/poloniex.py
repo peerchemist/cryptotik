@@ -2,6 +2,7 @@ from .common import APIError, headers
 import datetime, time
 import requests
 import hmac, hashlib
+from decimal import Decimal
 
 class Poloniex:
 
@@ -160,12 +161,12 @@ class Poloniex:
         loans = cls.api({"command": 'returnLoanOrders',
                          "currency": cls.format_pair(coin)
                          })
+
         return {"demands": loans["demands"], "offers": loans["offers"]}
 
     @classmethod
     def get_loan_depth(cls, coin):
         """return loans depth"""
-        from decimal import Decimal
 
         loans = cls.get_loans(coin)
         return {"offers": sum([Decimal(i["amount"]) for i in loans["offers"]]),
