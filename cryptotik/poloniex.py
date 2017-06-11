@@ -186,8 +186,6 @@ class Poloniex:
     def get_market_depth(cls, pair):
         '''return sum of all bids and asks'''
 
-        from decimal import Decimal
-
         order_book = cls.get_market_orders(cls.format_pair(pair))
         asks = sum([Decimal(i[1]) for i in order_book["asks"]])
         bid = sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]])
@@ -197,8 +195,6 @@ class Poloniex:
     @classmethod
     def get_market_spread(cls, pair):
         '''returns market spread'''
-
-        from decimal import Decimal
 
         order_book = cls.get_market_orders(cls.format_pair(pair), 1)
         ask = order_book["asks"][0][0]
