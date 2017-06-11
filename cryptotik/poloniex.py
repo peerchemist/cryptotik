@@ -220,7 +220,7 @@ class Poloniex:
 
     ### Private methods ##
 
-    def get_account_trade_history(self, pair, since=None, until=int(time.time())):
+    def get_order_history(self, pair, since=None, until=int(time.time())):
         """Returns the past 200 trades, or up to 50,000 trades
          between a range specified in UNIX timestamps by the "start" and
          "end" GET parameters."""
