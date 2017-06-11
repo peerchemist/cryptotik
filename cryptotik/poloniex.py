@@ -173,7 +173,7 @@ class Poloniex:
                 }
 
     @classmethod
-    def get_market_order_book(cls, pair, depth=999999):
+    def get_market_orders(cls, pair, depth=999999):
         '''return order book for the market'''
 
         return cls.api({"command": "returnOrderBook",
