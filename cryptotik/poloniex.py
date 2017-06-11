@@ -38,6 +38,7 @@ class Poloniex:
     delimiter = "_"
     case = "upper"
     headers = headers
+    timeout = (5, 8)
     try:  # at Poloniex, fees may vary per user (https://poloniex.com/fees/)
         taker_fee, maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
     except:
@@ -71,7 +72,7 @@ class Poloniex:
 
         try:
             result = cls.api_session.get(cls.url + "public?", params=params,
-                                         headers=cls.headers, timeout=(5, 8))
+                                         headers=cls.headers, timeout=cls.timeout)
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
@@ -94,7 +95,7 @@ class Poloniex:
 
         try:
             result = requests.post(self.url + "tradingApi", data=data,
-                                   headers=self.headers, timeout=(5, 8))
+                                   headers=self.headers, timeout=self.timeout)
             assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
