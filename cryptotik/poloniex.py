@@ -20,7 +20,8 @@ class Poloniex:
 
     url = 'https://poloniex.com/'
     public_commands = ['returnTicker', 'returnOrderBook', 'returnTradeHistory',
-                       'returnChartData', 'return24hVolume', 'returnLoanOrders']
+                       'returnChartData', 'return24hVolume', 'returnLoanOrders',
+                       'returnCurrencies']
 
     private_commands = ['returnBalances', 'returnCompleteBalances',
                         'returnDepositAddresses', 'generateNewAddress',
