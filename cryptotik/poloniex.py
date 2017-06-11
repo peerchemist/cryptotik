@@ -264,6 +264,7 @@ class Poloniex:
 
     def get_margin_account_summary(self):
         """margin account summary"""
+
         return self.private_api({'command': 'returnMarginAccountSummary'})
 
     def get_margin_position(self, pair):
