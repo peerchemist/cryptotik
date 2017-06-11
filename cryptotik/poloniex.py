@@ -15,8 +15,6 @@ class Poloniex:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
             self.nonce = int(time.time())
-        self.base_pairs = self.get_markets()["base"]
-        self.markets = self.get_markets()["markets"]
 
     url = 'https://poloniex.com/'
     public_commands = ['returnTicker', 'returnOrderBook', 'returnTradeHistory',
