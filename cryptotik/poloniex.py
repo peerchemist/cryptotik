@@ -187,7 +187,7 @@ class Poloniex:
 
         from decimal import Decimal
 
-        order_book = cls.get_market_order_book(cls.format_pair(pair))
+        order_book = cls.get_market_orders(cls.format_pair(pair))
         asks = sum([Decimal(i[1]) for i in order_book["asks"]])
         bid = sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]])
 
