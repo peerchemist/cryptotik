@@ -285,6 +285,14 @@ class Poloniex:
                                  'account': account
                                  })
 
+    def generate_new_address(self, coin):
+        """Generates a new deposit address for the currency specified by the
+           <coin> parameter."""
+
+        return self.private_api({'command': 'generateNewAddress',
+                                 'currency': coin
+                                 })
+
     def get_deposit_addresses(self):
         """get deposit addresses"""
 
