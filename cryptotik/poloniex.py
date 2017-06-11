@@ -326,7 +326,7 @@ class Poloniex:
     def get_open_loan_offers(self):
         """Returns your open loan offers for each currency"""
 
-        return self.private_api('returnOpenLoanOffers')
+        return self.private_api({'command': 'returnOpenLoanOffers'})
 
     def get_fee_info(self):
         """If you are enrolled in the maker-taker fee schedule,
