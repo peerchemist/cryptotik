@@ -96,7 +96,7 @@ class Poloniex:
         try:
             result = requests.post(self.url + "tradingApi", data=data,
                                    headers=self.headers, timeout=self.timeout)
-            assert result.status_code == 200
+            #assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
             return APIError(e)
@@ -290,7 +290,7 @@ class Poloniex:
            <coin> parameter."""
 
         return self.private_api({'command': 'generateNewAddress',
-                                 'currency': coin
+                                 'currency': coin.upper()
                                  })
 
     def get_deposit_address(self, coin=None):
