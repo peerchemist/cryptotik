@@ -196,9 +196,11 @@ class Bittrex:
                                         "quantity": amount,
                                         "address": address})["result"]
 
-    def get_order(self, uuid):
+    def get_order(self, order_id):
         """retrieve a single order by uuid."""
-        pass
+
+        return self.private_api(self.url + "account" + "/getorder",
+                                params={"uuid": order_id})["result"]
 
     def get_withdrawal_history(self, coin):
         """retrieve withdrawal history."""
