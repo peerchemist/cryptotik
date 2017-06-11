@@ -140,7 +140,7 @@ class Bittrex:
         return self.private_api(self.url + "market" + "/buylimit",
                                 params={"market": self.format_pair(pair),
                                         "quantity": amount,
-                                        "rate": rate})["result"]
+                                        "rate": rate})
 
     def sell(self, pair, rate, amount):  # sell_limit as default
         """creates sell order for <pair> at <rate> for <amount>"""
@@ -148,7 +148,7 @@ class Bittrex:
         return self.private_api(self.url + "market" + "/selllimit",
                                 params={"market": self.format_pair(pair),
                                         "quantity": amount,
-                                        "rate": rate})["result"]
+                                        "rate": rate})
 
     def cancel_order(self, order_id):
         """cancel order <id>"""
@@ -167,6 +167,9 @@ class Bittrex:
 
         return self.private_api(self.url + "market" + "/getopenorders",
                                 params=params)["result"]
+
+    def get_oder_history(self):
+        pass
 
     def get_balances(self):
         """get all balances from your account"""
@@ -193,4 +196,14 @@ class Bittrex:
                                         "quantity": amount,
                                         "address": address})["result"]
 
+    def get_order(self, uuid):
+        """retrieve a single order by uuid."""
+        pass
 
+    def get_withdrawal_history(self, coin):
+        """retrieve withdrawal history."""
+        pass
+
+    def get_deposit_history(self, coin):
+        """retreive deposit history."""
+        pass
