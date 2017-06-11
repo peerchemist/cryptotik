@@ -165,7 +165,7 @@ class Poloniex:
         return {"demands": loans["demands"], "offers": loans["offers"]}
 
     @classmethod
-    def get_loan_depth(cls, coin):
+    def get_loans_depth(cls, coin):
         """return loans depth"""
 
         loans = cls.get_loans(coin)
