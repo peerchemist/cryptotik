@@ -293,10 +293,13 @@ class Poloniex:
                                  'currency': coin
                                  })
 
-    def get_deposit_addresses(self):
+    def get_deposit_addresses(self, coin=None):
         """get deposit addresses"""
 
-        return self.private_api({'command:', 'returnDepositAddresses'})
+        if coin:
+            return self.private_api({'command': 'returnDepositAddresses'})[coin.upper()]
+        else:
+            return self.private_api({'command': 'returnDepositAddresses'})[coin.upper()]
 
     def get_open_orders(self, pair="all"):
         """get your open orders for [pair='all']"""
