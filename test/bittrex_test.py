@@ -152,3 +152,35 @@ def test_get_order_history(apikey, secret):
                                              'Condition', 'ConditionTarget',
                                              'ImmediateOrCancel', 'Closed']
 
+
+@private
+@pytest.mark.xfail
+def test_get_withdrawal_history(apikey, secret):
+    '''test get_withdrawal_history'''
+
+    btrx = Bittrex(apikey, secret)
+    withdrawal_history = btrx.get_withdrawal_history()
+
+    assert isinstance(withdrawal_history, list)
+    assert list(withdrawal_history[0].keys()) == ['PaymentUuid',
+                                                  'Currency', 'Amount',
+                                                  'Address', 'Opened',
+                                                  'Authorized', 'PendingPayment',
+                                                  'TxCost', 'TxId', 'Canceled',
+                                                  'InvalidAddress']
+
+
+@private
+@pytest.mark.xfail
+def test_get_deposit_history(apikey, secret):
+    '''test get_withdrawal_history'''
+
+    btrx = Bittrex(apikey, secret)
+    deposit_history = btrx.get_deposit_history()
+
+    assert isinstance(deposit_history, list)
+    assert list(deposit_history[0].keys()) == ['Id', 'Amount',
+                                               'Currency', 'Confirmations',
+                                               'LastUpdated', 'TxId',
+                                               'CryptoAddress']
+
