@@ -337,7 +337,7 @@ class Poloniex:
         return self.private_api({'command': 'returnOrderTrades', 
                                  'orderNumber': order_id})
 
-    def create_loan_offfer(self, coin, amount, rate, auto_renew=0):
+    def create_loan_offer(self, coin, amount, rate, auto_renew=0):
         """Creates a loan offer for <coin> for <amount> at <rate>"""
 
         return self.private_api({'command': 'createLoanOffer',
