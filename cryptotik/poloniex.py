@@ -106,12 +106,7 @@ class Poloniex:
     def get_markets(cls):
         '''return all supported markets.'''
 
-        markets = [i for i in cls.get_market_ticker("all")]
-        base_pairs = set([i.split(cls.delimiter)[0] for i in markets])
-        market_pairs = set([i.split(cls.delimiter)[1] for i in markets])
-
-        return {"base": base_pairs, "market_pairs": market_pairs,
-                "markets": markets}
+        return [i for i in cls.get_market_ticker("all")]
 
     @classmethod
     def get_market_ticker(cls, pair):
