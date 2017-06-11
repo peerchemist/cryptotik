@@ -252,7 +252,8 @@ class Poloniex:
     def get_balances(self, pair):
         '''get balances of my account'''
         if pair:
-            return self.private_api({'command': 'returnBalances'})[self.format_pair(pair)]
+            return self.private_api({'command': 'returnBalances'}
+                                    )[self.format_pair(pair)]
         return self.private_api({'command': 'returnBalances'})
 
     def get_available_balances(self):
