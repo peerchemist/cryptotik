@@ -199,7 +199,7 @@ class Poloniex:
 
         from decimal import Decimal
 
-        order_book = cls.get_market_order_book(cls.format_pair(pair), 1)
+        order_book = cls.get_market_orders(cls.format_pair(pair), 1)
         ask = order_book["asks"][0][0]
         bid = order_book["bids"][0][0]
 
