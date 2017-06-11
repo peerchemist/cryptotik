@@ -1,9 +1,10 @@
 
 def pytest_addoption(parser):
     parser.addoption("--apikey", action="store",
-                     help="Bittrex API key.")
+                     help="API key.")
     parser.addoption("--secret", action="store",
-                     help="Bittrex API secret.")
+                     help="API secret.")
+
 
 def pytest_generate_tests(metafunc):
 
