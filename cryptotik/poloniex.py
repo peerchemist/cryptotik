@@ -293,7 +293,7 @@ class Poloniex:
                                  'currency': coin
                                  })
 
-    def get_deposit_addresses(self, coin=None):
+    def get_deposit_address(self, coin=None):
         """get deposit addresses"""
 
         if coin:
