@@ -267,7 +267,7 @@ class Poloniex:
 
         return self.private_api({'command': 'returnMarginAccountSummary'})
 
-    def get_margin_position(self, pair):
+    def get_margin_position(self, pair=None):
         """get margin position for <pair> or for all pairs"""
 
         if pair:
