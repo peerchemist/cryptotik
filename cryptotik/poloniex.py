@@ -6,13 +6,13 @@ from decimal import Decimal
 
 class Poloniex:
 
-    def __init__(self, key=None, secret=None):
+    def __init__(self, apikey=None, secret=None):
         '''
         Initialize class when you want to use private commands.
         '''
 
-        if key is not None and secret is not None:
-            self.key = key.encode("utf-8")
+        if apikey is not None and secret is not None:
+            self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
             self.nonce = int(time.time())
         self.base_pairs = self.get_markets()["base"]
@@ -84,15 +84,15 @@ class Poloniex:
 
         assert data["command"] in self.private_commands
 
-        if not self.key or not self.secret:
+        if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
         data["nonce"] = self.get_nonce  # add nonce to post data
         pdata = requests.compat.urlencode(data).encode("utf-8")
         self.headers.update(
             {"Sign": hmac.new(self.secret, pdata, hashlib.sha512).hexdigest(),
-             "Key": self.key
-            })
+             "Key": self.apikey
+             })
 
         try:
             result = requests.post(self.url + "tradingApi", data=data,
