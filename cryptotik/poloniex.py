@@ -259,6 +259,7 @@ class Poloniex:
 
     def get_available_balances(self):
         '''get available account balances'''
+
         return self.private_api({'command': 'returnAvailableAccountBalances'})
 
     def get_margin_account_summary(self):
