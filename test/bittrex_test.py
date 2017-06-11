@@ -108,3 +108,29 @@ def test_get_deposit_address(apikey, secret):
 
     assert isinstance(btrx.get_deposit_address("btc"), str)
 
+
+@private
+def test_buy(apikey, secret):
+    '''test buy'''
+
+    btrx = Bittrex(apikey, secret)
+    buy = btrx.buy("btc_ppc", 0.0000001, 0.0001)
+
+    assert buy == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
+                   'result': None,
+                   'success': False
+                   }
+
+
+@private
+def test_sell(apikey, secret):
+    '''test buy'''
+
+    btrx = Bittrex(apikey, secret)
+    sell = btrx.sell("btc_ppc", 0.0000001, 0.0001)
+
+    assert sell == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
+                    'result': None,
+                    'success': False
+                    }
+
