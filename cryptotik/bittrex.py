@@ -168,8 +168,11 @@ class Bittrex:
         return self.private_api(self.url + "market" + "/getopenorders",
                                 params=params)["result"]
 
-    def get_oder_history(self):
-        pass
+    def get_order_history(self):
+        """get order history"""
+
+        return self.private_api(self.url + "account" + "/getorderhistory",
+                                params={})["result"]
 
     def get_balances(self):
         """get all balances from your account"""
@@ -209,3 +212,4 @@ class Bittrex:
     def get_deposit_history(self, coin):
         """retreive deposit history."""
         pass
+
