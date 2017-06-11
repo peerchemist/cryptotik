@@ -205,11 +205,25 @@ class Bittrex:
         return self.private_api(self.url + "account" + "/getorder",
                                 params={"uuid": order_id})["result"]
 
-    def get_withdrawal_history(self, coin):
+    def get_withdrawal_history(self, coin=None):
         """retrieve withdrawal history."""
-        pass
 
-    def get_deposit_history(self, coin):
+        if coin:
+            params = {"currency": self.format_pair(coin)}
+        else:
+            params = {}
+
+        return self.private_api(self.url + "account" + "/getwithdrawalhistory",
+                                params=params)["result"]
+
+    def get_deposit_history(self, coin=None):
         """retreive deposit history."""
-        pass
+
+        if coin:
+            params = {"currency": self.format_pair(coin)}
+        else:
+            params = {}
+
+        return self.private_api(self.url + "account" + "/getdeposithistory",
+                                params=params)["result"]
 
