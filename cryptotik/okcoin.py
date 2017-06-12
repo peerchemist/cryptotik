@@ -1,5 +1,9 @@
 import requests
+import hashlib
 from .common import APIError, headers
+
+# apiKey:	1527687c-49e6-4950-bc25-a4ac5f4a708e
+# secret: 	57B506A7DAB6232589ED45548FC59967
 
 class OKcoin:
 
@@ -12,6 +16,18 @@ class OKcoin:
                         'order_fee')
     public_commands = ('ticker.do', 'depth.do', 'trades.do')
     futures_public_commands = ('future_ticker.do', 'future_depth', 'future_trades', 'future_index')
+
+    def __init__(self, apikey, secret, domain="com"):
+        '''
+        To use private API methods, initialize class with <partner_id> and <secret_key> arguments,
+        you should also provide the OKcoin domain you registred at. OKcoin.com deals only with USD,
+        and OKcoin.cn deals only with CNY.
+        .com is taken as default.
+        '''
+
+        self.apikey = apikey
+        self.secret = secret
+        self.domain = domain
 
     error_codes = {10000: 'Required parameter can not be null',
                    10001: 'Requests are too frequent',
@@ -57,7 +73,7 @@ class OKcoin:
             result = requests.get(cls.url.replace("$", "cn") + command, params=params,
                                   headers=cls.headers, timeout=3)
 
-        assert result.status_code == 200
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
         try: ## try to get the error
             if result.json().get("result") is False:
@@ -72,6 +88,49 @@ class OKcoin:
 
         return result.json()
 
+    def build_signature(self, params):
+        '''calculate signature for this API call'''
+
+        sign = ''
+        for key in sorted(params.keys()): # alphabetically sorted
+            sign += key + '=' + str(params[key]) +'&'
+        data = sign + 'secret_key=' + self.secret
+        return hashlib.md5(data.encode("utf8")).hexdigest().upper()
+
+    def private_api(self, command, params):
+        '''handles private api methods'''
+
+        if not self.apikey or not self.secret:
+            raise ValueError("API key and secret key required!")
+
+        params["api_key"] = self.apikey
+        params["sign"] = self.build_signature(params)
+
+        result = requests.post(self.url.replace("$", "com") + command, params=params,
+                               headers=self.headers, timeout=3)
+
+        if self.domain == "com":
+            result = requests.get(self.url.replace("$", "com") + command, params=params,
+                                  headers=self.headers, timeout=3)
+        if self.domain == "cny":
+            result = requests.get(self.url.replace("$", "cn") + command, params=params,
+                                  headers=self.headers, timeout=3)
+
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+
+        try: ## try to get the error
+            if result.json().get("result") is False:
+                # API is not consistent about naming error field
+                if result.json()["errorCode"]:
+                    raise APIError(self.error_codes.get(result.json()["errorCode"]))
+                else:
+                    raise APIError(self.error_codes.get(result.json()["error_code"]))
+
+        except AttributeError:
+            pass
+
+        return result.json()
+
     @classmethod
     def get_market_ticker(cls, pair):
         '''returns simple current market status report'''
@@ -79,7 +138,7 @@ class OKcoin:
         return cls.api("ticker.do", {"symbol": cls.format_pair(pair)})["ticker"]
 
     @classmethod
-    def get_market_order_book(cls, pair, depth=200):
+    def get_market_orders(cls, pair, depth=200):
         '''get market depth up to 200'''
 
         assert depth <= 200, "maximum depth is 200"
@@ -105,7 +164,7 @@ class OKcoin:
 
         order_book = cls.get_market_order_book(pair)
 
-        ask = order_book["asks"][0][0]
+        ask = order_book["asks"][-1][0]
         bid = order_book["bids"][0][0]
 
         return Decimal(ask) - Decimal(bid)
@@ -114,7 +173,7 @@ class OKcoin:
     def get_market_trade_history(cls, pair):
         '''get market trade history'''
 
-        return cls.api("trades.do", {"symbol": cls.format_pair(pair)})
+        return cls.api("future_trades.do", {"symbol": cls.format_pair(pair)})
 
     @classmethod
     def get_futures_market_ticker(cls, pair, contract="this_week"):
@@ -163,7 +222,7 @@ class OKcoin:
 
         order_book = cls.get_futures_market_order_book(pair, contract=contract)
 
-        ask = order_book["asks"][0][0]
+        ask = order_book["asks"][-1][0]
         bid = order_book["bids"][0][0]
 
         return Decimal(ask) - Decimal(bid)
@@ -184,3 +243,31 @@ class OKcoin:
 
         return cls.api("future_index.do", {"symbol": cls.format_pair(pair)})
 
+    #########################################################
+    #  Private API commands from here on
+    #########################################################
+
+    def get_userinfo(self):
+        '''Get User Account Info'''
+
+        self.private_api("userinfo.do", {})
+
+    def buy_limit(self, pair, rate, amount):
+        '''spot limit buy order'''
+
+        assert amount > 0.1, "minimum buying unit is 0.1"
+
+        self.private_api("trade.do", {"symbol": pair, "price": rate,
+                                      "amount": amount, "type": "limit"})
+
+    def buy_market(self, pair, rate, amount):
+        '''spot market buy order'''
+
+        assert amount > 0.1, "minimum buying unit is 0.1"
+
+        self.private_api("trade.do", {"symbol": pair, "price": rate,
+                                      "amount": amount, "type": "market"})
+    
+                                      
+
+    
