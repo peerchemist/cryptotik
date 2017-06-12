@@ -15,7 +15,7 @@ class Poloniex:
         if apikey is not None and secret is not None:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
-            self.nonce = int(time.time()) * 1000
+            self.nonce = int(time.time()) * 1000000010
             self.timeout = timeout
 
     url = 'https://poloniex.com/'
@@ -353,13 +353,13 @@ class Poloniex:
         """Returns deposit history within a range,
         specified by the <since> and <until> parameters."""
 
-        self.get_deposits_withdrawals(since, until)["deposits"]
+        return self.get_deposits_withdrawals(since, until)["deposits"]
 
     def get_withdrawal_history(self, since=None, until=int(time.time())):
         """Returns withdrawal history within a range,
         specified by the <since> and <until> parameters."""
 
-        self.get_deposits_withdrawals(since, until)["withdrawals"]
+        return self.get_deposits_withdrawals(since, until)["withdrawals"]
 
     def get_tradable_balances(self):
         """Returns your current tradable balances for each currency in
