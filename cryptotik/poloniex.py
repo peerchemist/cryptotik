@@ -274,14 +274,14 @@ class Poloniex:
                                 Earilest data we can get is since {0} UTC'''.format((datetime.datetime.now() - self.time_limit).isoformat())
                                     )
 
-    def get_balances(self, pair=None):
-        '''get balances of my account'''
+    def get_balances(self, coin=None):
+        '''get balances of my account, <coin> argument is optional'''
 
-        if pair:
-            return self.private_api({'command': 'returnBalances'}
-                                    )[self.format_pair(pair)]
+        balances = self.private_api({'command': 'returnBalances'})
+        if coin:
+            return balances[coin.upper()]
 
-        return self.private_api({'command': 'returnBalances'})
+        return balances
 
     def get_available_balances(self):
         '''get available account balances'''
