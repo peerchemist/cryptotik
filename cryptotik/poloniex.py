@@ -49,7 +49,7 @@ class Poloniex:
     def get_nonce(self):
         '''return nonce integer'''
 
-        self.nonce += 1
+        self.nonce += 17
         return self.nonce
 
     @staticmethod
