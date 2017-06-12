@@ -43,6 +43,7 @@ class Poloniex:
         taker_fee, maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
     except:
         taker_fee, maker_fee = "0.0025", "0.0015"
+
     api_session = requests.Session()
 
     @property
