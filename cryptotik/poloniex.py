@@ -52,6 +52,24 @@ class Poloniex:
         self.nonce += 1
         return self.nonce
 
+    @staticmethod
+    def subtract_one_month(t):
+        """Return a `datetime.date` or `datetime.datetime` (as given) that is
+        one month later.
+
+        Note that the resultant day of the month might change if the following
+        month has fewer days:
+
+            >>> subtract_one_month(datetime.date(2010, 3, 31))
+            datetime.date(2010, 2, 28)
+        """
+
+        one_day = datetime.timedelta(days=1)
+        one_month_earlier = t - one_day
+        while one_month_earlier.month == t.month or one_month_earlier.day > t.day:
+            one_month_earlier -= one_day
+        return one_month_earlier
+
     @classmethod
     def format_pair(cls, pair):
         '''formats pair string in format understood by remote API'''
@@ -307,10 +325,33 @@ class Poloniex:
         return self.private_api({'command': 'returnOpenOrders', 
                                  'currencyPair': self.format_pair(pair)})
 
-    def get_deposits_withdrawals(self):
-        """get deposit/withdraw history"""
+    def get_deposits_withdrawals(self, since=None, until=int(time.time())):
+        """Returns your deposit and withdrawal history within a range,
+        specified by the <since> and <until> parameters, both of which should
+        be given as UNIX timestamps. (defaults to 1 month)"""
 
-        return self.private_api({'command': 'returnDepositsWithdrawals'})
+        if not since:
+            since = self.subtract_one_month(datetime.datetime.now()
+                                            ).timestamp()
+
+        if since > time.time():
+            raise APIError("Start time can't be future.")
+
+        return self.private_api({'command': 'returnDepositsWithdrawals',
+                                 'start': since,
+                                 'end': until})
+
+    def get_deposit_history(self, since=None, until=int(time.time())):
+        """Returns deposit history within a range,
+        specified by the <since> and <until> parameters."""
+
+        self.get_deposits_withdrawals(since, until)["deposits"]
+
+    def get_withdrawal_history(self, since=None, until=int(time.time())):
+        """Returns withdrawal history within a range,
+        specified by the <since> and <until> parameters."""
+
+        self.get_deposits_withdrawals(since, until)["withdrawals"]
 
     def get_tradable_balances(self):
         """Returns your current tradable balances for each currency in
