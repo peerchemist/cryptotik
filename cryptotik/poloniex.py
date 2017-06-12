@@ -4,6 +4,7 @@ import requests
 import hmac, hashlib
 from decimal import Decimal
 
+
 class Poloniex:
 
     def __init__(self, apikey=None, secret=None, timeout=130):
@@ -14,7 +15,7 @@ class Poloniex:
         if apikey is not None and secret is not None:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
-            self.nonce = int(time.time())
+            self.nonce = int(time.time()) * 1000
             self.timeout = timeout
 
     url = 'https://poloniex.com/'
