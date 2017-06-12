@@ -384,15 +384,25 @@ class Poloniex:
 
         return self.private_api({'command': 'returnFeeInfo'})
 
-    '''
-    def returnLendingHistory(self, start=False, end=time(), limit=False):
-        if not start:
-            start = time()-self.MONTH
-        args = {'start': str(start), 'end': str(end)}
-        if limit:
-            args['limit'] = str(limit)
-        return self.private_api('returnLendingHistory', args)
-    '''
+    def return_lending_history(self, since=None, until=int(time.time()),
+                               limit=None):
+        '''
+        Returns your lending history within a time range specified by the
+        <since> and <until> parameters as UNIX timestamps.
+        <limit> may also be specified to limit the number of rows returned.
+        '''
+
+        if not since:
+            since = self.subtract_one_month(datetime.datetime.now()
+                                            ).timestamp()
+
+        if since > time.time():
+            raise APIError("Start time can't be future.")
+
+        return self.private_api({'command': 'returnLendingHistory',
+                                 'start': since,
+                                 'end': until,
+                                 'limit': limit})
 
     def get_order_trades(self, order_id):
         """Returns any trades made from <orderId>"""
