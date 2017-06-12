@@ -384,8 +384,8 @@ class Poloniex:
 
         return self.private_api({'command': 'returnFeeInfo'})
 
-    def return_lending_history(self, since=None, until=int(time.time()),
-                               limit=None):
+    def get_lending_history(self, since=None, until=int(time.time()),
+                            limit=None):
         '''
         Returns your lending history within a time range specified by the
         <since> and <until> parameters as UNIX timestamps.
