@@ -168,8 +168,9 @@ class Poloniex:
 
         else:
             raise APIError('''Poloniex API does no support queries for data older than a year.\n
-                                Earilest data we can get is since {0} UTC'''.format((datetime.datetime.now() - cls.time_limit).isoformat())
-                                    )
+            Earilest data we can get is since {0} UTC'''.format((
+                datetime.datetime.now() - cls.time_limit).isoformat())
+                            )
 
     @classmethod
     def get_full_market_trade_history(cls, pair):
