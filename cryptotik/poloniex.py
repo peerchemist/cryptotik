@@ -6,7 +6,7 @@ from decimal import Decimal
 
 class Poloniex:
 
-    def __init__(self, apikey=None, secret=None):
+    def __init__(self, apikey=None, secret=None, timeout=130):
         '''
         Initialize class when you want to use private commands.
         '''
@@ -15,6 +15,7 @@ class Poloniex:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
             self.nonce = int(time.time())
+            self.timeout = timeout
 
     url = 'https://poloniex.com/'
     public_commands = ['returnTicker', 'returnOrderBook', 'returnTradeHistory',
@@ -38,11 +39,15 @@ class Poloniex:
     delimiter = "_"
     case = "upper"
     headers = headers
-    timeout = (5, 8)
     try:  # at Poloniex, fees may vary per user (https://poloniex.com/fees/)
         taker_fee, maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
     except:
         taker_fee, maker_fee = "0.0025", "0.0015"
+
+    try:
+        assert timeout is not None
+    except:
+        timeout = (8, 15)
 
     api_session = requests.Session()
 
