@@ -54,7 +54,7 @@ Same goes for Bittrex:
 
 # Running tests
 
-`cd tests`
+`cd test`
 
 ## Bittrex
 `pytest bittrex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
