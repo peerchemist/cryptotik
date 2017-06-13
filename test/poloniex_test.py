@@ -27,10 +27,10 @@ def test_get_market_ticker():
     ticker = Poloniex.get_market_ticker("btc-ltc")
 
     assert isinstance(ticker, dict)
-    assert list(ticker.keys()) == ['id', 'last', 'lowestAsk',
+    assert sorted(ticker.keys()) == sorted(['id', 'last', 'lowestAsk',
                                    'highestBid', 'percentChange',
                                    'baseVolume', 'quoteVolume',
-                                   'isFrozen', 'high24hr', 'low24hr']
+                                   'isFrozen', 'high24hr', 'low24hr'])
 
 
 @pytest.mark.parametrize("depth", [10, 20, 50])
@@ -50,9 +50,9 @@ def test_get_market_trade_history():
     trade_history = Poloniex.get_market_trade_history("btc-ppc")
 
     assert isinstance(trade_history, list)
-    assert list(trade_history[0].keys()) == ['globalTradeID', 'tradeID',
+    assert sorted(trade_history[0].keys()) == sorted(['globalTradeID', 'tradeID',
                                              'date', 'type', 'rate', 'amount',
-                                             'total']
+                                             'total'])
 
 
 def test_get_full_market_trade_history():
@@ -61,9 +61,9 @@ def test_get_full_market_trade_history():
     trade_history = Poloniex.get_full_market_trade_history("btc-ppc")
 
     assert isinstance(trade_history, list)
-    assert list(trade_history[0].keys()) == ['globalTradeID', 'tradeID',
+    assert sorted(trade_history[0].keys()) == sorted(['globalTradeID', 'tradeID',
                                              'date', 'type', 'rate', 'amount',
-                                             'total']
+                                             'total'])
 
 
 def test_get_market_depth():
@@ -117,11 +117,11 @@ def test_get_order_history(apikey, secret):
     order_history = polo.get_order_history("btc_eth")
 
     assert isinstance(order_history, list)
-    assert list(order_history[0].keys()) == ['globalTradeID',
+    assert sorted(order_history[0].keys()) == sorted(['globalTradeID',
                                              'tradeID', 'date',
                                              'rate', 'amount', 'total',
                                              'fee', 'orderNumber', 'type',
-                                             'category']
+                                             'category'])
 
 
 @private
@@ -132,7 +132,7 @@ def test_get_avaliable_balances(apikey, secret):
     avaliable_balances = polo.get_available_balances()
 
     assert isinstance(avaliable_balances, dict)
-    assert list(avaliable_balances.keys()) == ['exchange', 'margin']
+    assert sorted(avaliable_balances.keys()) == ['exchange', 'margin']
 
 
 @private
@@ -143,11 +143,11 @@ def test_get_margin_account_summary(apikey, secret):
     margin_account_summary = polo.get_margin_account_summary()
 
     assert isinstance(margin_account_summary, dict)
-    assert list(margin_account_summary.keys()) == ['currentMargin',
-                                                   'lendingFees',
-                                                   'netValue', 'pl',
-                                                   'totalBorrowedValue',
-                                                   'totalValue']
+    assert sorted(margin_account_summary.keys()) == sorted(['currentMargin',
+                                                            'lendingFees',
+                                                            'netValue', 'pl',
+                                                            'totalBorrowedValue',
+                                                            'totalValue'])
 
 
 @private
@@ -189,8 +189,8 @@ def test_get_fee_info(apikey, secret):
     fee_info = polo.get_fee_info()
 
     assert isinstance(fee_info, dict)
-    assert list(fee_info.keys()) == ['makerFee', 'takerFee',
-                                     'thirtyDayVolume', 'nextTier']
+    assert sorted(fee_info.keys()) == sorted(['makerFee', 'takerFee',
+                                     'thirtyDayVolume', 'nextTier'])
 
 
 @private
@@ -201,7 +201,7 @@ def test_active_loans(apikey, secret):
     active_loans = polo.get_active_loans()
 
     assert isinstance(active_loans, dict)
-    assert list(active_loans.keys()) == ['provided', 'used']
+    assert sorted(active_loans.keys()) == ['provided', 'used']
 
 
 @private
@@ -221,9 +221,9 @@ def test_get_deposit_history(apikey, secret):
     deposit_history = polo.get_deposit_history()
 
     assert isinstance(deposit_history, list)
-    assert list(deposit_history[0].keys()) == ['currency', 'address',
+    assert sorted(deposit_history[0].keys()) == sorted(['currency', 'address',
                                                'amount', 'confirmations',
-                                               'txid', 'timestamp', 'status']
+                                               'txid', 'timestamp', 'status'])
 
 
 @private
@@ -234,10 +234,10 @@ def test_get_withdrawal_history(apikey, secret):
     withdrawal_history = polo.get_withdrawal_history()
 
     assert isinstance(withdrawal_history, list)
-    assert list(withdrawal_history[0].keys()) == ['withdrawalNumber',
+    assert sorted(withdrawal_history[0].keys()) == sorted(['withdrawalNumber',
                                                   'currency', 'address',
                                                   'amount', 'fee', 'timestamp',
-                                                  'status', 'ipAddress']
+                                                  'status', 'ipAddress'])
 
 
 @private
