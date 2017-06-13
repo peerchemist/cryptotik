@@ -27,7 +27,7 @@ def test_get_market_ticker():
     ticker = Bittrex.get_market_ticker("btc-ltc")
 
     assert isinstance(ticker, dict)
-    assert list(ticker.keys()) == ['Bid', 'Ask', 'Last']
+    assert sorted(ticker.keys()) == ['Ask', 'Bid', 'Last']
 
 
 @pytest.mark.parametrize("depth", [10, 20, 50])
@@ -48,9 +48,10 @@ def test_get_market_trade_history():
 
     assert isinstance(trade_history, list)
     assert len(trade_history) == 10
-    assert list(trade_history[0].keys()) == ['Id', 'TimeStamp', 'Quantity',
-                                             'Price', 'Total', 'FillType',
-                                             'OrderType']
+    assert sorted(trade_history[0].keys()) == ['FillType', 'Id',
+                                               'OrderType', 'Price',
+                                               'Quantity', 'TimeStamp',
+                                               'Total']
 
 
 def test_get_market_depth():
@@ -69,15 +70,18 @@ def test_get_market_spread():
 
 
 @private
-def test_get_balance(apikey, secret):
+def test_get_balances(apikey, secret):
     '''test get_balances'''
 
     btrx = Bittrex(apikey, secret)
     balances = btrx.get_balances()
 
     assert isinstance(balances, list)
-    assert list(balances[0].keys()) == ['Currency', 'Balance', 'Available',
-                                        'Pending', 'CryptoAddress']
+    assert sorted(balances[0].keys()) == sorted(['Available',
+                                                 'Balance',
+                                                 'CryptoAddress',
+                                                 'Currency',
+                                                 'Pending'])
 
 
 @private
@@ -89,14 +93,23 @@ def test_get_open_orders(apikey, secret):
 
     if orders:
         assert isinstance(orders, list)
-        assert list(orders[0].keys()) == ['Uuid', 'OrderUuid',
-                                          'Exchange', 'OrderType',
-                                          'Quantity', 'QuantityRemaining',
-                                          'Limit', 'CommissionPaid', 'Price',
-                                          'PricePerUnit', 'Opened', 'Closed',
-                                          'CancelInitiated', 'ImmediateOrCancel',
-                                          'IsConditional', 'Condition',
-                                          'ConditionTarget']
+        assert sorted(orders[0].keys()) == sorted(['CancelInitiated',
+                                                   'Closed',
+                                                   'CommissionPaid',
+                                                   'Condition',
+                                                   'ConditionTarget',
+                                                   'Exchange',
+                                                   'ImmediateOrCancel',
+                                                   'IsConditional',
+                                                   'Limit',
+                                                   'Opened',
+                                                   'OrderType',
+                                                   'OrderUuid',
+                                                   'Price',
+                                                   'PricePerUnit',
+                                                   'Quantity',
+                                                   'QuantityRemaining',
+                                                   'Uuid'])
 
 
 @private
@@ -144,13 +157,21 @@ def test_get_order_history(apikey, secret):
     order_history = btrx.get_order_history()
 
     assert isinstance(order_history, list)
-    assert list(order_history[0].keys()) == ['OrderUuid', 'Exchange',
-                                             'TimeStamp', 'OrderType',
-                                             'Limit', 'Quantity',
-                                             'QuantityRemaining', 'Commission',
-                                             'Price', 'PricePerUnit', 'IsConditional',
-                                             'Condition', 'ConditionTarget',
-                                             'ImmediateOrCancel', 'Closed']
+    assert sorted(order_history[0].keys()) == sorted(['Closed',
+                                                      'Commission',
+                                                      'Condition',
+                                                      'ConditionTarget',
+                                                      'Exchange',
+                                                      'ImmediateOrCancel',
+                                                      'IsConditional',
+                                                      'Limit',
+                                                      'OrderType',
+                                                      'OrderUuid',
+                                                      'Price',
+                                                      'PricePerUnit',
+                                                      'Quantity',
+                                                      'QuantityRemaining',
+                                                      'TimeStamp'])
 
 
 @private
@@ -162,12 +183,17 @@ def test_get_withdrawal_history(apikey, secret):
     withdrawal_history = btrx.get_withdrawal_history()
 
     assert isinstance(withdrawal_history, list)
-    assert list(withdrawal_history[0].keys()) == ['PaymentUuid',
-                                                  'Currency', 'Amount',
-                                                  'Address', 'Opened',
-                                                  'Authorized', 'PendingPayment',
-                                                  'TxCost', 'TxId', 'Canceled',
-                                                  'InvalidAddress']
+    assert sorted(withdrawal_history[0].keys()) == sorted(['PaymentUuid',
+                                                           'Currency',
+                                                           'Amount',
+                                                           'Address',
+                                                           'Opened',
+                                                           'Authorized',
+                                                           'PendingPayment',
+                                                           'TxCost',
+                                                           'TxId',
+                                                           'Canceled',
+                                                           'InvalidAddress'])
 
 
 @private
@@ -179,8 +205,10 @@ def test_get_deposit_history(apikey, secret):
     deposit_history = btrx.get_deposit_history()
 
     assert isinstance(deposit_history, list)
-    assert list(deposit_history[0].keys()) == ['Id', 'Amount',
-                                               'Currency', 'Confirmations',
-                                               'LastUpdated', 'TxId',
-                                               'CryptoAddress']
+    assert sorted(deposit_history[0].keys()) == sorted(['Id', 'Amount',
+                                                        'Currency',
+                                                        'Confirmations',
+                                                        'LastUpdated',
+                                                        'TxId',
+                                                        'CryptoAddress'])
 
