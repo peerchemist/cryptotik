@@ -269,7 +269,7 @@ def test_margin_buy(apikey, secret):
 
 @private
 def test_margin_sell(apikey, secret):
-    '''test buy'''
+    '''test sell'''
 
     polo = Poloniex(apikey, secret, 130)
 
