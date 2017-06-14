@@ -132,7 +132,7 @@ def test_get_avaliable_balances(apikey, secret):
     avaliable_balances = polo.get_available_balances()
 
     assert isinstance(avaliable_balances, dict)
-    assert sorted(avaliable_balances.keys()) == ['exchange', 'margin']
+    assert sorted(avaliable_balances.keys()) == sorted(['exchange', 'margin'])
 
 
 @private
@@ -201,7 +201,7 @@ def test_active_loans(apikey, secret):
     active_loans = polo.get_active_loans()
 
     assert isinstance(active_loans, dict)
-    assert sorted(active_loans.keys()) == ['provided', 'used']
+    assert sorted(active_loans.keys()) == sorted(['provided', 'used'])
 
 
 @private
