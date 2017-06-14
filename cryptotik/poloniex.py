@@ -77,6 +77,15 @@ class Poloniex:
             one_month_earlier -= one_day
         return one_month_earlier
 
+    @staticmethod
+    def to_timestamp(datetime):
+        '''convert datetime to unix timestamp in python2 compatible manner.'''
+
+        try:
+            return datetime.timestamp()
+        except AttributeError:
+            return datetime.strftime('%s')
+
     @classmethod
     def format_pair(cls, pair):
         '''formats pair string in format understood by remote API'''
@@ -160,7 +169,7 @@ class Poloniex:
         if since > time.time():
             raise APIError("AYYY LMAO start time is in the future, take it easy.")
 
-        if (datetime.datetime.now() - cls.time_limit).timestamp() <= since:
+        if cls.to_timestamp(datetime.datetime.now() - cls.time_limit) <= since:
             query.update({"start": str(since),
                           "end": str(until)}
                          )
@@ -339,8 +348,8 @@ class Poloniex:
         be given as UNIX timestamps. (defaults to 1 month)"""
 
         if not since:
-            since = self.subtract_one_month(datetime.datetime.now()
-                                            ).timestamp()
+            since = self.to_timestamp(self.subtract_one_month(
+                                      datetime.datetime.now()))
 
         if since > time.time():
             raise APIError("Start time can't be future.")
