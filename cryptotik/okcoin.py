@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import requests
 import hashlib
 from .common import APIError, headers
-
-# apiKey:	1527687c-49e6-4950-bc25-a4ac5f4a708e
-# secret: 	57B506A7DAB6232589ED45548FC59967
 
 class OKcoin:
 

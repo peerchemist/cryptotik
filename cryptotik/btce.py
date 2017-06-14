@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import requests
 from decimal import Decimal
 from .common import APIError, headers

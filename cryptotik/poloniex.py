@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from .common import APIError, headers
 import datetime, time
 import requests

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import requests
 from .common import APIError, headers
 from re import findall
