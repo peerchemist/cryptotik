@@ -86,7 +86,7 @@ class Poloniex:
         try:
             return datetime.timestamp()
         except AttributeError:
-            return datetime.strftime('%s')
+            return int(datetime.strftime('%s'))
 
     @classmethod
     def format_pair(cls, pair):
