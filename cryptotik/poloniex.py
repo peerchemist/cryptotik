@@ -188,7 +188,7 @@ class Poloniex:
         """get full (maximium) trade history for this pair from one year ago
         until now, or last 50k trades - whichever comes first."""
 
-        start = (datetime.datetime.now() - cls.time_limit).timestamp() + 1
+        start = cls.to_timestamp(datetime.datetime.now() - cls.time_limit) + 1
         return cls.get_market_trade_history(cls.format_pair(pair), int(start))
 
     @classmethod
@@ -274,7 +274,7 @@ class Poloniex:
         if since > time.time():
             raise APIError("AYYY LMAO start time is in the future, take it easy.")
 
-        if (datetime.datetime.now() - self.time_limit).timestamp() <= since:
+        if self.to_timestamp(datetime.datetime.now() - self.time_limit) <= since:
             query.update({"start": str(since),
                           "end": str(until)}
                          )
@@ -404,8 +404,8 @@ class Poloniex:
         '''
 
         if not since:
-            since = self.subtract_one_month(datetime.datetime.now()
-                                            ).timestamp()
+            since = self.to_timestamp(self.subtract_one_month(datetime.datetime.now()
+                                            ))
 
         if since > time.time():
             raise APIError("Start time can't be future.")
