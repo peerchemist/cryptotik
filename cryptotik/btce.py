@@ -8,7 +8,7 @@ import hashlib
 
 class Btce:
 
-    def __init__(self, apikey=None, secret=None):
+    def __init__(self, apikey=None, secret=None, timeout=5):
 
         if apikey:
             self.apikey = apikey.encode("utf-8")
@@ -28,6 +28,10 @@ class Btce:
     case = "lower"
     headers = headers
     maker_fee, taker_fee = 0.002, 0.002
+    try:
+        assert timeout is not None
+    except:
+        timeout = (8, 15)
 
     @property
     def get_nonce(self):
@@ -55,7 +59,7 @@ class Btce:
         """call remote API"""
 
         result = cls.api_session.get(cls.url + command, headers=cls.headers,
-                                     timeout=(3, 5))
+                                     timeout=cls.timeout)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
@@ -79,7 +83,7 @@ class Btce:
             "Sign": sig.hexdigest()
         })
 
-        result = requests.post(self.trade_url, data=params, headers=headers, timeout=2)
+        result = requests.post(self.trade_url, data=params, headers=headers, timeout=self.timeout)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         return result.json()
