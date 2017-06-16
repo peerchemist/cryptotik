@@ -17,10 +17,18 @@ class Bittrex:
                        'withdraw')
     api_session = requests.Session()
 
-    def __init__(self, apikey, secret):
-        self.apikey = apikey.encode("utf-8")
-        self.secret = secret.encode("utf-8")
-        self.nonce = int(time.time())
+    def __init__(self, apikey=None, secret=None, timeout=None):
+        '''initialize bittrex class'''
+
+        if apikey and secret:
+            self.apikey = apikey.encode("utf-8")
+            self.secret = secret.encode("utf-8")
+            self.nonce = int(time.time())
+
+    try:
+        assert timeout is not None
+    except:
+        timeout = (8, 15)
 
     @property
     def get_nonce(self):
@@ -45,7 +53,7 @@ class Bittrex:
         """call api"""
 
         result = cls.api_session.get(url, params=params, headers=cls.headers,
-                                     timeout=(3, 5)).json()
+                                     timeout=cls.timeout).json()
 
         assert result["success"] is True
         return result
@@ -63,7 +71,7 @@ class Bittrex:
                                                  ).hexdigest()
                              })
 
-        result = requests.get(url, headers=self.headers, timeout=3)
+        result = requests.get(url, headers=self.headers, timeout=self.timeout)
 
         assert result.status_code == 200
         return result.json()
