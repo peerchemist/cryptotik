@@ -83,7 +83,8 @@ class Btce:
             "Sign": sig.hexdigest()
         })
 
-        result = requests.post(self.trade_url, data=params, headers=headers, timeout=self.timeout)
+        result = requests.post(self.trade_url, data=params, headers=headers,
+                               timeout=self.timeout)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         return result.json()
