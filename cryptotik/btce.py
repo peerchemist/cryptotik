@@ -8,7 +8,7 @@ import hashlib
 
 class Btce:
 
-    def __init__(self, apikey=None, secret=None, timeout=5):
+    def __init__(self, apikey=None, secret=None, timeout=None):
 
         if apikey:
             self.apikey = apikey.encode("utf-8")
