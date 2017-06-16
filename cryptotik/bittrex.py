@@ -53,10 +53,11 @@ class Bittrex:
         """call api"""
 
         result = cls.api_session.get(url, params=params, headers=cls.headers,
-                                     timeout=cls.timeout).json()
+                                     timeout=cls.timeout)
 
-        assert result["success"] is True
-        return result
+        assert result.status_code == 200
+        assert result.json()["success"] is True, {'error': result.json()["message"]}
+        return result.json()
 
     def private_api(self, url, params):
         '''handles private api methods'''
@@ -74,6 +75,7 @@ class Bittrex:
         result = requests.get(url, headers=self.headers, timeout=self.timeout)
 
         assert result.status_code == 200
+        assert result.json()["success"] is True, {'error': result.json()["message"]}
         return result.json()
 
     @classmethod
