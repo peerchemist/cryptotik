@@ -55,7 +55,7 @@ class Bittrex:
         result = cls.api_session.get(url, params=params, headers=cls.headers,
                                      timeout=cls.timeout)
 
-        assert result.status_code == 200
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         assert result.json()["success"] is True, {'error': result.json()["message"]}
         return result.json()
 
@@ -74,7 +74,7 @@ class Bittrex:
 
         result = requests.get(url, headers=self.headers, timeout=self.timeout)
 
-        assert result.status_code == 200
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         assert result.json()["success"] is True, {'error': result.json()["message"]}
         return result.json()
 
