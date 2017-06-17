@@ -21,11 +21,11 @@ class Poloniex:
             self.timeout = timeout
 
     url = 'https://poloniex.com/'
-    public_commands = ['returnTicker', 'returnOrderBook', 'returnTradeHistory',
+    public_commands = ('returnTicker', 'returnOrderBook', 'returnTradeHistory',
                        'returnChartData', 'return24hVolume', 'returnLoanOrders',
-                       'returnCurrencies']
+                       'returnCurrencies')
 
-    private_commands = ['returnBalances', 'returnCompleteBalances',
+    private_commands = ('returnBalances', 'returnCompleteBalances',
                         'returnDepositAddresses', 'generateNewAddress',
                         'returnDepositsWithdrawals', 'returnOpenOrders',
                         'returnTradeHistory', 'returnAvailableAccountBalances',
@@ -36,7 +36,7 @@ class Poloniex:
                         'cancelOrder', 'moveOrder', 'withdraw', 'returnFeeInfo',
                         'transferBalance', 'returnMarginAccountSummary',
                         'marginBuy', 'marginSell', 'getMarginPosition',
-                        'closeMarginPosition']
+                        'closeMarginPosition')
 
     time_limit = datetime.timedelta(days=365)  # Poloniex will provide just 1 year of data
     delimiter = "_"
@@ -109,7 +109,7 @@ class Poloniex:
         try:
             result = cls.api_session.get(cls.url + "public?", params=params,
                                          headers=cls.headers, timeout=cls.timeout)
-            assert result.status_code == 200
+            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
             return result.json()
         except requests.exceptions.RequestException as e:
             raise APIError(e)
