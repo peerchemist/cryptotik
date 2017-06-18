@@ -6,6 +6,7 @@ from .common import APIError, headers
 import hmac
 import hashlib
 
+
 class Btce:
 
     def __init__(self, apikey=None, secret=None, timeout=None):
@@ -246,3 +247,4 @@ class Btce:
                                  "coinName": coin.upper(),
                                  "amount": amount,
                                  "address": address})
+
