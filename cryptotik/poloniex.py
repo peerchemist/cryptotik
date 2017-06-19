@@ -156,29 +156,39 @@ class Poloniex:
                             "currencyPair": pair.lower()})
 
     @classmethod
-    def get_market_trade_history(cls, pair, since=None, until=int(time.time())):
-        """Requests trade history for >pair< from >since< to >until< selected
-           timeframe expressed in seconds (unix time)\n
-           Each request is limited to 50000 trades or 1 year.\n
-           If called without arguments, it will request last 200 trades for the pair."""
+    def get_market_trade_history(cls, pair, depth=200, since=None,
+                                 until=int(time.time())):
+        """Requests trade history for >pair<, of <depth> from >since< to >until<
+        selected timeframe expressed in seconds (unix time)
+        Each request is limited to 50000 trades or 1 year.
+        If called without arguments, it will request last 200 trades for the pair."""
 
         query = {"command": "returnTradeHistory",
                  "currencyPair": cls.format_pair(pair)}
 
+        if depth is None:
+            depth = 200
+
+        if since is None and depth is not None and depth > 200:
+            raise APIError("You can't get depth > 200 without <since> argument.")
+
         if since is None:  # default, return 200 last trades
-            return cls.api(query)
+            if depth is not None:
+                return cls.api(query)[-depth:]
+            else:
+                return cls.api(query)
 
         if since > time.time():
             raise APIError("AYYY LMAO start time is in the future, take it easy.")
 
-        if cls.to_timestamp(datetime.datetime.now() - cls.time_limit) <= since:
+        if since is not None and cls.to_timestamp(datetime.datetime.now() - cls.time_limit) <= since:
             query.update({"start": str(since),
                           "end": str(until)}
                          )
             return cls.api(query)
 
         else:
-            raise APIError('''Poloniex API does no support queries for data older than a year.\n
+            raise APIError('''Poloniex API does no support queries for data older than a year.
             Earilest data we can get is since {0} UTC'''.format((
                 datetime.datetime.now() - cls.time_limit).isoformat())
                             )

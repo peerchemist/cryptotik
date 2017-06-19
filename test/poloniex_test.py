@@ -1,5 +1,6 @@
 import pytest
 from cryptotik import Poloniex
+from cryptotik.common import APIError
 from decimal import Decimal
 
 private = pytest.mark.skipif(
@@ -44,15 +45,25 @@ def test_get_market_orders(depth):
     assert isinstance(market_orders["bids"], list)
 
 
-def test_get_market_trade_history():
+@pytest.mark.parametrize("depth", [1, 201])
+def test_get_market_trade_history(depth):
     '''test get_market_trade_history'''
 
-    trade_history = Poloniex.get_market_trade_history("btc-ppc")
+    if depth < 200:
 
-    assert isinstance(trade_history, list)
-    assert sorted(trade_history[0].keys()) == sorted(['globalTradeID', 'tradeID',
-                                             'date', 'type', 'rate', 'amount',
-                                             'total'])
+        trade_history = Poloniex.get_market_trade_history("btc-ppc", depth)
+
+        assert isinstance(trade_history, list)
+        assert sorted(trade_history[0].keys()) == sorted(['globalTradeID', 'tradeID',
+                                                'date', 'type', 'rate', 'amount',
+                                                'total'])
+
+    if depth > 200:
+
+        try:
+            trade_history = Poloniex.get_market_trade_history("btc-ppc", depth)
+        except APIError:
+            assert True
 
 
 def test_get_full_market_trade_history():
