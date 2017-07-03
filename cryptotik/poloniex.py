@@ -199,7 +199,7 @@ class Poloniex:
         until now, or last 50k trades - whichever comes first."""
 
         start = cls.to_timestamp(datetime.datetime.now() - cls.time_limit) + 1
-        return cls.get_market_trade_history(cls.format_pair(pair), int(start))
+        return cls.get_market_trade_history(cls.format_pair(pair), since=int(start))
 
     @classmethod
     def get_loans(cls, coin):
