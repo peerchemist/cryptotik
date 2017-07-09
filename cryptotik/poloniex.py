@@ -222,12 +222,14 @@ class Poloniex:
 
     @classmethod
     def get_market_orders(cls, pair, depth=999999):
-        '''return order book for the market'''
+        '''return order book for the market <pair>'''
 
-        return cls.api({"command": "returnOrderBook",
-                        "currencyPair": cls.format_pair(pair),
-                        "depth": depth
-                        })
+        r = cls.api({"command": "returnOrderBook",
+                     "currencyPair": cls.format_pair(pair),
+                     "depth": depth
+                     })
+
+        return {k: v for k, v in r.items() if k in ['asks', 'bids']}
 
     @classmethod
     def get_market_depth(cls, pair):
