@@ -7,7 +7,7 @@ import hmac
 import hashlib
 
 
-class Btce:
+class Wex:
 
     def __init__(self, apikey=None, secret=None, timeout=None):
 
@@ -23,8 +23,8 @@ class Btce:
                         "CancelOrder", "TradeHistory", "TransHistory",
                         "WithdrawCoin", "CreateCuopon", "RedeemCuopon")
 
-    url = 'https://btc-e.com/api/3/'
-    trade_url = 'https://btc-e.com/tapi/'
+    url = 'https://wex.nz/api/3/'
+    trade_url = 'https://wex.nz/tapi/'
     delimiter = "_"
     case = "lower"
     headers = headers
@@ -102,7 +102,7 @@ class Btce:
         """return ticker for market"""
 
         pair = cls.format_pair(pair)
-        return cls.api("ticker" + "/" + pair)
+        return cls.api("ticker" + "/" + pair)[pair]
 
     @classmethod
     def get_market_orders(cls, pair, depth=None):
