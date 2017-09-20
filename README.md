@@ -7,25 +7,23 @@ Standardized common API for several cryptocurrency exchanges.
 
 ## Examples
 
-Right now library supports: Btce, Poloniex, Bittrex, TheRockTrading, HitBtc, Livecoin and OKcoin.
+Right now library supports: Wex.nz, Poloniex.com and Bittrex.com; with elementary support for: TheRockTrading, HitBtc and Livecoin.
 
-`from cryptotik import Btce, Bittrex, Poloniex, TheRock`
+`from cryptotik import Wex, Bittrex, Poloniex`
 
-You only need to learn commands once, for example `get_markets` will work anywhere
+You only need to learn commands once, for example `get_markets` will work anywhere:
 
 `Bittrex.get_markets()`
 
 `Poloniex.get_markets()`
 
-`Btce.get_markets()`
-
-`TheRock.get_markets()`
+`Wex.get_markets()`
 
 and will yield similar results. However parsing and interpreting them is left to user.
 
 ## More examples
 
-`Btce.get_market_ticker("ppc-btc")`
+`Wex.get_market_ticker("ppc-btc")`
 
 `Poloniex.get_market_order_book("btc-nxt")`
 
@@ -61,5 +59,4 @@ Same goes for Bittrex:
 
 ## Poloniex
 `pytest poloniex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
-
 
