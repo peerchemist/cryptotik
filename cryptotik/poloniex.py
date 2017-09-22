@@ -38,7 +38,7 @@ class Poloniex:
                         'marginBuy', 'marginSell', 'getMarginPosition',
                         'closeMarginPosition')
 
-    time_limit = datetime.timedelta(days=365)  # Poloniex will provide just 1 year of data
+    time_limit = datetime.timedelta(days=35)  # Poloniex will provide just 1 month of data
     delimiter = "_"
     case = "upper"
     headers = headers
@@ -62,14 +62,14 @@ class Poloniex:
         return self.nonce
 
     @staticmethod
-    def subtract_one_month(t):
+    def _subtract_one_month(t):
         """Return a `datetime.date` or `datetime.datetime` (as given) that is
         one month later.
 
         Note that the resultant day of the month might change if the following
         month has fewer days:
 
-            >>> subtract_one_month(datetime.date(2010, 3, 31))
+            >>> _subtract_one_month(datetime.date(2010, 3, 31))
             datetime.date(2010, 2, 28)
         """
 
@@ -80,7 +80,7 @@ class Poloniex:
         return one_month_earlier
 
     @staticmethod
-    def to_timestamp(datetime):
+    def _to_timestamp(datetime):
         '''convert datetime to unix timestamp in python2 compatible manner.'''
 
         try:
@@ -181,24 +181,23 @@ class Poloniex:
         if since > time.time():
             raise APIError("AYYY LMAO start time is in the future, take it easy.")
 
-        if since is not None and cls.to_timestamp(datetime.datetime.now() - cls.time_limit) <= since:
+        if since is not None and cls._to_timestamp(datetime.datetime.now() - cls.time_limit) <= since:
             query.update({"start": str(since),
                           "end": str(until)}
                          )
             return cls.api(query)
 
         else:
-            raise APIError('''Poloniex API does no support queries for data older than a year.
+            raise APIError('''Poloniex API does no support queries for data older than a month.
             Earilest data we can get is since {0} UTC'''.format((
                 datetime.datetime.now() - cls.time_limit).isoformat())
                             )
 
     @classmethod
     def get_full_market_trade_history(cls, pair):
-        """get full (maximium) trade history for this pair from one year ago
-        until now, or last 50k trades - whichever comes first."""
+        """get trade history of the last month."""
 
-        start = cls.to_timestamp(datetime.datetime.now() - cls.time_limit) + 1
+        start = cls._to_timestamp(cls._subtract_one_month(datetime.datetime.now()))
         return cls.get_market_trade_history(cls.format_pair(pair), since=int(start))
 
     @classmethod
