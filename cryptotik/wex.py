@@ -168,6 +168,11 @@ class Wex:
 
         return self.private_api({"method": "getInfo"})['return']['funds']
 
+    def get_deposit_address(self, coin=None):
+        '''get deposit address'''
+
+        return self.private_api({"method": "CoinDepositAddress", "coinName": coin})['return']
+
     def buy(self, pair, rate, amount):
         '''submit spot buy order
         Expected result:
