@@ -2,6 +2,7 @@
 
 import requests
 from decimal import Decimal
+import time
 from .common import APIError, headers
 import hmac
 import hashlib
@@ -255,3 +256,13 @@ class Wex:
                                  "amount": amount,
                                  "address": address})
 
+    def get_transaction_history(self, since=1, until=time.time()):
+        '''Returns the history of transactions.
+
+        since: the time to start the display [unix timestamp]
+        until: the time to end the display [unix timestamp]
+        '''
+
+        return self.private_api({"method": "TransHistory",
+                                 "since": since,
+                                 "end": int(until)})['return']
