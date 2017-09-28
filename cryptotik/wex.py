@@ -88,6 +88,8 @@ class Wex:
                                timeout=self.timeout)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+        if result.json()['success'] != 1:
+            raise ValueError(result.json()['error'])
         return result.json()
 
     @classmethod
