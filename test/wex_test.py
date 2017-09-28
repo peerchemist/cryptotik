@@ -120,7 +120,7 @@ def test_get_transaction_history(apikey, secret):
 
     wex = Wex(apikey, secret)
 
-    assert isinstance(wex.test_get_transaction_history, dict)
+    assert isinstance(wex.get_transaction_history(), dict)
 
 
 @pytest.mark.xfail
