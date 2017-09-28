@@ -15,7 +15,7 @@ class Wex:
         if apikey:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
-        self.nonce = 1
+        self.nonce = int(time.time())
 
     api_session = requests.Session()
 
