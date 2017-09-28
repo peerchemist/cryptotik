@@ -38,7 +38,7 @@ class Wex:
     def get_nonce(self):
         '''return nonce integer'''
 
-        self.nonce += 1
+        self.nonce += 17
         return self.nonce
 
     @classmethod
@@ -164,7 +164,7 @@ class Wex:
         the number of open orders and Server Time.
         '''
 
-        return self.private_api({"method": "getInfo"})
+        return self.private_api({"method": "getInfo"})['return']['funds']
 
     def buy(self, pair, rate, amount):
         '''submit spot buy order
