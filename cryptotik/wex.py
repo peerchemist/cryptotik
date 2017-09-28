@@ -189,7 +189,7 @@ class Wex:
                                  "pair": self.format_pair(pair),
                                  "amount": amount,
                                  "rate": rate
-                                })
+                                })['return']
 
     def sell(self, pair, rate, amount):
         '''submit spot sell order
@@ -206,7 +206,7 @@ class Wex:
                                  "pair": self.format_pair(pair),
                                  "amount": amount,
                                  "rate": rate
-                                })
+                                })['return']
 
     def cancel_order(self, order_id):
         '''cancel order by <order_id>
@@ -218,7 +218,7 @@ class Wex:
 
         return self.private_api({"method": "CancelOrder",
                                  "order_id": order_id
-                                })
+                                })['return']
 
     def get_open_orders(self, pair=None):
         '''get open orders
@@ -233,14 +233,14 @@ class Wex:
         '''
 
         if pair:
-            return self.private_api({"method": "ActiveOrders", "pair": self.format_pair(pair)})
+            return self.private_api({"method": "ActiveOrders", "pair": self.format_pair(pair)})['return']
         else:
-            return self.private_api({"method": "ActiveOrders"})
+            return self.private_api({"method": "ActiveOrders"})['return']
 
     def get_order_info(self, order_id):
         '''get order information'''
 
-        return self.private_api({"method": "OrderInfo", "order_id": order_id})
+        return self.private_api({"method": "OrderInfo", "order_id": order_id})['return']
 
     def withdraw(self, coin, amount, address):
         '''withdraw cryptocurrency
@@ -254,7 +254,7 @@ class Wex:
         return self.private_api({"method": "WithdrawCoin",
                                  "coinName": coin.upper(),
                                  "amount": amount,
-                                 "address": address})
+                                 "address": address})['return']
 
     def get_transaction_history(self, since=1, until=time.time()):
         '''Returns the history of transactions.
