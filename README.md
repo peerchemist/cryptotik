@@ -31,7 +31,7 @@ and will yield similar results. However parsing and interpreting them is left to
 
 ## Private API methods (the ones that require authentication)
 
-Library also supports private API methods for Poloniex and Bittrex, 
+Library also supports private API methods for Poloniex, Bittrex and Wex, 
 to use them you need to make class instance though with your API credentials.
 
 `polo = Poloniex(yourkey, yoursecret)`
@@ -48,6 +48,14 @@ Same goes for Bittrex:
 
 `btrx.withdraw(<coin>, <amount>, <address>)`
 
+And Wex:
+
+`wex = Wex(yourkey, yoursecret)`
+
+`Wex.get_balances()`
+
+`Wex.withdraw(<coin>, <amount>, <address>)`
+
 ----------------------------------------------------------
 
 # Running tests
@@ -60,3 +68,6 @@ Same goes for Bittrex:
 ## Poloniex
 `pytest poloniex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
 
+## Wex
+
+pytest wex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
