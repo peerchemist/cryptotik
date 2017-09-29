@@ -36,7 +36,7 @@ class Wex:
         timeout = (8, 15)
 
     @property
-    def get_nonce(self):
+    def __nonce(self):
         '''return nonce integer'''
 
         self.nonce += 17
@@ -73,7 +73,7 @@ class Wex:
         if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
-        params["nonce"] = self.get_nonce
+        params["nonce"] = self.__nonce
         encoded_params = requests.compat.urlencode(params)
 
         sig = hmac.new(self.secret,
