@@ -1,6 +1,8 @@
 # cryptotik
 Standardized common API for several cryptocurrency exchanges.
 
+[![PyPI](https://img.shields.io/pypi/v/cryptotik.svg)](https://pypi.python.org/pypi/cryptotik/)
+
 ## Install
 
 `pip install git+git://github.com/peerchemist/cryptotik.git`
