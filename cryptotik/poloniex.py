@@ -55,7 +55,7 @@ class Poloniex:
     api_session = requests.Session()
 
     @property
-    def get_nonce(self):
+    def __nonce(self):
         '''return nonce integer'''
 
         self.nonce += 17
@@ -122,7 +122,7 @@ class Poloniex:
         if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
-        data["nonce"] = self.get_nonce  # add nonce to post data
+        data["nonce"] = self.__nonce  # add nonce to post data
         pdata = requests.compat.urlencode(data).encode("utf-8")
         self.headers.update(
             {"Sign": hmac.new(self.secret, pdata, hashlib.sha512).hexdigest(),
