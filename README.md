@@ -73,4 +73,4 @@ And Wex:
 
 ## Wex
 
-pytest wex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
+`pytest wex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
