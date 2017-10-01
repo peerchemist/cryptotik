@@ -138,7 +138,15 @@ class Bittrex:
                        params={"market": cls.format_pair(pair)})["result"][0]
 
     @classmethod
-    def get_market_spread(cls, pair):
+    def get_market_volume(cls, pair):
+        '''return market volume [of last 24h]'''
+
+        smry = cls.get_market_summary(pair)
+
+        return {'BTC': smry['BaseVolume'], pair.split(Bittrex.delimiter)[1].upper(): smry['Volume']}
+
+    @classmethod
+    def get_market_spread(cls, pair):s
         '''return first buy order and first sell order'''
 
         from decimal import Decimal
