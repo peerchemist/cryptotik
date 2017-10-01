@@ -157,6 +157,15 @@ class Wex:
         order_book = cls.get_market_orders(pair, 1)
         return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
 
+    @classmethod
+    def get_market_volume(cls, pair):
+        '''return market volume [of last 24h]'''
+
+        pair = cls.format_pair(pair)
+        smry = cls.get_market_ticker(pair)
+
+        return {'BTC': smry['vol'], pair.split(cls.delimiter)[0].upper(): smry['vol_cur']}
+
     ####################
     # Private commands
     ####################
