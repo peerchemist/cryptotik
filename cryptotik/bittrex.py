@@ -143,10 +143,10 @@ class Bittrex:
 
         smry = cls.get_market_summary(pair)
 
-        return {'BTC': smry['BaseVolume'], pair.split(Bittrex.delimiter)[1].upper(): smry['Volume']}
+        return {'BTC': smry['BaseVolume'], pair.split(cls.delimiter)[1].upper(): smry['Volume']}
 
     @classmethod
-    def get_market_spread(cls, pair):s
+    def get_market_spread(cls, pair):
         '''return first buy order and first sell order'''
 
         from decimal import Decimal
