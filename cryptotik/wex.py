@@ -164,7 +164,7 @@ class Wex:
         pair = cls.format_pair(pair)
         smry = cls.get_market_ticker(pair)
 
-        return {'BTC': smry['vol'], pair.split(cls.delimiter)[0].upper(): smry['vol_cur']}
+        return {pair.split(cls.delimiter)[1].upper(): smry['vol'], pair.split(cls.delimiter)[0].upper(): smry['vol_cur']}
 
     ####################
     # Private commands
