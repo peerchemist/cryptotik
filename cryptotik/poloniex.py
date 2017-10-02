@@ -361,8 +361,8 @@ class Poloniex:
         be given as UNIX timestamps. (defaults to 1 month)"""
 
         if not since:
-            since = self.to_timestamp(self.subtract_one_month(
-                                      datetime.datetime.now()))
+            since = self._to_timestamp(self._subtract_one_month(
+                                       datetime.datetime.now()))
 
         if since > time.time():
             raise APIError("Start time can't be future.")
