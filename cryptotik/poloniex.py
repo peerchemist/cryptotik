@@ -501,7 +501,9 @@ class Poloniex:
     def cancel_order(self, order_id):
         """Cancels order <orderId>"""
 
-        return self.private_api('cancelOrder', {'orderNumber': order_id})
+        return self.private_api({'command': 'cancelOrder',
+                                 'orderNumber': order_id
+                                 })
 
     def move_order(self, order_id, rate, amount):
         """Cancels an order and places a new one of the same type in a single
