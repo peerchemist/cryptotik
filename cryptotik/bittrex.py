@@ -7,6 +7,7 @@ import hmac, hashlib
 
 class Bittrex:
 
+    name = 'bittrex'
     url = 'https://bittrex.com/api/v1.1/'
     delimiter = "-"
     headers = headers

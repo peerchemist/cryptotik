@@ -20,6 +20,7 @@ class Poloniex:
             self.nonce = int(time.time()) * 1000000010
             self.timeout = timeout
 
+    name = 'poloniex'
     url = 'https://poloniex.com/'
     public_commands = ('returnTicker', 'returnOrderBook', 'returnTradeHistory',
                        'returnChartData', 'return24hVolume', 'returnLoanOrders',

@@ -24,6 +24,7 @@ class Wex:
                         "CancelOrder", "TradeHistory", "TransHistory",
                         "WithdrawCoin", "CreateCuopon", "RedeemCuopon")
 
+    name = 'wex'
     url = 'https://wex.nz/api/3/'
     trade_url = 'https://wex.nz/tapi/'
     delimiter = "_"
