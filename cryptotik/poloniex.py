@@ -333,7 +333,7 @@ class Poloniex:
                                  'account': account
                                  })
 
-    def generate_new_address(self, coin):
+    def get_new_deposit_address(self, coin):
         """Generates a new deposit address for the currency specified by the
            <coin> parameter."""
 
