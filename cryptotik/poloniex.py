@@ -377,7 +377,7 @@ class Poloniex:
 
         return self.get_deposits_withdrawals(since, until)["deposits"]
 
-    def get_withdrawal_history(self, since=None, until=int(time.time())):
+    def get_withdraw_history(self, since=None, until=int(time.time())):
         """Returns withdrawal history within a range,
         specified by the <since> and <until> parameters."""
 
