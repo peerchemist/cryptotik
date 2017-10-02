@@ -285,7 +285,7 @@ class Poloniex:
         if since > time.time():
             raise APIError("AYYY LMAO start time is in the future, take it easy.")
 
-        if self.to_timestamp(datetime.datetime.now() - self.time_limit) <= since:
+        if self._to_timestamp(datetime.datetime.now() - self.time_limit) <= since:
             query.update({"start": str(since),
                           "end": str(until)}
                          )
