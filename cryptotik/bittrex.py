@@ -225,7 +225,7 @@ class Bittrex:
         return self.private_api(self.url + "account" + "/getorder",
                                 params={"uuid": order_id})["result"]
 
-    def get_withdrawal_history(self, coin=None):
+    def get_withdraw_history(self, coin=None):
         """retrieve withdrawal history."""
 
         if coin:
