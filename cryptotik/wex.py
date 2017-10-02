@@ -276,3 +276,13 @@ class Wex:
         return self.private_api({"method": "TransHistory",
                                  "since": since,
                                  "end": int(until)})['return']
+
+    def get_deposit_history(self, coin=None):
+        '''get deposit history'''
+
+        hist = {k: v for k, v in self.get_transaction_history().items() if  v['type'] == 1}
+
+        if coin:
+            return {k: v for k, v in hist.items() if v['currency'] == coin.upper()}
+
+        return hist
