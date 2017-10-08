@@ -273,9 +273,14 @@ class Wex:
         until: the time to end the display [unix timestamp]
         '''
 
-        return self.private_api({"method": "TransHistory",
-                                 "since": since,
-                                 "end": int(until)})['return']
+        try:
+            txn_history = self.private_api({"method": "TransHistory",
+                                            "since": since,
+                                            "end": int(until)})['return']
+            return txn_history
+
+        except ValueError:
+            return {}
 
     def get_deposit_history(self, coin=None):
         '''get deposit history'''
