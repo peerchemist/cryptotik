@@ -291,3 +291,13 @@ class Wex:
             return {k: v for k, v in hist.items() if v['currency'] == coin.upper()}
 
         return hist
+
+    def get_withdraw_history(self, coin=None):
+        '''get withdrawals history'''
+
+        hist = {k: v for k, v in self.get_transaction_history().items() if  v['type'] == 2}
+
+        if coin:
+            return {k: v for k, v in hist.items() if v['currency'] == coin.upper()}
+
+        return hist
