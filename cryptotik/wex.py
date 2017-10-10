@@ -3,12 +3,12 @@
 import requests
 from decimal import Decimal
 import time
-from .common import APIError, headers
+from .common import APIError, headers, ExchangeWrapper
 import hmac
 import hashlib
 
 
-class Wex:
+class Wex(ExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=None):
 
@@ -247,7 +247,7 @@ class Wex:
         else:
             return self.private_api({"method": "ActiveOrders"})['return']
 
-    def get_order_info(self, order_id):
+    def get_order(self, order_id):
         '''get order information'''
 
         return self.private_api({"method": "OrderInfo", "order_id": order_id})['return']
