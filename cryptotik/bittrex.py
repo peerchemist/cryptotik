@@ -32,7 +32,7 @@ class Bittrex:
         timeout = (8, 15)
 
     @property
-    def __nonce(self):
+    def _nonce(self):
         '''return nonce integer'''
 
         self.nonce += 1
