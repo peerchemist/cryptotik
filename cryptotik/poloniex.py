@@ -56,7 +56,7 @@ class Poloniex(ExchangeWrapper):
     api_session = requests.Session()
 
     @property
-    def __nonce(self):
+    def _nonce(self):
         '''return nonce integer'''
 
         self.nonce += 17
