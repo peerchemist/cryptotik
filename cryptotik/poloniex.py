@@ -361,6 +361,16 @@ class Poloniex:
         else:
             return orders
 
+    def get_order(self, order_id):
+        '''get details about order'''
+
+        open_orders = self.get_open_orders()
+
+        for pair in open_orders.keys():
+            for order in open_orders[pair]:
+                if order['orderNumber'] == order_id:
+                    return order
+
     def get_deposits_withdrawals(self, since=None, until=int(time.time())):
         """Returns your deposit and withdrawal history within a range,
         specified by the <since> and <until> parameters, both of which should
