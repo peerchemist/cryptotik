@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from .common import APIError, headers
+from .common import APIError, headers, ExchangeWrapper
 import time
 import hmac, hashlib
 
-class Bittrex:
+
+class Bittrex(ExchangeWrapper):
 
     name = 'bittrex'
     url = 'https://bittrex.com/api/v1.1/'
