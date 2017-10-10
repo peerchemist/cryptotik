@@ -353,8 +353,13 @@ class Poloniex(ExchangeWrapper):
     def get_open_orders(self, pair="all"):
         """get your open orders for [pair='all']"""
 
-        return self.private_api({'command': 'returnOpenOrders', 
-                                 'currencyPair': self.format_pair(pair)})
+        orders = self.private_api({'command': 'returnOpenOrders',
+                                   'currencyPair': self.format_pair(pair)})
+
+        if pair == "all":
+            return {k: v for k, v in orders.items() if v}
+        else:
+            return orders
 
     def get_deposits_withdrawals(self, since=None, until=int(time.time())):
         """Returns your deposit and withdrawal history within a range,
