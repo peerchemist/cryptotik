@@ -69,7 +69,7 @@ class ExchangeWrapper:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_balance(self):
+    def get_balances(self):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -98,10 +98,6 @@ class ExchangeWrapper:
 
     @abc.abstractmethod
     def withdraw(self):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_transaction_history(self):
         raise NotImplementedError
 
     @abc.abstractmethod
