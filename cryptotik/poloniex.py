@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from .common import APIError, headers
+from .common import APIError, headers, ExchangeWrapper
 import datetime, time
 import requests
 import hmac, hashlib
 from decimal import Decimal
 
 
-class Poloniex:
+class Poloniex(ExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=130):
         '''
@@ -138,7 +138,7 @@ class Poloniex:
         except requests.exceptions.RequestException as e:
             return APIError(e)
 
-    ### Public methods ##
+    # Public methods
 
     @classmethod
     def get_markets(cls):
