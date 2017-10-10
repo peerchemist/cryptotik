@@ -74,7 +74,7 @@ class Wex(ExchangeWrapper):
         if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
-        params["nonce"] = self.__nonce
+        params["nonce"] = self._nonce
         encoded_params = requests.compat.urlencode(params)
 
         sig = hmac.new(self.secret,

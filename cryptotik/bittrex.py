@@ -67,7 +67,7 @@ class Bittrex(ExchangeWrapper):
         if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
-        params.update({"apikey": self.apikey, "nonce": self.__nonce})
+        params.update({"apikey": self.apikey, "nonce": self._nonce})
         url += "?" + requests.compat.urlencode(params)
         self.headers.update({"apisign": hmac.new(self.secret, url.
                                                  encode(), hashlib.sha512
