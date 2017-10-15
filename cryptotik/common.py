@@ -88,6 +88,11 @@ class ExchangeWrapper:
     def cancel_order(self):
         raise NotImplementedError
 
+    @abs.abstractmethod
+    def cancel_all_orders(self):
+        '''Cancel all active orders.'''
+        raise NotImplementedError
+
     @abc.abstractmethod
     def get_order(self):
         raise NotImplementedError
