@@ -357,7 +357,7 @@ class Poloniex(ExchangeWrapper):
                                    'currencyPair': self.format_pair(pair)})
 
         if pair == "all":
-            return {k: v for k, v in orders.items() if v}
+            return [{k: v for k, v in orders.items() if v}]
         else:
             return orders
 
