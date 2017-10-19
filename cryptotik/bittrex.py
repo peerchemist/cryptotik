@@ -190,6 +190,11 @@ class Bittrex(ExchangeWrapper):
         return self.private_api(self.url + "market" + "/getopenorders",
                                 params=params)["result"]
 
+    def cancel_all_orders(self):
+
+        for order in self.get_open_orders():
+            self.cancel_order(order['OrderUuid'])
+
     def get_order_history(self):
         """get order history"""
 

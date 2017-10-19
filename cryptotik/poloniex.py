@@ -361,6 +361,14 @@ class Poloniex(ExchangeWrapper):
         else:
             return orders
 
+    def cancel_all_orders(self):
+
+        orders = self.get_open_orders()
+
+        for pair in orders:
+            for i in orders['pair']:
+                self.cancel_order(i['orderNumber'])
+
     def get_order(self, order_id):
         '''get details about order'''
 
