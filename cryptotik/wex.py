@@ -230,6 +230,11 @@ class Wex(ExchangeWrapper):
                                  "order_id": order_id
                                 })['return']
 
+    def cancel_all_orders(self):
+        '''cancel all active orders'''
+
+        raise NotImplementedError
+
     def get_open_orders(self, pair=None):
         '''get open orders
         Expected result:
