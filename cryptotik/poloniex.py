@@ -357,7 +357,7 @@ class Poloniex(ExchangeWrapper):
                                    'currencyPair': self.format_pair(pair)})
 
         if pair == "all":
-            return [{k: v for k, v in orders.items() if v}]
+            return {k: v for k, v in orders.items() if v}
         else:
             return orders
 
@@ -365,9 +365,9 @@ class Poloniex(ExchangeWrapper):
 
         orders = self.get_open_orders()
 
-        for pair in orders:
-            for i in orders['pair']:
-                self.cancel_order(i['orderNumber'])
+        for i in orders.keys():
+            for order in orders[i]:
+                self.cancel_order(order['orderNumber'])
 
     def get_order(self, order_id):
         '''get details about order'''
