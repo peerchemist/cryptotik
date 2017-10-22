@@ -3,7 +3,9 @@
 import requests
 from decimal import Decimal
 import time
-from .common import headers, ExchangeWrapper
+from .common import APIError, headers, ExchangeWrapper
+import hmac
+import hashlib
 
 
 class Bitstamp(ExchangeWrapper):
@@ -11,10 +13,9 @@ class Bitstamp(ExchangeWrapper):
     def __init__(self, apikey=None, secret=None, customer_id=None, timeout=None):
 
         if apikey:
-            self.apikey = apikey.encode("utf-8")
-            self.secret = secret.encode("utf-8")
-            self.customer_id = customer_id.encode("utf-8")
-        self.nonce = int(time.time())
+            self._apikey = apikey
+            self._secret = secret
+            self._customer_id = customer_id
 
     api_session = requests.Session()
 
@@ -24,8 +25,8 @@ class Bitstamp(ExchangeWrapper):
                         "sell")
 
     name = 'bitstamp'
-    url = 'https://www.bitstamp.net/api/v2/'
-    trade_url = url
+    url = 'https://www.bitstamp.net/'
+    trade_url = url + 'api/v2/'
     delimiter = ""
     case = "lower"
     headers = headers
@@ -36,12 +37,16 @@ class Bitstamp(ExchangeWrapper):
     except:
         timeout = (8, 15)
 
-    @property
-    def _nonce(self):
+    def get_nonce(self):
         '''return nonce integer'''
 
-        self.nonce += 17
-        return self.nonce
+        nonce = getattr(self, '_nonce', 0)
+        if nonce:
+            nonce += 1
+        # If the unix time is greater though, use that instead (helps low
+        # concurrency multi-threaded apps always call with the largest nonce).
+        self._nonce = max(int(time.time()), nonce)
+        return self._nonce
 
     @classmethod
     def format_pair(cls, pair):
@@ -64,6 +69,30 @@ class Bitstamp(ExchangeWrapper):
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
         return result.json()
+
+    def private_api(self, command):
+        '''handles private api methods'''
+
+        if not self._customer_id or not self._apikey or not self._secret:
+            raise ValueError("A Key, Secret and customer_id required!")
+
+        nonce = str(self.get_nonce())
+        message = (nonce + self._customer_id + self._apikey).encode('utf-8')
+
+        sig = hmac.new(self._secret.encode('utf-8'),
+                       msg=message,
+                       digestmod=hashlib.sha256).hexdigest().upper()
+
+        result = self.api_session.post(self.trade_url+command,
+                                       data={'key': self._apikey,
+                                             'nonce': nonce,
+                                             'signature': sig},
+                                       headers=headers,
+                                       timeout=self.timeout)
+
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+
+        return result
 
     @classmethod
     def get_markets(cls):
@@ -118,3 +147,68 @@ class Bitstamp(ExchangeWrapper):
         pair = cls.format_pair(pair)
 
         return cls.get_market_ticker(pair)['volume']
+
+    ########################
+    # Private methods bellow
+    ########################
+
+    def get_balances(self, coin=None):
+        '''Returns the values relevant to the specified <coin> parameter.'''
+
+        if not coin:
+            return self.private_api("balance")
+        else:
+            return self.private_api("balance/{}".format(coin.lower()))
+
+    def get_deposit_address(self, coin=None):
+        '''get deposit address'''
+
+        raise NotImplementedError
+
+    def buy(self, pair, rate, amount):
+        '''submit spot buy order'''
+
+        raise NotImplementedError
+
+    def sell(self, pair, rate, amount):
+        '''submit spot sell order'''
+
+        raise NotImplementedError
+
+    def cancel_order(self, order_id):
+        '''cancel order by <order_id>'''
+
+        raise NotImplementedError
+
+    def cancel_all_orders(self):
+        raise NotImplementedError
+
+    def get_open_orders(self, pair=None):
+        '''Get open orders.'''
+
+        raise NotImplementedError
+
+    def get_order(self, order_id):
+        '''get order information'''
+
+        raise NotImplementedError
+
+    def withdraw(self, coin, amount, address):
+        '''withdraw cryptocurrency'''
+
+        raise NotImplementedError
+
+    def get_transaction_history(self):
+        '''Returns the history of transactions.'''
+
+        raise NotImplementedError
+
+    def get_deposit_history(self, coin=None):
+        '''get deposit history'''
+
+        raise NotImplementedError
+
+    def get_withdraw_history(self, coin=None):
+        '''get withdrawals history'''
+
+        raise NotImplementedError
