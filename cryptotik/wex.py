@@ -86,8 +86,8 @@ class Wex(ExchangeWrapper):
             "Sign": sig.hexdigest()
         })
 
-        result = requests.post(self.trade_url, data=params, headers=headers,
-                               timeout=self.timeout)
+        result = self.api_session.post(self.trade_url, data=params, headers=headers,
+                                       timeout=self.timeout)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         if result.json()['success'] != 1:
