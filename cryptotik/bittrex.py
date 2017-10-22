@@ -25,19 +25,22 @@ class Bittrex(ExchangeWrapper):
         if apikey and secret:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
-            self.nonce = int(time.time())
 
     try:
         assert timeout is not None
     except:
         timeout = (8, 15)
 
-    @property
-    def _nonce(self):
+    def get_nonce(self):
         '''return nonce integer'''
 
-        self.nonce += 1
-        return self.nonce
+        nonce = getattr(self, '_nonce', 0)
+        if nonce:
+            nonce += 1
+        # If the unix time is greater though, use that instead (helps low
+        # concurrency multi-threaded apps always call with the largest nonce).
+        self._nonce = max(int(time.time()), nonce)
+        return self._nonce
 
     @classmethod
     def format_pair(cls, pair):
@@ -67,7 +70,7 @@ class Bittrex(ExchangeWrapper):
         if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
-        params.update({"apikey": self.apikey, "nonce": self._nonce})
+        params.update({"apikey": self.apikey, "nonce": self.get_nonce()})
         url += "?" + requests.compat.urlencode(params)
         self.headers.update({"apisign": hmac.new(self.secret, url.
                                                  encode(), hashlib.sha512
