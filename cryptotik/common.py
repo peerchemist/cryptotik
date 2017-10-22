@@ -1,5 +1,6 @@
 import abc
 import six
+from time import time
 
 
 class APIError(Exception):
@@ -24,8 +25,8 @@ class ExchangeWrapper:
         self.apikey = apikey
         self.secret = secret
 
-    @abc.abstractproperty
-    def _nonce(self):
+    @abc.abstractmethod
+    def get_nonce(self):
         raise NotImplementedError
 
     @abc.abstractmethod
