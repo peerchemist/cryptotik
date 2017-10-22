@@ -3,7 +3,7 @@
 import requests
 from decimal import Decimal
 import time
-from .common import headers, ExchangeWrapper
+from cryptotik.common import headers, ExchangeWrapper
 
 
 class Bitstamp(ExchangeWrapper):

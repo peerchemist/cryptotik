@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from .common import APIError, headers
+from cryptotik.common import APIError, headers
 from re import findall
 
 class TheRock:
