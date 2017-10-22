@@ -1,7 +1,5 @@
 import abc
 import six
-from time import time
-
 
 class APIError(Exception):
     "Raise exception when the remote API returned an error."
