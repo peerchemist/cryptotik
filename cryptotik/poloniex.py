@@ -17,7 +17,6 @@ class Poloniex(ExchangeWrapper):
         if apikey is not None and secret is not None:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
-            self.nonce = int(time.time()) * 1000000010
             self.timeout = timeout
 
     name = 'poloniex'
@@ -55,12 +54,16 @@ class Poloniex(ExchangeWrapper):
 
     api_session = requests.Session()
 
-    @property
-    def _nonce(self):
+    def get_nonce(self):
         '''return nonce integer'''
 
-        self.nonce += 17
-        return self.nonce
+        nonce = getattr(self, '_nonce', 0)
+        if nonce:
+            nonce += 1
+        # If the unix time is greater though, use that instead (helps low
+        # concurrency multi-threaded apps always call with the largest nonce).
+        self._nonce = max(int(time.time() * * 1000000010), nonce)
+        return self._nonce
 
     @staticmethod
     def _subtract_one_month(t):
@@ -123,7 +126,7 @@ class Poloniex(ExchangeWrapper):
         if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
-        data["nonce"] = self._nonce  # add nonce to post data
+        data["nonce"] = self.get_nonce()  # add nonce to post data
         pdata = requests.compat.urlencode(data).encode("utf-8")
         self.headers.update(
             {"Sign": hmac.new(self.secret, pdata, hashlib.sha512).hexdigest(),
