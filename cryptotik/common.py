@@ -1,7 +1,6 @@
 import abc
 import six
 
-
 class APIError(Exception):
     "Raise exception when the remote API returned an error."
     pass
@@ -24,8 +23,8 @@ class ExchangeWrapper:
         self.apikey = apikey
         self.secret = secret
 
-    @abc.abstractproperty
-    def _nonce(self):
+    @abc.abstractmethod
+    def get_nonce(self):
         raise NotImplementedError
 
     @abc.abstractmethod
