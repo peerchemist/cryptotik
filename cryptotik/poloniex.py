@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, headers, ExchangeWrapper
 import datetime, time
 import requests
 import hmac, hashlib

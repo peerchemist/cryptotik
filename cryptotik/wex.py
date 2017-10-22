@@ -3,7 +3,7 @@
 import requests
 from decimal import Decimal
 import time
-from .common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, headers, ExchangeWrapper
 import hmac
 import hashlib
 

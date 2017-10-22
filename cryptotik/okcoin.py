@@ -2,7 +2,7 @@
 
 import requests
 import hashlib
-from .common import APIError, headers
+from cryptotik.common import APIError, headers
 
 class OKcoin:
 

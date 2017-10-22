@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from .common import APIError, headers
+from cryptotik.common import APIError, headers, ExchangeWrapper
 
-class Hitbtc:
+class Hitbtc(ExchangeWrapper):
 
     url = 'http://api.hitbtc.com/api/1/public/'
     delimiter = ""
