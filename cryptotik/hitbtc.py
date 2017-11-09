@@ -80,11 +80,6 @@ class Hitbtc(ExchangeWrapper):
     def get_market_spread(cls, pair):
         '''return first buy order and first sell order'''
 
-<<<<<<< HEAD
-=======
-        from decimal import Decimal
-
->>>>>>> ae66876... Hitbtc: updated to new API, added private methods and test
         order_book = cls.get_market_orders(cls.format_pair(pair))
 
         ask = order_book['ask'][0]['price']
@@ -112,11 +107,6 @@ class Hitbtc(ExchangeWrapper):
     def get_market_depth(cls, pair):
         '''return sum of all bids and asks'''
 
-<<<<<<< HEAD
-=======
-        from decimal import Decimal
-
->>>>>>> ae66876... Hitbtc: updated to new API, added private methods and test
         order_book = cls.get_market_orders(cls.format_pair(pair))
         asks = sum([Decimal(i['size']) for i in order_book['ask']])
         bid = sum([Decimal(i['size']) for i in order_book['bid']])
