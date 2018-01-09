@@ -99,11 +99,14 @@ class Binance(ExchangeWrapper):
         return {"bids": bid, "asks": asks}
 
     @classmethod
-    def get_markets(cls):
-        '''Find supported markets on this exchange'''
+    def get_markets(cls, filter=None):
+        '''Find supported markets on this exchange,
+            use <filter> if needed'''
 
         r = cls.api(cls.url + "api/v1/ticker/allPrices", params=())
         pairs = [i["symbol"].lower() for i in r]
+        if filter:
+            pairs = [p for p in pairs if filter in p]
         return pairs
 
     @classmethod
@@ -139,7 +142,7 @@ class Binance(ExchangeWrapper):
     def buy(self, pair, price, quantity):
         '''creates buy order for <pair> at <price> for <quantity>'''
 
-        return self.private_api(self.url + "api/v3/order/test",
+        return self.private_api(self.url + "api/v3/order",
                                 params={'symbol': self.format_pair(pair),
                                     'side': 'BUY', 'type': 'limit',
                                     'timeInForce': 'GTC', 'quantity': quantity,
@@ -165,16 +168,24 @@ class Binance(ExchangeWrapper):
     def sell(self, pair, price, quantity):
         '''creates sell order for <pair> at <price> for <quantity>'''
 
-        return self.private_api(self.url + "api/v3/order/test",
+        return self.private_api(self.url + "api/v3/order",
                                 params={'symbol': self.format_pair(pair),
                                     'side': 'SELL', 'type': 'limit',
                                     'timeInForce': 'GTC', 'quantity': quantity,
                                     'price': price},
                                 http_method='POST')
 
-    def withdraw(self, coin, amount, address):
-        '''withdraw <coin> <amount> to <address>'''
+    def withdraw(self, coin, amount, address, address_tag=None):
+        '''withdraw <coin> <amount> to <address> with <address_tag> if needed'''
 
+        if address_tag:
+            return self.private_api(self.url + "/wapi/v3/withdraw.html",
+                                    params={'asset': coin.upper(),
+                                            'address': address,
+                                            'addressTag': address_tag,
+                                            'name': coin.upper(),
+                                            'amount': amount},
+                                    http_method='POST')
         return self.private_api(self.url + "/wapi/v3/withdraw.html",
                                 params={'asset': coin.upper(),
                                         'address': address, 
