@@ -52,7 +52,7 @@ class Hitbtc(ExchangeWrapper):
 
         try:
             result = requests.get(url, params=params, headers=cls.headers, timeout=3)
-            assert result.status_code == 200
+            assert result.status_code == 200, {'error: ' + str(result.json()['error'])}
             return result.json()
         except requests.exceptions.RequestException as e:
             raise APIError(e)
@@ -187,13 +187,13 @@ class Hitbtc(ExchangeWrapper):
                                             params={"currency": currency.upper()})
         return [i for i in transactions if i["type"] == 'payin']
 
-    def get_open_orders(self, symbol=None):
-        '''get open orders for <market>
+    def get_open_orders(self, pair=None):
+        '''get open orders for <pair>
            or all open orders if called without an argument.'''
 
-        if symbol:
+        if pair:
             return self.private_api(self.url + "order", 
-                                    params={'symbol': symbol.upper()})
+                                    params={'symbol': pair.upper()})
         return self.private_api(self.url + "order")
 
     def get_deposit_address(self, currency):
