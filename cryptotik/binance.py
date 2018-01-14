@@ -13,6 +13,7 @@ from cryptotik.common import APIError, headers, ExchangeWrapper
 class Binance(ExchangeWrapper):
     ''' Binance exchange class'''
 
+    name = "binance"
     url = 'https://api.binance.com/'
     delimiter = ""
     headers = headers
