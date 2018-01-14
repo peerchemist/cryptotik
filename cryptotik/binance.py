@@ -72,6 +72,13 @@ class Binance(ExchangeWrapper):
                         params=(('symbol', cls.format_pair(pair)), ('limit', limit),))
 
     @classmethod
+    def get_summaries(cls):
+        '''get summary of all active markets'''
+
+        return cls.api(cls.url + 'api/v1/ticker/24hr',
+                       params=())
+
+    @classmethod
     def get_market_orders(cls, pair, limit=100):
         '''return sum of all bids and asks'''
         params=(('symbol', cls.format_pair(pair)), ('limit', limit),)
