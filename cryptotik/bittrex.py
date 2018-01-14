@@ -93,6 +93,13 @@ class Bittrex(ExchangeWrapper):
         return pairs
 
     @classmethod
+    def get_summaries(cls):
+        '''get summary of all active markets'''
+
+        return cls.api(cls.url + "public" + "/getmarketsummaries",
+                       params={})["result"]
+
+    @classmethod
     def get_market_ticker(cls, pair):
         '''returns simple current market status report'''
 

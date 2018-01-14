@@ -21,6 +21,12 @@ def test_get_markets():
     assert "btc-ltc" in Bittrex.get_markets()
 
 
+def test_get_summaries():
+
+    assert isinstance(Bittrex.get_summaries(), list)
+    assert isinstance(Bittrex.get_summaries()[0], dict)
+
+
 def test_get_market_ticker():
     '''test get_market_ticker'''
 
