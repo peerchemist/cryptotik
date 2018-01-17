@@ -17,6 +17,7 @@ class Binance(ExchangeWrapper):
     url = 'https://api.binance.com/'
     delimiter = ""
     headers = headers
+    taker_fee, maker_fee = 0.001, 0.001
 
     def __init__(self, apikey=None, secret=None, timeout=None):
         '''initialize object from Hitbtc class'''
