@@ -39,17 +39,6 @@ class Binance(ExchangeWrapper):
         except requests.exceptions.RequestException as e:
             raise APIError(e)
 
-    def get_nonce(self):
-        '''return nonce integer'''
-
-        nonce = getattr(self, '_nonce', 0)
-        if nonce:
-            nonce += 1
-        # If the unix time is greater though, use that instead (helps low
-        # concurrency multi-threaded apps always call with the largest nonce).
-        self._nonce = max(int(time.time()), nonce)
-        return self._nonce
-
     @classmethod
     def format_pair(cls, pair):
         '''Format the pair argument to format understood by remote API.'''
