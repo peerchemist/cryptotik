@@ -234,4 +234,5 @@ class Binance(ExchangeWrapper):
         for order in self.get_open_orders():
             self.cancel_order(order['orderId'], order['symbol'])
 
-    
+    def get_nonce(self):
+        pass
