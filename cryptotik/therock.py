@@ -16,6 +16,18 @@ class TheRock(ExchangeWrapper):
     delimiter = ""
     headers = headers
 
+    def __init__(self, apikey=None, secret=None, timeout=None):
+        '''initialize bittrex class'''
+
+        if apikey and secret:
+            self.apikey = apikey.encode("utf-8")
+            self.secret = secret.encode("utf-8")
+
+    try:
+        assert timeout is not None
+    except:
+        timeout = (8, 15)
+
     @classmethod
     def format_pair(cls, pair):
         """format the pair argument to format understood by remote API."""
@@ -88,17 +100,6 @@ class TheRock(ExchangeWrapper):
 
         return cls.get_market_ticker(cls.format_pair(pair))["volume"]
 
-    def __init__(self, apikey=None, secret=None, timeout=None):
-        '''initialize bittrex class'''
-
-        if apikey and secret:
-            self.apikey = apikey.encode("utf-8")
-            self.secret = secret.encode("utf-8")
-
-    try:
-        assert timeout is not None
-    except:
-        timeout = (8, 15)
 
     def private_api(self, url, http_method='GET', params={}):
         '''handles private api methods'''
