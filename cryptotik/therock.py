@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import hmac
-import json
 import hashlib
 import time
 import requests
