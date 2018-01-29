@@ -77,7 +77,7 @@ class Bittrex(ExchangeWrapper):
                                                  ).hexdigest()
                              })
 
-        result = requests.get(url, headers=self.headers, timeout=self.timeout)
+        result = self.api_session.get(url, headers=self.headers, timeout=self.timeout)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         assert result.json()["success"] is True, {'error': result.json()["message"]}
