@@ -9,6 +9,7 @@ from cryptotik.common import APIError, headers, ExchangeWrapper
 from re import findall
 from decimal import Decimal
 
+
 class TheRock(ExchangeWrapper):
 
     url = 'https://api.therocktrading.com/v1/'
@@ -69,7 +70,6 @@ class TheRock(ExchangeWrapper):
         ob = cls.get_market_orders(pair)
         return {"bids": Decimal(ob['bids'][0]['depth']), 
                 "asks": Decimal(ob['asks'][0]['depth'])}
-
 
     @classmethod
     def get_markets(cls, filter=None):
