@@ -100,7 +100,6 @@ class TheRock(ExchangeWrapper):
 
         return cls.get_market_ticker(cls.format_pair(pair))["volume"]
 
-
     def private_api(self, url, http_method='GET', params={}):
         '''handles private api methods'''
 
@@ -120,7 +119,7 @@ class TheRock(ExchangeWrapper):
                 "X-TRT-NONCE": nonce}
 
         result = requests.request(http_method, url, headers=head)
-        assert result.status_code == 200, {'error: ' + str(result.json())}
+        #assert result.status_code == 200, {'error: ' + str(result.json())}
         return result.json()
 
     def get_nonce(self):
