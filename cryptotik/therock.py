@@ -80,8 +80,8 @@ class TheRock(ExchangeWrapper):
         '''return sum of all bids and asks'''
 
         ob = cls.get_market_orders(pair)
-        return {"bids": Decimal(ob['bids'][0]['depth']), 
-                "asks": Decimal(ob['asks'][0]['depth'])}
+        return {"bids": Decimal(ob['bids'][-1]['depth']),
+                "asks": Decimal(ob['asks'][-1]['depth'])}
 
     @classmethod
     def get_markets(cls, filter=None):
@@ -141,7 +141,7 @@ class TheRock(ExchangeWrapper):
 
     def get_deposit_address(self, currency):
         ''' get deposit address for <currency> '''
-        
+
         return self.private_api(self.url + "currencies/" + currency.upper() +
                                 "/addresses",
                                 http_method='GET', 
