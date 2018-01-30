@@ -7,30 +7,32 @@ private = pytest.mark.skipif(
     reason="needs --apikey option to run."
 )
 
+btrx = Bittrex()
+
 
 def test_format_pair():
     '''test string formating to match API expectations'''
 
-    assert Bittrex.format_pair("btc_ppc") == "btc-ppc"
+    assert btrx.format_pair("btc_ppc") == "btc-ppc"
 
 
 def test_get_markets():
     '''test get_markets'''
 
-    assert isinstance(Bittrex.get_markets(), list)
-    assert "btc-ltc" in Bittrex.get_markets()
+    assert isinstance(btrx.get_markets(), list)
+    assert "btc-ltc" in btrx.get_markets()
 
 
 def test_get_summaries():
 
-    assert isinstance(Bittrex.get_summaries(), list)
-    assert isinstance(Bittrex.get_summaries()[0], dict)
+    assert isinstance(btrx.get_summaries(), list)
+    assert isinstance(btrx.get_summaries()[0], dict)
 
 
 def test_get_market_ticker():
     '''test get_market_ticker'''
 
-    ticker = Bittrex.get_market_ticker("btc-ltc")
+    ticker = btrx.get_market_ticker("btc-ltc")
 
     assert isinstance(ticker, dict)
     assert sorted(ticker.keys()) == ['Ask', 'Bid', 'Last']
@@ -40,7 +42,7 @@ def test_get_market_ticker():
 def test_get_market_orders(depth):
     '''test get_market_orderbook'''
 
-    market_orders = Bittrex.get_market_orders("btc-ppc", depth)
+    market_orders = btrx.get_market_orders("btc-ppc", depth)
 
     assert isinstance(market_orders, dict)
     assert isinstance(market_orders["buy"], list)
@@ -50,7 +52,7 @@ def test_get_market_orders(depth):
 def test_get_market_trade_history():
     '''test get_market_trade_history'''
 
-    trade_history = Bittrex.get_market_trade_history("btc-ppc", 10)
+    trade_history = btrx.get_market_trade_history("btc-ppc", 10)
 
     assert isinstance(trade_history, list)
     assert len(trade_history) == 10
@@ -63,7 +65,7 @@ def test_get_market_trade_history():
 def test_get_market_depth():
     '''test get_market_depth'''
 
-    market_depth = Bittrex.get_market_depth("btc-ppc")
+    market_depth = btrx.get_market_depth("btc-ppc")
 
     assert isinstance(market_depth, dict)
     assert isinstance(market_depth["asks"], Decimal)
@@ -72,7 +74,7 @@ def test_get_market_depth():
 def test_get_market_spread():
     '''test get_market spread'''
 
-    assert isinstance(Bittrex.get_market_spread("btc-vtc"), Decimal)
+    assert isinstance(btrx.get_market_spread("btc-vtc"), Decimal)
 
 
 @private
