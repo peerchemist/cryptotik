@@ -7,30 +7,32 @@ private = pytest.mark.skipif(
     reason="needs --apikey option to run."
 )
 
+bnb = Binance()
+
 
 def test_format_pair():
     '''test string formating to match API expectations'''
 
-    assert Binance.format_pair("eth-btc") == "ETHBTC"
+    assert bnb.format_pair("eth-btc") == "ETHBTC"
 
 
 def test_get_markets():
     '''test get_markets'''
 
-    assert isinstance(Binance.get_markets(), list)
-    assert "ethbtc" in Binance.get_markets()
+    assert isinstance(bnb.get_markets(), list)
+    assert "ethbtc" in bnb.get_markets()
 
 
 def test_get_summaries():
 
-    assert isinstance(Bittrex.get_summaries(), list)
-    assert isinstance(Bittrex.get_summaries()[0], dict)
+    assert isinstance(bnb.get_summaries(), list)
+    assert isinstance(bnb.get_summaries()[0], dict)
 
 
 def test_get_market_ticker():
     '''test get_market_ticker'''
 
-    ticker = Binance.get_market_ticker("ETH-BTC")
+    ticker = bnb.get_market_ticker("ETH-BTC")
 
     assert isinstance(ticker, dict)
     assert sorted(ticker.keys()) == ['askPrice', 'askQty', 'bidPrice', 'bidQty',
@@ -40,36 +42,41 @@ def test_get_market_ticker():
                                      'priceChange', 'priceChangePercent', 'quoteVolume',
                                       'symbol', 'volume', 'weightedAvgPrice']
 
+
 def test_get_market_orders():
     '''test get_market_orderbook'''
 
-    market_orders = Binance.get_market_orders("eth-btc")
+    market_orders = bnb.get_market_orders("eth-btc")
 
     assert isinstance(market_orders, dict)
     assert isinstance(market_orders["asks"], list)
     assert isinstance(market_orders["bids"], list)
 
+
 def test_get_market_trade_history():
     '''test get_market_trade_history'''
 
-    trade_history = Binance.get_market_trade_history("eth-btc", 10)
+    trade_history = bnb.get_market_trade_history("eth-btc", 10)
 
     assert isinstance(trade_history, list)
     assert len(trade_history) == 10
     assert sorted(trade_history[0].keys()) == sorted(['a', 'p', 'q', 'f', 'l', 'T', 'm', 'M'])
 
+
 def test_get_market_depth():
     '''test get_market_depth'''
 
-    market_depth = Binance.get_market_depth("eth-btc")
+    market_depth = bnb.get_market_depth("eth-btc")
 
     assert isinstance(market_depth, dict)
     assert isinstance(market_depth["asks"], Decimal)
 
+
 def test_get_market_spread():
     '''test get_market spread'''
 
-    assert isinstance(Binance.get_market_spread("eth-btc"), Decimal)
+    assert isinstance(bnb.get_market_spread("eth-btc"), Decimal)
+
 
 @private
 def test_get_balances(apikey, secret):
@@ -79,6 +86,7 @@ def test_get_balances(apikey, secret):
 
     assert isinstance(balances, list)
 
+
 @private
 def test_get_deposit_address(apikey, secret):
 
@@ -86,12 +94,14 @@ def test_get_deposit_address(apikey, secret):
 
     assert isinstance(bin.get_deposit_address("eth"), dict)
 
+
 @private
 def test_get_withdraw_history(apikey, secret):
 
     bin = Binance(apikey, secret)
 
     assert isinstance(bin.get_withdraw_history("eth"), list)
+
 
 @pytest.mark.xfail
 @private
@@ -103,6 +113,7 @@ def test_withdraw(apikey, secret):
 
     with pytest.raises(AssertionError):
         bin.withdraw("eth", 1, 'PpcEaT3Rd0NTsendftMKDAKr331DXgHe3L')
+
 
 @private
 def test_buy(apikey, secret):
@@ -120,6 +131,7 @@ def test_sell(apikey, secret):
 
     with pytest.raises(AssertionError):
         bin.sell("ltc_btc", 1, 0.25)
+
 
 @private
 def test_cancel_order(apikey, secret):
