@@ -9,15 +9,27 @@ from decimal import Decimal
 
 class Poloniex(ExchangeWrapper):
 
-    def __init__(self, apikey=None, secret=None, timeout=130):
-        '''
-        Initialize class when you want to use private commands.
-        '''
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
 
         if apikey is not None and secret is not None:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
+
+        if proxy:
+            assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
+        self.proxy = {'https': proxy}
+
+        if not timeout:
+            self.timeout = (8, 15)
+        else:
             self.timeout = timeout
+
+        try:  # at Poloniex, fees may vary per user (https://poloniex.com/fees/)
+            self.taker_fee, self.maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
+        except:
+            self.taker_fee, self.maker_fee = "0.0025", "0.0015"
+
+        self.api_session = requests.Session()
 
     name = 'poloniex'
     url = 'https://poloniex.com/'
@@ -42,17 +54,6 @@ class Poloniex(ExchangeWrapper):
     delimiter = "_"
     case = "upper"
     headers = headers
-    try:  # at Poloniex, fees may vary per user (https://poloniex.com/fees/)
-        taker_fee, maker_fee = self.get_fee_info()["takerFee"], self.get_fee_info()["makerFee"]
-    except:
-        taker_fee, maker_fee = "0.0025", "0.0015"
-
-    try:
-        assert timeout is not None
-    except:
-        timeout = (8, 15)
-
-    api_session = requests.Session()
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -93,26 +94,26 @@ class Poloniex(ExchangeWrapper):
             return int(datetime.strftime('%s'))
 
     @classmethod
-    def format_pair(cls, pair):
+    def format_pair(self, pair):
         '''formats pair string in format understood by remote API'''
 
-        if not cls.delimiter in pair and len(pair) > 5:
-            pair = pair.replace("-", cls.delimiter)
+        if not self.delimiter in pair and len(pair) > 5:
+            pair = pair.replace("-", self.delimiter)
 
         if not pair.isupper():
             pair = pair.upper()
 
         return pair
 
-    @classmethod
-    def api(cls, params):
+    def api(self, params):
         '''API calls'''
 
-        assert params["command"] in cls.public_commands
+        assert params["command"] in self.public_commands
 
         try:
-            result = cls.api_session.get(cls.url + "public?", params=params,
-                                         headers=cls.headers, timeout=cls.timeout)
+            result = self.api_session.get(self.url + "public?", params=params,
+                                          headers=self.headers, timeout=self.timeout,
+                                          proxies=self.proxy)
             assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
             return result.json()
         except requests.exceptions.RequestException as e:
@@ -135,32 +136,28 @@ class Poloniex(ExchangeWrapper):
 
         try:
             result = self.api_session.post(self.url + "tradingApi", data=data,
-                                           headers=self.headers, timeout=self.timeout)
+                                           headers=self.headers, timeout=self.timeout,
+                                           proxies=self.proxy)
             #assert result.status_code == 200
             return result.json()
         except requests.exceptions.RequestException as e:
             return APIError(e)
 
-    # Public methods
-
-    @classmethod
-    def get_markets(cls):
+    def get_markets(self):
         '''return all supported markets.'''
 
-        return [i for i in cls.get_market_ticker("all")]
+        return [i for i in self.get_market_ticker("all")]
 
-    @classmethod
-    def get_market_ticker(cls, pair):
+    def get_market_ticker(self, pair):
         '''Returns the ticker for all markets'''
 
         if pair.lower() != "all":
-            return cls.api({"command": 'returnTicker'})[cls.format_pair(pair)]
+            return self.api({"command": 'returnTicker'})[self.format_pair(pair)]
         else:
-            return cls.api({"command": 'returnTicker',
+            return self.api({"command": 'returnTicker',
                             "currencyPair": pair.lower()})
 
-    @classmethod
-    def get_market_trade_history(cls, pair, depth=200, since=None,
+    def get_market_trade_history(self, pair, depth=200, since=None,
                                  until=int(time.time())):
         """Requests trade history for >pair<, of <depth> from >since< to >until<
         selected timeframe expressed in seconds (unix time)
@@ -168,7 +165,7 @@ class Poloniex(ExchangeWrapper):
         If called without arguments, it will request last 200 trades for the pair."""
 
         query = {"command": "returnTradeHistory",
-                 "currencyPair": cls.format_pair(pair)}
+                 "currencyPair": self.format_pair(pair)}
 
         if depth is None:
             depth = 200
@@ -178,100 +175,90 @@ class Poloniex(ExchangeWrapper):
 
         if since is None:  # default, return 200 last trades
             if depth is not None:
-                return cls.api(query)[-depth:]
+                return self.api(query)[-depth:]
             else:
-                return cls.api(query)
+                return self.api(query)
 
         if since > time.time():
             raise APIError("AYYY LMAO start time is in the future, take it easy.")
 
-        if since is not None and cls._to_timestamp(datetime.datetime.now() - cls.time_limit) <= since:
+        if since is not None and self._to_timestamp(datetime.datetime.now() - self.time_limit) <= since:
             query.update({"start": str(since),
                           "end": str(until)}
                          )
-            return cls.api(query)
+            return self.api(query)
 
         else:
             raise APIError('''Poloniex API does no support queries for data older than a month.
             Earilest data we can get is since {0} UTC'''.format((
-                datetime.datetime.now() - cls.time_limit).isoformat())
+                datetime.datetime.now() - self.time_limit).isoformat())
                             )
 
-    @classmethod
-    def get_full_market_trade_history(cls, pair):
+    def get_full_market_trade_history(self, pair):
         """get trade history of the last month."""
 
-        start = cls._to_timestamp(cls._subtract_one_month(datetime.datetime.now()))
-        return cls.get_market_trade_history(cls.format_pair(pair), since=int(start))
+        start = self._to_timestamp(self._subtract_one_month(datetime.datetime.now()))
+        return self.get_market_trade_history(self.format_pair(pair), since=int(start))
 
-    @classmethod
-    def get_loans(cls, coin):
+    def get_loans(self, coin):
         '''return loan offers for coin'''
 
-        loans = cls.api({"command": 'returnLoanOrders',
-                         "currency": cls.format_pair(coin)
+        loans = self.api({"command": 'returnLoanOrders',
+                         "currency": self.format_pair(coin)
                          })
 
         return {"demands": loans["demands"], "offers": loans["offers"]}
 
-    @classmethod
-    def get_loans_depth(cls, coin):
+    def get_loans_depth(self, coin):
         """return loans depth"""
 
-        loans = cls.get_loans(coin)
+        loans = self.get_loans(coin)
         return {"offers": sum([Decimal(i["amount"]) for i in loans["offers"]]),
                 "demands": sum([Decimal(i["amount"]) for i in loans["demands"]])
                 }
 
-    @classmethod
-    def get_market_orders(cls, pair, depth=999999):
+    def get_market_orders(self, pair, depth=999999):
         '''return order book for the market <pair>'''
 
-        r = cls.api({"command": "returnOrderBook",
-                     "currencyPair": cls.format_pair(pair),
+        r = self.api({"command": "returnOrderBook",
+                     "currencyPair": self.format_pair(pair),
                      "depth": depth
                      })
 
         return {k: v for k, v in r.items() if k in ['asks', 'bids']}
 
-    @classmethod
-    def get_market_depth(cls, pair):
+    def get_market_depth(self, pair):
         '''return sum of all bids and asks'''
 
-        order_book = cls.get_market_orders(cls.format_pair(pair))
+        order_book = self.get_market_orders(self.format_pair(pair))
         asks = sum([Decimal(i[1]) for i in order_book["asks"]])
         bid = sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]])
 
         return {"bids": bid, "asks": asks}  # bids are expressed in base pair
 
-    @classmethod
-    def get_market_spread(cls, pair):
+    def get_market_spread(self, pair):
         '''returns market spread'''
 
-        order_book = cls.get_market_orders(cls.format_pair(pair), 1)
+        order_book = self.get_market_orders(self.format_pair(pair), 1)
         ask = order_book["asks"][0][0]
         bid = order_book["bids"][0][0]
 
         return Decimal(ask) - Decimal(bid)
-
-    @classmethod
-    def get_market_volume(cls, pair=None):
+    
+    def get_market_volume(self, pair=None):
         '''Returns the volume for past 24h'''
 
-        q = cls.api({"command": 'return24hVolume'})
+        q = self.api({"command": 'return24hVolume'})
 
         if pair:
-            return q[cls.format_pair(pair)]
+            return q[self.format_pair(pair)]
         else:
             return q
 
-    @classmethod
-    def get_markets_status(cls):
+    def get_markets_status(self):
         ''' Returns additional market info for all markets '''
 
-        return cls.api({'command': 'returnCurrencies'})
-
-    ### Private methods ##
+        return self.api({'command': 'returnCurrencies'})
 
     def get_order_history(self, pair, since=None, until=int(time.time())):
         """Returns the past 200 trades, or up to 50,000 trades
@@ -562,4 +549,3 @@ class Poloniex(ExchangeWrapper):
                                  'fromAccount': fromac,
                                  'toAccount': toac
                                  })
-
