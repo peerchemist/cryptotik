@@ -3,7 +3,9 @@
 import requests
 from cryptotik.common import APIError, headers, ExchangeWrapper
 import time
-import hmac, hashlib
+import hmac
+import hashlib
+from decimal import Decimal
 
 
 class Bittrex(ExchangeWrapper):
@@ -17,19 +19,23 @@ class Bittrex(ExchangeWrapper):
                         'buymarket', 'buylimit')
     public_commands = ('getbalances', 'getbalance', 'getdepositaddress',
                        'withdraw')
-    api_session = requests.Session()
 
-    def __init__(self, apikey=None, secret=None, timeout=None):
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize bittrex class'''
 
         if apikey and secret:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
 
-    try:
-        assert timeout is not None
-    except:
-        timeout = (8, 15)
+        if proxy:
+            assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
+        self.proxy = {'https': proxy}
+        self.api_session = requests.Session()
+
+        if not timeout:
+            self.timeout = (8, 15)
+        else:
+            self.timeout = timeout
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -42,23 +48,21 @@ class Bittrex(ExchangeWrapper):
         self._nonce = max(int(time.time()), nonce)
         return self._nonce
 
-    @classmethod
-    def format_pair(cls, pair):
+    def format_pair(self, pair):
         """format the pair argument to format understood by remote API."""
 
-        pair = pair.replace("_", cls.delimiter)
+        pair = pair.replace("_", self.delimiter)
 
         if not pair.islower():
             return pair.lower()
         else:
             return pair
 
-    @classmethod
-    def api(cls, url, params):
+    def api(self, url, params):
         """call api"""
 
-        result = cls.api_session.get(url, params=params, headers=cls.headers,
-                                     timeout=cls.timeout)
+        result = self.api_session.get(url, params=params, headers=self.headers,
+                                      timeout=self.timeout, proxies=self.proxy)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         assert result.json()["success"] is True, {'error': result.json()["message"]}
@@ -77,93 +81,82 @@ class Bittrex(ExchangeWrapper):
                                                  ).hexdigest()
                              })
 
-        result = self.api_session.get(url, headers=self.headers, timeout=self.timeout)
+        result = self.api_session.get(url, headers=self.headers,
+                                      timeout=self.timeout,
+                                      proxies=self.proxy)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
         assert result.json()["success"] is True, {'error': result.json()["message"]}
         return result.json()
 
-    @classmethod
-    def get_markets(cls):
+    def get_markets(self):
         '''find out supported markets on this exhange.'''
 
-        r = cls.api(cls.url + "public" + "/getmarkets", params={})["result"]
+        r = self.api(self.url + "public" + "/getmarkets", params={})["result"]
         pairs = [i["MarketName"].lower() for i in r]
 
         return pairs
 
-    @classmethod
-    def get_summaries(cls):
+    def get_summaries(self):
         '''get summary of all active markets'''
 
-        return cls.api(cls.url + "public" + "/getmarketsummaries",
-                       params={})["result"]
+        return self.api(self.url + "public" + "/getmarketsummaries",
+                        params={})["result"]
 
-    @classmethod
-    def get_market_ticker(cls, pair):
+    def get_market_ticker(self, pair):
         '''returns simple current market status report'''
 
-        return cls.api(cls.url + "public" + "/getticker",
-                       params={"market": cls.format_pair(pair)})["result"]
+        return self.api(self.url + "public" + "/getticker",
+                        params={"market": self.format_pair(pair)})["result"]
 
-    @classmethod
-    def get_market_trade_history(cls, pair, depth=200):
+    def get_market_trade_history(self, pair, depth=200):
         '''returns last <n> trades for the pair'''
 
         if depth > 200:
             raise ValueError("Bittrex API allows maximum history of last 200 trades.")
 
-        return cls.api(cls.url + "public" + "/getmarkethistory",
-                       params={"market": cls.format_pair(pair)}
-                       )["result"][-depth:]
+        return self.api(self.url + "public" + "/getmarkethistory",
+                        params={"market": self.format_pair(pair)}
+                        )["result"][-depth:]
 
-    @classmethod
-    def get_market_orders(cls, pair, depth=50):
+    def get_market_orders(self, pair, depth=50):
         '''return market order book, default <depth> is 50'''
 
         if depth > 50:
             raise ValueError("Bittrex API allows maximum depth of last 50 offers.")
 
-        order_book = cls.api(cls.url + "public" + "/getorderbook",
-                             params={'market': cls.format_pair(pair),
-                                     'type': 'both',
-                                     'depth': depth})["result"]
+        order_book = self.api(self.url + "public" + "/getorderbook",
+                              params={'market': self.format_pair(pair),
+                                      'type': 'both',
+                                      'depth': depth})["result"]
 
         return order_book
 
-    @classmethod
-    def get_market_depth(cls, pair):
+    def get_market_depth(self, pair):
         '''returns market depth'''
 
-        from decimal import Decimal
-
-        order_book = cls.get_market_orders(cls.format_pair(pair))
+        order_book = self.get_market_orders(self.format_pair(pair))
         return {"bids": sum([Decimal(i["Quantity"]) * Decimal(i["Rate"]) for i in order_book["buy"]]),
                 "asks": sum([Decimal(i["Quantity"]) for i in order_book["sell"]])
                 }
 
-    @classmethod
-    def get_market_summary(cls, pair):
+    def get_market_summary(self, pair):
         '''return basic market information'''
 
-        return cls.api(cls.url + "public" + "/getmarketsummary",
-                       params={"market": cls.format_pair(pair)})["result"][0]
+        return self.api(self.url + "public" + "/getmarketsummary",
+                        params={"market": self.format_pair(pair)})["result"][0]
 
-    @classmethod
-    def get_market_volume(cls, pair):
+    def get_market_volume(self, pair):
         '''return market volume [of last 24h]'''
 
-        smry = cls.get_market_summary(pair)
+        smry = self.get_market_summary(pair)
 
-        return {'BTC': smry['BaseVolume'], pair.split(cls.delimiter)[1].upper(): smry['Volume']}
+        return {'BTC': smry['BaseVolume'], pair.split(self.delimiter)[1].upper(): smry['Volume']}
 
-    @classmethod
-    def get_market_spread(cls, pair):
+    def get_market_spread(self, pair):
         '''return first buy order and first sell order'''
 
-        from decimal import Decimal
-
-        d = cls.get_market_summary(cls.format_pair(pair))
+        d = self.get_market_summary(self.format_pair(pair))
         return Decimal(d["Ask"]) - Decimal(d["Bid"])
 
     def buy(self, pair, rate, amount):  # buy_limit as default
@@ -263,4 +256,3 @@ class Bittrex(ExchangeWrapper):
 
         return self.private_api(self.url + "account" + "/getdeposithistory",
                                 params=params)["result"]
-
