@@ -30,12 +30,13 @@ class Bittrex(ExchangeWrapper):
         if proxy:
             assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
         self.proxy = {'https': proxy}
-        self.api_session = requests.Session()
 
         if not timeout:
             self.timeout = (8, 15)
         else:
             self.timeout = timeout
+
+        self.api_session = requests.Session()
 
     def get_nonce(self):
         '''return nonce integer'''
