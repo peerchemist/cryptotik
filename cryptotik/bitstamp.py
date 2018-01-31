@@ -3,21 +3,31 @@
 import requests
 from decimal import Decimal
 import time
-from cryptotik.common import headers, ExchangeWrapper
+from cryptotik.common import headers, ExchangeWrapper, APIError
 import hmac
 import hashlib
 
 
 class Bitstamp(ExchangeWrapper):
 
-    def __init__(self, apikey=None, secret=None, customer_id=None, timeout=None):
+    def __init__(self, apikey=None, secret=None, customer_id=None,
+                 timeout=None, proxy=None):
 
         if apikey:
             self._apikey = apikey
             self._secret = secret
             self._customer_id = customer_id
 
-    api_session = requests.Session()
+        if proxy:
+            assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
+        self.proxy = {'https': proxy}
+
+        if not timeout:
+            self.timeout = (8, 15)
+        else:
+            self.timeout = timeout
+
+        self.api_session = requests.Session()
 
     public_commands = ("ticker", "transactions", "order_book")
     private_commands = ("balance", "user_transactions", "open_orders", "order_status",
@@ -32,10 +42,6 @@ class Bitstamp(ExchangeWrapper):
     headers = headers
     _markets = 'btcusd, btceur, eurusd, xrpusd, xrpeur, xrpbtc, ltcusd, ltceur, ltcbtc, ethusd, etheur, ethbtc'.split(', ')
     maker_fee, taker_fee = 0.002, 0.002
-    try:
-        assert timeout is not None
-    except:
-        timeout = (8, 15)
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -59,16 +65,17 @@ class Bitstamp(ExchangeWrapper):
         else:
             return pair
 
-    @classmethod
-    def api(cls, command):
+    def api(self, command):
         """call remote API"""
 
-        result = cls.api_session.get(cls.url + command, headers=cls.headers,
-                                     timeout=cls.timeout)
+        try:
+            result = self.api_session.get(self.url + command, headers=self.headers,
+                                          timeout=self.timeout, proxies=self.proxy)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-
         return result.json()
+        except requests.exceptions.RequestException as e:
+            raise APIError(e)
 
     def private_api(self, command):
         '''handles private api methods'''
