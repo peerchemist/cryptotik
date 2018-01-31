@@ -144,9 +144,9 @@ class Bitstamp(ExchangeWrapper):
     def get_market_volume(self, pair):
         '''return market volume [of last 24h]'''
 
-        pair = cls.format_pair(pair)
+        pair = self.format_pair(pair)
 
-        return cls.get_market_ticker(pair)['volume']
+        return self.get_market_ticker(pair)['volume']
 
     ########################
     # Private methods bellow
