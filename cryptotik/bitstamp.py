@@ -101,54 +101,47 @@ class Bitstamp(ExchangeWrapper):
 
         return result
 
-    @classmethod
-    def get_markets(cls):
+    def get_markets(self):
         '''get all market pairs supported by the exchange'''
 
-        return cls._markets
+        return self._markets
 
-    @classmethod
-    def get_market_ticker(cls, pair):
+    def get_market_ticker(self, pair):
         """return ticker for market <pair>"""
 
-        pair = cls.format_pair(pair)
-        return cls.api("ticker/" + pair)
+        pair = self.format_pair(pair)
+        return self.api("ticker/" + pair)
 
-    @classmethod
-    def get_market_orders(cls, pair):
+    def get_market_orders(self, pair):
         """returns market order book for <pair>"""
 
-        pair = cls.format_pair(pair)
-        return cls.api("order_book/" + pair)
+        pair = self.format_pair(pair)
+        return self.api("order_book/" + pair)
 
-    @classmethod
-    def get_market_trade_history(cls, pair, since="hour"):
+    def get_market_trade_history(self, pair, since="hour"):
         """get market trade history; since {minute, hour, day}"""
 
-        pair = cls.format_pair(pair)
+        pair = self.format_pair(pair)
 
-        return cls.api("transactions/" + pair + "/?time={0}".format(since))
+        return self.api("transactions/" + pair + "/?time={0}".format(since))
 
-    @classmethod
-    def get_market_depth(cls, pair):
+    def get_market_depth(self, pair):
         """get market order book depth"""
 
-        pair = cls.format_pair(pair)
-        order_book = cls.get_market_orders(pair)
+        pair = self.format_pair(pair)
+        order_book = self.get_market_orders(pair)
         return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
                 "asks": sum([Decimal(i[1]) for i in order_book["asks"]])}
 
-    @classmethod
-    def get_market_spread(cls, pair):
+    def get_market_spread(self, pair):
         """get market spread"""
 
-        pair = cls.format_pair(pair)
+        pair = self.format_pair(pair)
 
-        order_book = cls.get_market_orders(pair)
+        order_book = self.get_market_orders(pair)
         return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
 
-    @classmethod
-    def get_market_volume(cls, pair):
+    def get_market_volume(self, pair):
         '''return market volume [of last 24h]'''
 
         pair = cls.format_pair(pair)
