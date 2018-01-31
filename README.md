@@ -10,7 +10,7 @@ Standardized common API for several cryptocurrency exchanges.
 
 ## Examples
 
-Right now library supports: Wex.nz, Poloniex.com, Bittrex.com, Binance and TheRockTrading; with elementary support HitBtc and Livecoin.
+Right now library supports: Wex.nz, Poloniex.com, Bittrex.com, Binance and TheRockTrading; with elementary support for HitBtc and Livecoin.
 
 `from cryptotik import Wex, Bittrex, Poloniex`
 
@@ -21,6 +21,8 @@ You only need to learn commands once, for example `get_markets` will work anywhe
 `Poloniex.get_markets()`
 
 `Wex.get_markets()`
+
+`Binance.get_markets()`
 
 and will yield similar results. However parsing and interpreting them is left to user.
 
@@ -34,8 +36,8 @@ and will yield similar results. However parsing and interpreting them is left to
 
 ## Private API methods (the ones that require authentication)
 
-Library also supports private API methods for Poloniex, Bittrex and Wex, 
-to use them you need to make class instance though with your API credentials.
+Library also supports private API methods for Poloniex, Binance, TheRockExchange, Bittrex, Wex and some others.
+To use them you need to make class instance though with your API credentials.
 
 `polo = Poloniex(yourkey, yoursecret)`
 
