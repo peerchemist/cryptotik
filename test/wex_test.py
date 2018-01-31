@@ -7,24 +7,26 @@ private = pytest.mark.skipif(
     reason="needs --apikey option to run."
 )
 
+wex = Wex()
+
 
 def test_format_pair():
     '''test string formating to match API expectations'''
 
-    assert Wex.format_pair("ppc-usd") == "ppc_usd"
+    assert wex.format_pair("ppc-usd") == "ppc_usd"
 
 
 def test_get_markets():
     '''test get_markets'''
 
-    assert isinstance(Wex.get_markets(), list)
-    assert "btc_usd" in Wex.get_markets()
+    assert isinstance(wex.get_markets(), list)
+    assert "btc_usd" in wex.get_markets()
 
 
 def test_get_market_ticker():
     '''test get_market_ticker'''
 
-    ticker = Wex.get_market_ticker("ppc_usd")
+    ticker = wex.get_market_ticker("ppc_usd")
 
     assert isinstance(ticker, dict)
     assert sorted(ticker.keys()) == ['avg', 'buy', 'high', 'last', 'low', 'sell', 'updated', 'vol', 'vol_cur']
@@ -33,7 +35,7 @@ def test_get_market_ticker():
 def test_get_market_orders():
     '''test get_market_orderbook'''
 
-    market_orders = Wex.get_market_orders("ppc_usd")
+    market_orders = wex.get_market_orders("ppc_usd")
 
     assert isinstance(market_orders, dict)
     assert isinstance(market_orders["asks"], list)
@@ -43,7 +45,7 @@ def test_get_market_orders():
 def test_get_market_trade_history():
     '''test get_market_trade_history'''
 
-    trade_history = Wex.get_market_trade_history("ppc_usd", 10)
+    trade_history = wex.get_market_trade_history("ppc_usd", 10)
 
     assert isinstance(trade_history, list)
     assert len(trade_history) == 10
@@ -54,7 +56,7 @@ def test_get_market_trade_history():
 def test_get_market_depth():
     '''test get_market_depth'''
 
-    market_depth = Wex.get_market_depth("ppc_usd")
+    market_depth = wex.get_market_depth("ppc_usd")
 
     assert isinstance(market_depth, dict)
     assert isinstance(market_depth["asks"], Decimal)
@@ -63,7 +65,7 @@ def test_get_market_depth():
 def test_get_market_spread():
     '''test get_market spread'''
 
-    assert isinstance(Wex.get_market_spread("ppc_usd"), Decimal)
+    assert isinstance(wex.get_market_spread("ppc_usd"), Decimal)
 
 
 @private
@@ -86,7 +88,7 @@ def test_get_deposit_address(apikey, secret):
             wex.get_deposit_address("ltc")
     except:
         assert isinstance(wex.get_deposit_address("ppc"), dict)
-    
+
 
 @private
 def test_cancel_order(apikey, secret):

@@ -10,13 +10,22 @@ import hashlib
 
 class Wex(ExchangeWrapper):
 
-    def __init__(self, apikey=None, secret=None, timeout=None):
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
 
         if apikey:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
 
-    api_session = requests.Session()
+        if proxy:
+            assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
+        self.proxy = {'https': proxy}
+
+        if not timeout:
+            self.timeout = (8, 15)
+        else:
+            self.timeout = timeout
+
+        self.api_session = requests.Session()
 
     public_commands = ("info", "ticker", "depth", "trades")
     private_commands = ("getInfo", "Trade", "ActiveOrders", "OrderInfo",
@@ -30,10 +39,6 @@ class Wex(ExchangeWrapper):
     case = "lower"
     headers = headers
     maker_fee, taker_fee = 0.002, 0.002
-    try:
-        assert timeout is not None
-    except:
-        timeout = (8, 15)
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -60,16 +65,19 @@ class Wex(ExchangeWrapper):
         else:
             return pair
 
-    @classmethod
-    def api(cls, command):
+    def api(self, command):
         """call remote API"""
 
-        result = cls.api_session.get(cls.url + command, headers=cls.headers,
-                                     timeout=cls.timeout)
+        try:
 
-        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+            result = self.api_session.get(self.url + command, headers=self.headers,
+                                          timeout=self.timeout, proxies=self.proxy)
 
-        return result.json()
+            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+            return result.json()
+
+        except requests.exceptions.RequestException as e:
+            raise APIError(e)
 
     def private_api(self, params):
         '''handles private api methods'''
@@ -89,90 +97,84 @@ class Wex(ExchangeWrapper):
             "Sign": sig.hexdigest()
         })
 
-        result = self.api_session.post(self.trade_url, data=params, headers=headers,
-                                       timeout=self.timeout)
+        try:
+            result = self.api_session.post(self.trade_url, data=params, headers=headers,
+                                           timeout=self.timeout, proxies=self.proxy)
 
-        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-        if result.json()['success'] != 1:
-            raise ValueError(result.json()['error'])
-        return result.json()
+            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+            if result.json()['success'] != 1:
+                raise ValueError(result.json()['error'])
+            return result.json()
 
-    @classmethod
-    def get_markets(cls):
+        except requests.exceptions.RequestException as e:
+            raise APIError(e)
+
+    def get_markets(self):
         '''get all pairs supported by the exchange'''
 
-        q = cls.api("info")
+        q = self.api("info")
         return list(q['pairs'].keys())
 
-    @classmethod
-    def get_market_ticker(cls, pair):
+    def get_market_ticker(self, pair):
         """return ticker for market"""
 
-        pair = cls.format_pair(pair)
-        return cls.api("ticker" + "/" + pair)[pair]
+        pair = self.format_pair(pair)
+        return self.api("ticker" + "/" + pair)[pair]
 
-    @classmethod
-    def get_market_orders(cls, pair, depth=None):
+    def get_market_orders(self, pair, depth=None):
         """returns market order book on selected pair"""
 
-        pair = cls.format_pair(pair)
+        pair = self.format_pair(pair)
 
         if depth == None:
-            return cls.api("depth" + "/" + pair)[pair]
+            return self.api("depth" + "/" + pair)[pair]
 
         if depth > 5000:
-            raise ValueError("Btce API allows maximum depth of 5000 orders")
+            raise ValueError("Wex API allows maximum depth of 5000 orders")
 
-        return cls.api("depth" + "/" + pair + "/?limit={0}".format(depth))[pair]
+        return self.api("depth" + "/" + pair + "/?limit={0}".format(depth))[pair]
 
-    @classmethod
-    def get_market_trade_history(cls, pair, limit=1000):
+    def get_market_trade_history(self, pair, limit=1000):
         """get market trade history"""
 
-        pair = cls.format_pair(pair)
+        pair = self.format_pair(pair)
 
         if limit > 2000:
             raise APIError("Btc-e API can only return last 2000 trades.")
 
         if not isinstance(pair, list):
-            return cls.api("trades" + "/" + pair + "/?limit={0}".format(limit))[pair]
+            return self.api("trades" + "/" + pair + "/?limit={0}".format(limit))[pair]
 
         if pair == "all":  # returns market history for all pairs with default history size.
-            return cls.api("trades" + "/" + "-".join(cls.get_markets() + "/?limit={0}".format(limit)))
+            return self.api("trades" + "/" + "-".join(cls.get_markets() + "/?limit={0}".format(limit)))
 
         else:  # simply concat pairs in the list
-            return cls.api("trades" + "/" + "-".join(pair) + "/?limit={0}".format(limit))
+            return self.api("trades" + "/" + "-".join(pair) + "/?limit={0}".format(limit))
 
-    @classmethod
-    def get_market_depth(cls, pair):
+    def get_market_depth(self, pair):
         """get market order book depth"""
 
-        pair = cls.format_pair(pair)
-        order_book = cls.get_market_orders(pair, 5000)
+        pair = self.format_pair(pair)
+        order_book = self.get_market_orders(pair, 5000)
         return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
                 "asks": sum([Decimal(i[1]) for i in order_book["asks"]])}
 
-    @classmethod
-    def get_market_spread(cls, pair):
+    def get_market_spread(self, pair):
         """get market spread"""
 
-        pair = cls.format_pair(pair)
+        pair = self.format_pair(pair)
 
-        order_book = cls.get_market_orders(pair, 1)
+        order_book = self.get_market_orders(pair, 1)
         return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
 
-    @classmethod
-    def get_market_volume(cls, pair):
+    def get_market_volume(self, pair):
         '''return market volume [of last 24h]'''
 
-        pair = cls.format_pair(pair)
-        smry = cls.get_market_ticker(pair)
+        pair = self.format_pair(pair)
+        smry = self.get_market_ticker(pair)
 
-        return {pair.split(cls.delimiter)[1].upper(): smry['vol'], pair.split(cls.delimiter)[0].upper(): smry['vol_cur']}
-
-    ####################
-    # Private commands
-    ####################
+        return {pair.split(self.delimiter)[1].upper(): smry['vol'],
+                pair.split(self.delimiter)[0].upper(): smry['vol_cur']}
 
     def get_balances(self):
         '''
