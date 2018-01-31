@@ -49,6 +49,7 @@ class Bittrex(ExchangeWrapper):
         self._nonce = max(int(time.time()), nonce)
         return self._nonce
 
+    @classmethod
     def format_pair(self, pair):
         """format the pair argument to format understood by remote API."""
 
