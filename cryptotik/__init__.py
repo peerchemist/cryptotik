@@ -8,3 +8,4 @@ from cryptotik.okcoin import OKcoin
 from cryptotik.hitbtc import Hitbtc
 from cryptotik.bitstamp import Bitstamp
 from cryptotik.binance import Binance
+from cryptotik.bitkonan import Bitkonan
