@@ -71,7 +71,7 @@ class Bitstamp(ExchangeWrapper):
         """call remote API"""
 
         try:
-            result = self.api_session.get(self.url + command, headers=self.headers,
+            result = self.api_session.get(self.trade_url + command, headers=self.headers,
                                           timeout=self.timeout, proxies=self.proxy)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
