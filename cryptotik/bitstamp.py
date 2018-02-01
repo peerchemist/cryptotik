@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+'''https://www.bitstamp.net/api/'''
+
 import requests
 from decimal import Decimal
 import time
