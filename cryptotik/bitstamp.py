@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-'''https://www.bitstamp.net/api/'''
-
 import requests
 from decimal import Decimal
 import time
@@ -71,11 +69,11 @@ class Bitstamp(ExchangeWrapper):
         """call remote API"""
 
         try:
-            result = self.api_session.get(self.trade_url + command, headers=self.headers,
+            result = self.api_session.get(self.url + command, headers=self.headers,
                                           timeout=self.timeout, proxies=self.proxy)
 
-            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-            return result.json()
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+        return result.json()
         except requests.exceptions.RequestException as e:
             raise APIError(e)
 
@@ -96,10 +94,10 @@ class Bitstamp(ExchangeWrapper):
                                        data={'key': self._apikey,
                                              'nonce': nonce,
                                              'signature': sig},
-                                       headers=self.headers,
+                                       headers=headers,
                                        timeout=self.timeout)
 
-        #assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
         return result
 
