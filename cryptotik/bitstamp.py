@@ -111,6 +111,11 @@ class Bitstamp(ExchangeWrapper):
 
         return self._markets
 
+    def get_summaries(self):
+        '''get summary of all active markets'''
+
+        raise NotImplementedError
+
     def get_market_ticker(self, pair):
         """return ticker for market <pair>"""
 
