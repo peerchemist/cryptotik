@@ -104,7 +104,7 @@ class Bitstamp(ExchangeWrapper):
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
-        return result
+        return result.json()
 
     def get_markets(self):
         '''get all market pairs supported by the exchange'''
