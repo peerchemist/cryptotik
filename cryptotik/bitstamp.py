@@ -79,14 +79,13 @@ class Bitstamp(ExchangeWrapper):
         except requests.exceptions.RequestException as e:
             raise APIError(e)
 
-    def private_api(self, command):
+    def private_api(self, command, data={}):
         '''handles private api methods'''
 
         if not self._customer_id or not self._apikey or not self._secret:
             raise ValueError("A Key, Secret and customer_id required!")
 
         nonce = self.get_nonce()
-        data = {}
         data['key'] = self._apikey
         message = str(nonce) + self._customer_id + self._apikey
 
