@@ -188,10 +188,11 @@ class Bitstamp(ExchangeWrapper):
     def cancel_all_orders(self):
         raise NotImplementedError
 
-    def get_open_orders(self, pair=None):
+    def get_open_orders(self, pair):
         '''Get open orders.'''
 
-        raise NotImplementedError
+        pair = self.format_pair(pair)
+        return self.private_api("open_orders/{}".format(pair))
 
     def get_order(self, order_id):
         '''get order information'''
