@@ -98,10 +98,12 @@ class Bitstamp(ExchangeWrapper):
 
         result = self.api_session.post(url=self.trade_url + command,
                                        data=data,
-                                       headers=self.headers,
+                                       #headers=self.headers,
                                        timeout=self.timeout,
                                        proxies=self.proxy)
 
+        print(result.url)
+        print(result.content)
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
         return result.json()
@@ -248,7 +250,7 @@ class Bitstamp(ExchangeWrapper):
         '''Get open orders.'''
 
         pair = self.format_pair(pair)
-        return self.private_api("open_orders/{}".format(pair))
+        return self.private_api("open_orders/{}/".format(pair))
 
     def get_order(self, order_id):
         '''get order information'''
