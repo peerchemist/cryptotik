@@ -74,8 +74,8 @@ class Bitstamp(ExchangeWrapper):
             result = self.api_session.get(self.trade_url + command, headers=self.headers,
                                           timeout=self.timeout, proxies=self.proxy)
 
-        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-        return result.json()
+            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+            return result.json()
         except requests.exceptions.RequestException as e:
             raise APIError(e)
 
@@ -163,27 +163,78 @@ class Bitstamp(ExchangeWrapper):
         if not coin:
             return self.private_api("balance/")
         else:
-            return self.private_api("balance/{}".format(coin.lower()))
+            return self.private_api("balance/{}/".format(coin.lower()))
 
     def get_deposit_address(self, coin=None):
         '''get deposit address'''
 
-        raise NotImplementedError
+        if coin == 'btc':
+            command = 'bitcoin_deposit_address/'
+        if coin == 'ltc':
+            command = 'ltc_address/'
+        if coin == 'eth':
+            command = 'eth_address/'
+        if coin == 'xrp':
+            command = 'ripple_address/'
+        if coin == 'bch':
+            command = 'bch_address/'
 
-    def buy(self, pair, rate, amount):
-        '''submit spot buy order'''
+        return self.private_api(command)
 
-        raise NotImplementedError
+    def get_liquidation_address(self, fiat):
+        '''Creates new liquidation address which will automatically sell your BTC for specified liquidation_currency.'''
 
-    def sell(self, pair, rate, amount):
-        '''submit spot sell order'''
+        return self.private_api('liquidation_address/new/',
+                                data={'liquidation_currency': fiat.lower()})
 
-        raise NotImplementedError
+    def get_liquidation_address_info(self, address=None):
+        '''Shows transactions (BTC to liquidation_currency) for liquidation address.'''
+
+        return self.private_api('liquidation_address/info/',
+                                data={'address': address})
+
+    def buy(self, pair, rate, amount, daily_order=False):
+        '''submit limit buy order
+
+        daily_order: opens buy limit order which will be canceled at 0:00 UTC unless it already has been executed. Possible value: True'''
+
+        pair = self.format_pair(pair)
+        return self.private_api('buy/',
+                                data={'amount': amount,
+                                      'price': rate,
+                                      'daily_order': daily_order
+                                      }
+                                )
+
+    def buy_market(self, pair, amount):
+        '''submit market buy order'''
+
+        pair = self.format_pair(pair)
+        return self.private_api('buy/market/{}/'.format(pair),
+                                data={'amount': amount})
+
+    def sell(self, pair, rate, amount, daily_order=False):
+        '''submit limit sell order'''
+
+        pair = self.format_pair(pair)
+        return self.private_api('sell/',
+                                data={'amount': amount,
+                                      'price': rate,
+                                      'daily_order': daily_order
+                                      }
+                                )
+
+    def sell_market(self, pair, amount):
+        '''submit market sell order'''
+
+        pair = self.format_pair(pair)
+        return self.private_api('sell/market/{}/'.format(pair),
+                                data={'amount': amount})
 
     def cancel_order(self, order_id):
         '''cancel order by <order_id>'''
 
-        raise NotImplementedError
+        return self.private_api('cancel_order', data={'id': order_id})
 
     def cancel_all_orders(self):
         raise NotImplementedError
@@ -197,12 +248,25 @@ class Bitstamp(ExchangeWrapper):
     def get_order(self, order_id):
         '''get order information'''
 
-        raise NotImplementedError
+        return self.private_api('orders_status/', data={'id': order_id})
 
     def withdraw(self, coin, amount, address):
         '''withdraw cryptocurrency'''
 
-        raise NotImplementedError
+        if coin == 'btc':
+            command = 'bitcoin_withdrawal/'
+        if coin == 'ltc':
+            command = 'ltc_withdrawal/'
+        if coin == 'eth':
+            command = 'eth_withdrawal/'
+        if coin == 'xrp':
+            command = 'ripple_withdrawal/'
+        if coin == 'bch':
+            command = 'bch_withdrawal/'
+
+        return self.private_api(command, data={'amount': amount,
+                                               'address': address}
+                                )
 
     def get_transaction_history(self):
         '''Returns the history of transactions.'''
@@ -214,7 +278,8 @@ class Bitstamp(ExchangeWrapper):
 
         raise NotImplementedError
 
-    def get_withdraw_history(self, coin=None):
+    def get_withdraw_history(self, coin=None, timedelta=50000000):
         '''get withdrawals history'''
 
-        raise NotImplementedError
+        return self.api_session('withdrawal-requests/',
+                                data={'timedelta': timedelta})
