@@ -53,7 +53,7 @@ class Bitstamp(ExchangeWrapper):
             nonce += 1
         # If the unix time is greater though, use that instead (helps low
         # concurrency multi-threaded apps always call with the largest nonce).
-        self._nonce = max(int(time.time()), nonce)
+        self._nonce = max(int(time.time() * 1000000), nonce)
         return self._nonce
 
     @classmethod
