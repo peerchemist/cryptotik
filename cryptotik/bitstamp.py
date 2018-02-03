@@ -85,19 +85,23 @@ class Bitstamp(ExchangeWrapper):
         if not self._customer_id or not self._apikey or not self._secret:
             raise ValueError("A Key, Secret and customer_id required!")
 
-        nonce = str(self.get_nonce())
-        message = (nonce + self._customer_id + self._apikey).encode('utf-8')
+        nonce = self.get_nonce()
+        data = {}
+        data['key'] = self._apikey
+        message = str(nonce) + self._customer_id + self._apikey
 
         sig = hmac.new(self._secret.encode('utf-8'),
-                       msg=message,
+                       msg=message.encode('utf-8'),
                        digestmod=hashlib.sha256).hexdigest().upper()
 
-        result = self.api_session.post(self.trade_url+command,
-                                       data={'key': self._apikey,
-                                             'nonce': nonce,
-                                             'signature': sig},
-                                       headers=headers,
-                                       timeout=self.timeout)
+        data['signature'] = sig
+        data['nonce'] = nonce
+
+        result = self.api_session.post(url=self.trade_url + command,
+                                       data=data,
+                                       headers=self.headers,
+                                       timeout=self.timeout,
+                                       proxies=self.proxy)
 
         assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
 
