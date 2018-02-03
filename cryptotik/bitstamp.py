@@ -248,7 +248,7 @@ class Bitstamp(ExchangeWrapper):
         '''Get open orders.'''
 
         pair = self.format_pair(pair)
-        return self.private_api("open_orders/{}".format(pair))
+        return self.private_api("open_orders/{}/".format(pair))
 
     def get_order(self, order_id):
         '''get order information'''
