@@ -162,7 +162,7 @@ class Bitstamp(ExchangeWrapper):
         '''Returns the values relevant to the specified <coin> parameter.'''
 
         if not coin:
-            return self.private_api("balance")
+            return self.private_api("balance/")
         else:
             return self.private_api("balance/{}".format(coin.lower()))
 
