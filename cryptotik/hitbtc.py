@@ -160,7 +160,7 @@ class Hitbtc(ExchangeWrapper):
 
         return self.private_api(self.url + "history/order/" + order_id + "/trades")
 
-    def sell(self, pair, price, quantity):
+    def sell_limit(self, pair, price, quantity):
         '''creates sell order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + "order",
@@ -201,7 +201,7 @@ class Hitbtc(ExchangeWrapper):
 
         return self.private_api(self.url + "account/crypto/address/" + currency.upper())
 
-    def buy(self, pair, price, quantity):
+    def buy_limit(self, pair, price, quantity):
         '''creates buy order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + "order",

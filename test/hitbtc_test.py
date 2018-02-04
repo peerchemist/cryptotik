@@ -92,7 +92,7 @@ def test_withdraw(apikey, secret):
         hit.withdraw("ppc", 1, 'PpcEaT3Rd0NTsendftMKDAKr331DXgHe3L')
 
 @private
-def test_buy(apikey, secret):
+def test_buy_limit(apikey, secret):
 
     hit = Hitbtc(apikey, secret)
 
@@ -101,7 +101,7 @@ def test_buy(apikey, secret):
 
 
 @private
-def test_sell(apikey, secret):
+def test_sell_limit(apikey, secret):
 
     hit = Hitbtc(apikey, secret)
 
