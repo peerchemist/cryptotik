@@ -131,7 +131,7 @@ def test_get_deposit_address(apikey, secret):
 
 
 @private
-def test_buy(apikey, secret):
+def test_buy_limit(apikey, secret):
     '''test buy'''
 
     btrx = Bittrex(apikey, secret)
@@ -144,7 +144,7 @@ def test_buy(apikey, secret):
 
 
 @private
-def test_sell(apikey, secret):
+def test_sell_limit(apikey, secret):
     '''test buy'''
 
     btrx = Bittrex(apikey, secret)

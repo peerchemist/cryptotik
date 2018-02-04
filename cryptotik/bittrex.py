@@ -161,7 +161,7 @@ class Bittrex(ExchangeWrapper):
         d = self.get_market_summary(self.format_pair(pair))
         return Decimal(d["Ask"]) - Decimal(d["Bid"])
 
-    def buy(self, pair, rate, amount):  # buy_limit as default
+    def buy_limit(self, pair, rate, amount):  # buy_limit as default
         """creates buy order for <pair> at <rate> for <amount>"""
 
         return self.private_api(self.url + "market" + "/buylimit",
@@ -169,7 +169,7 @@ class Bittrex(ExchangeWrapper):
                                         "quantity": amount,
                                         "rate": rate})
 
-    def sell(self, pair, rate, amount):  # sell_limit as default
+    def sell_limit(self, pair, rate, amount):  # sell_limit as default
         """creates sell order for <pair> at <rate> for <amount>"""
 
         return self.private_api(self.url + "market" + "/selllimit",
