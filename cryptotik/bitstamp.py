@@ -38,7 +38,7 @@ class Bitstamp(ExchangeWrapper):
 
     name = 'bitstamp'
     url = 'https://www.bitstamp.net/'
-    trade_url = url + 'api/v2/'
+    api_url = url + 'api/'
     delimiter = ""
     case = "lower"
     headers = headers
@@ -96,7 +96,7 @@ class Bitstamp(ExchangeWrapper):
         data['signature'] = sig
         data['nonce'] = nonce
 
-        result = self.api_session.post(url=self.trade_url + command,
+        result = self.api_session.post(url=self.api_url + command,
                                        data=data,
                                        headers=self.headers,
                                        timeout=self.timeout,
