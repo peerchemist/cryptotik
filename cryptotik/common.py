@@ -27,7 +27,7 @@ class ExchangeWrapper:
     def get_nonce(self):
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abc.abstractclassmethod
     def format_pair(self):
         raise NotImplementedError
 
@@ -76,11 +76,11 @@ class ExchangeWrapper:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def buy(self):
+    def buy_limit(self):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def sell(self):
+    def sell_limit(self):
         raise NotImplementedError
 
     @abc.abstractmethod
