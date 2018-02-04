@@ -143,7 +143,7 @@ class Binance(ExchangeWrapper):
 
         return [i for i in balances if i["free"] != '0.00000000']
 
-    def buy(self, pair, price, quantity):
+    def buy_limit(self, pair, price, quantity):
         '''creates buy order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + "api/v3/order",
@@ -169,7 +169,7 @@ class Binance(ExchangeWrapper):
                                     params={'symbol': pair.upper()})
         return self.private_api(self.url + "/api/v3/openOrders")
 
-    def sell(self, pair, price, quantity):
+    def sell_limit(self, pair, price, quantity):
         '''creates sell order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + "api/v3/order",
