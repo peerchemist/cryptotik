@@ -150,7 +150,7 @@ class TheRock(ExchangeWrapper):
                                 http_method='GET',
                                 params={'unused': 'true'})
 
-    def buy(self, pair, price, quantity):
+    def buy_limit(self, pair, price, quantity):
         '''creates buy order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + "funds/"
@@ -160,7 +160,7 @@ class TheRock(ExchangeWrapper):
                                     'price': price},
                                 http_method='POST')
 
-    def sell(self, pair, price, quantity):
+    def sell_limit(self, pair, price, quantity):
         '''creates sell order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + "funds/" 

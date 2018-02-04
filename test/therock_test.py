@@ -108,21 +108,22 @@ def test_withdraw(apikey, secret):
 
 
 @private
-def test_buy(apikey, secret):
+def test_buy_limit(apikey, secret):
     time.sleep(1)
     rock = rock(apikey, secret)
     print('This is made to fail because of small amount')
     with pytest.raises(AssertionError):
-        rock.buy("eth-btc", 0.0005, 0.0005)
+        rock.buy_limit("eth-btc", 0.0005, 0.0005)
 
 
 @private
-def test_sell(apikey, secret):
+def test_sell_limit(apikey, secret):
     time.sleep(1)
     rock = rock(apikey, secret)
 
     with pytest.raises(AssertionError):
-        rock.sell("eth-btc", 0.0005, 0.0005)
+        rock.sell_limit("eth-btc", 0.0005, 0.0005)
+
 
 @private
 def test_cancel_order(apikey, secret):
