@@ -100,21 +100,21 @@ def test_cancel_order(apikey, secret):
 
 
 @private
-def test_buy(apikey, secret):
+def test_buy_limit(apikey, secret):
 
     wex = Wex(apikey, secret)
 
     with pytest.raises(ValueError):
-        wex.buy("ppc_btc", 0.05, 1)
+        wex.buy_limit("ppc_btc", 0.05, 1)
 
 
 @private
-def test_sell(apikey, secret):
+def test_sell_limit(apikey, secret):
 
     wex = Wex(apikey, secret)
 
     with pytest.raises(ValueError):
-        wex.sell("ltc_btc", 1, 0.25)
+        wex.sell_limit("ltc_btc", 1, 0.25)
 
 
 @private

@@ -189,7 +189,7 @@ class Wex(ExchangeWrapper):
 
         return self.private_api({"method": "CoinDepositAddress", "coinName": coin})['return']
 
-    def buy(self, pair, rate, amount):
+    def buy_limit(self, pair, rate, amount):
         '''submit spot buy order
         Expected result:
 
@@ -206,7 +206,7 @@ class Wex(ExchangeWrapper):
                                  "rate": rate
                                 })['return']
 
-    def sell(self, pair, rate, amount):
+    def sell_limit(self, pair, rate, amount):
         '''submit spot sell order
         Expected result:
 
