@@ -107,7 +107,7 @@ def test_get_liquidation_address(apikey, secret, id):
 
 
 @private
-def test_buy(apikey, secret, id):
+def test_buy_limit(apikey, secret, id):
     '''test buy'''
 
     stamp = Bitstamp(apikey, secret, id)
@@ -127,7 +127,7 @@ def test_buy_market(apikey, secret, id):
 
 
 @private
-def test_sell(apikey, secret, id):
+def test_sell_limit(apikey, secret, id):
     '''test buy'''
 
     stamp = Bitstamp(apikey, secret, id)
