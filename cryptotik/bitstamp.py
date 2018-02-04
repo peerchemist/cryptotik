@@ -242,7 +242,9 @@ class Bitstamp(ExchangeWrapper):
         return self.private_api('cancel_order', data={'id': order_id})
 
     def cancel_all_orders(self):
-        raise NotImplementedError
+        '''cancel all active orders'''
+
+        return self.private_api('cancel_all_orders/')
 
     def get_open_orders(self, pair):
         '''Get open orders.'''
