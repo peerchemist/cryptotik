@@ -116,21 +116,21 @@ def test_withdraw(apikey, secret):
 
 
 @private
-def test_buy(apikey, secret):
+def test_buy_limit(apikey, secret):
 
     bin = Binance(apikey, secret)
 
     with pytest.raises(AssertionError):
-        bin.buy("eth_btc", 0.05, 1)
+        bin.buy_limit("eth_btc", 0.05, 1)
 
 
 @private
-def test_sell(apikey, secret):
+def test_sell_limit(apikey, secret):
 
     bin = Binance(apikey, secret)
 
     with pytest.raises(AssertionError):
-        bin.sell("ltc_btc", 1, 0.25)
+        bin.sell_limit("ltc_btc", 1, 0.25)
 
 
 @private

@@ -198,7 +198,7 @@ class Bitstamp(ExchangeWrapper):
         return self.private_api('v2/liquidation_address/info/',
                                 data={'address': address})
 
-    def buy(self, pair, rate, amount, daily_order=False):
+    def buy_limit(self, pair, rate, amount, daily_order=False):
         '''submit limit buy order
 
         daily_order: opens buy limit order which will be canceled at 0:00 UTC unless it already has been executed. Possible value: True'''
@@ -219,7 +219,7 @@ class Bitstamp(ExchangeWrapper):
                                 data={'amount': amount}
                                 )
 
-    def sell(self, pair, rate, amount, daily_order=False):
+    def sell_limit(self, pair, rate, amount, daily_order=False):
         '''submit limit sell order'''
 
         pair = self.format_pair(pair)
