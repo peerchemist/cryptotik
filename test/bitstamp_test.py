@@ -69,73 +69,112 @@ def test_get_market_spread():
 
 
 @private
-def test_get_balances(apikey, secret):
+def test_get_balances(apikey, secret, id):
     '''test get_balances'''
 
-    stamp = Bitstamp(apikey, secret)
+    stamp = Bitstamp(apikey, secret, id)
     balances = stamp.get_balances()
 
-    raise NotImplementedError
+    assert isinstance(balances, dict)
+    assert 'btc_available' in balances.keys()
 
 
 @private
-def test_get_open_orders(apikey, secret):
+def test_get_open_orders(apikey, secret, id):
     '''test get_balances'''
 
-    stamp = Bitstamp(apikey, secret)
+    stamp = Bitstamp(apikey, secret, id)
     orders = stamp.get_open_orders()
 
     raise NotImplementedError
 
 
 @private
-def test_get_deposit_address(apikey, secret):
+def test_get_deposit_address(apikey, secret, id):
     '''test get_deposit_address'''
 
-    stamp = Bitstamp(apikey, secret)
+    stamp = Bitstamp(apikey, secret, id)
 
-    assert isinstance(stamp.get_deposit_address("btc"), str)
+    assert isinstance(stamp.get_deposit_address("ltc")['address'], str)
 
 
 @private
-def test_buy(apikey, secret):
+def test_get_liquidation_address(apikey, secret, id):
+
+    stamp = Bitstamp(apikey, secret, id)
+    liq = stamp.get_liquidation_address('eur')
+    assert liq['addres'].startswith('3')
+
+
+@private
+def test_buy(apikey, secret, id):
     '''test buy'''
 
-    stamp = Bitstamp(apikey, secret)
+    stamp = Bitstamp(apikey, secret, id)
 
-    raise NotImplementedError
+    sell = stamp.buy('etheur', 10, 0.1)
+    assert isinstance(sell, dict)
 
 
 @private
-def test_sell(apikey, secret):
+def test_buy_market(apikey, secret, id):
+    '''test market buy'''
+
+    stamp = Bitstamp(apikey, secret, id)
+    buy = stamp.buy_market('etheur', 0.001)
+
+    assert buy == {'reason': {'__all__': ['Minimum order size is 5.0 EUR.']}, 'status': 'error'}
+
+
+@private
+def test_sell(apikey, secret, id):
     '''test buy'''
 
-    stamp = Bitstamp(apikey, secret)
+    stamp = Bitstamp(apikey, secret, id)
 
-    raise NotImplementedError
+    sell = stamp.sell('btcusd', 10018, 0.1)
+    assert isinstance(sell, dict)
 
 
 @private
-def test_get_order_history(apikey, secret):
+def test_sell_market(apikey, secret, id):
+
+    stamp = Bitstamp(apikey, secret, id)
+
+    sell = stamp.sell_market('ethusd', 1)
+    assert isinstance(sell, dict)
+
+
+@private
+def test_get_order_history(apikey, secret, id):
     '''test get_order_history'''
 
-    stamp = Bitstamp(apikey, secret)
+    stamp = Bitstamp(apikey, secret, id)
     order_history = stamp.get_order_history()
 
     raise NotImplementedError
 
 
 @private
-def test_get_withdrawal_history(apikey, secret):
+def test_get_withdrawal_history(apikey, secret, id):
     '''test get_withdrawal_history'''
 
-    stamp = Bitstamp(apikey, secret)
+    stamp = Bitstamp(apikey, secret, id)
+    assert isinstance(stamp.get_withdraw_history(), list)
+
+
+@private
+def test_get_deposit_history(apikey, secret, id):
+    '''test get_withdrawal_history'''
+
+    #stamp = Bitstamp(apikey, secret, id)
     raise NotImplementedError
 
 
 @private
-def test_get_deposit_history(apikey, secret):
-    '''test get_withdrawal_history'''
+def test_cancel_all_orders(apikey, secret, id):
+    '''test cancel all orders'''
 
-    stamp = Bitstamp(apikey, secret)
-    raise NotImplementedError
+    stamp = Bitstamp(apikey, secret, id)
+
+    assert stamp.cancel_all_orders()
