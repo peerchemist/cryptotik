@@ -204,7 +204,7 @@ class Bitstamp(ExchangeWrapper):
         daily_order: opens buy limit order which will be canceled at 0:00 UTC unless it already has been executed. Possible value: True'''
 
         pair = self.format_pair(pair)
-        return self.private_api('v2/buy/',
+        return self.private_api('v2/buy/{}/'.format(pair),
                                 data={'amount': amount,
                                       'price': rate,
                                       'daily_order': daily_order
@@ -216,13 +216,14 @@ class Bitstamp(ExchangeWrapper):
 
         pair = self.format_pair(pair)
         return self.private_api('v2/buy/market/{}/'.format(pair),
-                                data={'amount': amount})
+                                data={'amount': amount}
+                                )
 
     def sell(self, pair, rate, amount, daily_order=False):
         '''submit limit sell order'''
 
         pair = self.format_pair(pair)
-        return self.private_api('v2/sell/',
+        return self.private_api('v2/sell/{}/'.format(pair),
                                 data={'amount': amount,
                                       'price': rate,
                                       'daily_order': daily_order
