@@ -4,6 +4,8 @@ def pytest_addoption(parser):
                      help="API key.")
     parser.addoption("--secret", action="store",
                      help="API secret.")
+    parser.addoption("--id", action="store",
+                     help="API user id.")
 
 
 def pytest_generate_tests(metafunc):
@@ -13,3 +15,6 @@ def pytest_generate_tests(metafunc):
 
     if 'secret' in metafunc.fixturenames:
         metafunc.parametrize('secret', [metafunc.config.option.secret])
+
+    if 'id' in metafunc.fixturenames:
+            metafunc.parametrize('id', [metafunc.config.option.secret])
