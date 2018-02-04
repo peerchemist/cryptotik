@@ -255,36 +255,36 @@ def test_get_withdrawal_history(apikey, secret):
 
 
 @private
-def test_buy(apikey, secret):
+def test_buy_limit(apikey, secret):
     '''test buy'''
 
     polo = Poloniex(apikey, secret, 20)
 
-    assert polo.buy("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    assert polo.buy_limit("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
 
 
 @private
-def test_sell(apikey, secret):
+def test_sell_limit(apikey, secret):
     '''test sell'''
 
     polo = Poloniex(apikey, secret, 20)
 
-    assert polo.sell("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    assert polo.sell_limit("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
 
 
 @private
-def test_margin_buy(apikey, secret):
+def test_buy_margin(apikey, secret):
     '''test buy'''
 
     polo = Poloniex(apikey, secret, 20)
 
-    assert polo.margin_buy("btc-eth", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    assert polo.buy_margin("btc-eth", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
 
 
 @private
-def test_margin_sell(apikey, secret):
+def test_sell_margin(apikey, secret):
     '''test sell'''
 
     polo = Poloniex(apikey, secret, 20)
 
-    assert polo.margin_sell("btc-ltc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    assert polo.sell_margin("btc-ltc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}

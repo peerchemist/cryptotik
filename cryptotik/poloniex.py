@@ -474,7 +474,7 @@ class Poloniex(ExchangeWrapper):
         return self.private_api({'command': 'closeMarginPosition',
                                  'currencyPair': self.format_pair(pair)})
 
-    def margin_buy(self, pair, rate, amount, lending_rate=2):
+    def buy_margin(self, pair, rate, amount, lending_rate=2):
         """Creates <pair> margin buy order at <rate> for <amount>"""
 
         return self.private_api({'command': 'marginBuy',
@@ -484,7 +484,7 @@ class Poloniex(ExchangeWrapper):
                                  'lendingRate': lending_rate
                                  })
 
-    def margin_sell(self, pair, rate, amount, lending_rate=2):
+    def sell_margin(self, pair, rate, amount, lending_rate=2):
         """Creates <pair> margin sell order at <rate> for <amount>"""
 
         return self.private_api({'command': 'marginSell',
@@ -494,7 +494,7 @@ class Poloniex(ExchangeWrapper):
                                  'lendingRate': lending_rate
                                  })
 
-    def buy(self, pair, rate, amount):
+    def buy_limit(self, pair, rate, amount):
         """Creates buy order for <pair> at <rate> for <amount>"""
 
         return self.private_api({'command': 'buy',
@@ -503,7 +503,7 @@ class Poloniex(ExchangeWrapper):
                                  'amount': amount
                                  })
 
-    def sell(self, pair, rate, amount):
+    def sell_limit(self, pair, rate, amount):
         """Creates sell order for <pair> at <rate> for <amount>"""
 
         return self.private_api({'command': 'sell',
