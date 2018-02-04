@@ -155,12 +155,12 @@ class Bitkonan(ExchangeWrapper):
 
         raise NotImplementedError
 
-    def buy(self, pair, rate, amount):
+    def buy_limit(self, pair, rate, amount):
         '''submit spot buy order'''
 
         raise NotImplementedError
 
-    def sell(self, pair, rate, amount):
+    def sell_limit(self, pair, rate, amount):
         '''submit spot sell order'''
 
         raise NotImplementedError
