@@ -166,9 +166,9 @@ class Bitstamp(ExchangeWrapper):
         '''Returns the values relevant to the specified <coin> parameter.'''
 
         if not coin:
-            return self.private_api("balance/")
+            return self.private_api("v2/balance/")
         else:
-            return self.private_api("balance/{}/".format(coin.lower()))
+            return self.private_api("v2/balance/{}/".format(coin.lower()))
 
     def get_deposit_address(self, coin=None):
         '''get deposit address'''
@@ -176,26 +176,26 @@ class Bitstamp(ExchangeWrapper):
         if coin == 'btc':
             command = 'bitcoin_deposit_address/'
         if coin == 'ltc':
-            command = 'ltc_address/'
+            command = 'v2/ltc_address/'
         if coin == 'eth':
-            command = 'eth_address/'
+            command = 'v2/eth_address/'
         if coin == 'xrp':
             command = 'ripple_address/'
         if coin == 'bch':
-            command = 'bch_address/'
+            command = 'v2/bch_address/'
 
         return self.private_api(command)
 
     def get_liquidation_address(self, fiat):
         '''Creates new liquidation address which will automatically sell your BTC for specified liquidation_currency.'''
 
-        return self.private_api('liquidation_address/new/',
+        return self.private_api('v2/liquidation_address/new/',
                                 data={'liquidation_currency': fiat.lower()})
 
     def get_liquidation_address_info(self, address=None):
         '''Shows transactions (BTC to liquidation_currency) for liquidation address.'''
 
-        return self.private_api('liquidation_address/info/',
+        return self.private_api('v2/liquidation_address/info/',
                                 data={'address': address})
 
     def buy(self, pair, rate, amount, daily_order=False):
@@ -204,7 +204,7 @@ class Bitstamp(ExchangeWrapper):
         daily_order: opens buy limit order which will be canceled at 0:00 UTC unless it already has been executed. Possible value: True'''
 
         pair = self.format_pair(pair)
-        return self.private_api('buy/',
+        return self.private_api('v2/buy/',
                                 data={'amount': amount,
                                       'price': rate,
                                       'daily_order': daily_order
@@ -215,14 +215,14 @@ class Bitstamp(ExchangeWrapper):
         '''submit market buy order'''
 
         pair = self.format_pair(pair)
-        return self.private_api('buy/market/{}/'.format(pair),
+        return self.private_api('v2/buy/market/{}/'.format(pair),
                                 data={'amount': amount})
 
     def sell(self, pair, rate, amount, daily_order=False):
         '''submit limit sell order'''
 
         pair = self.format_pair(pair)
-        return self.private_api('sell/',
+        return self.private_api('v2/sell/',
                                 data={'amount': amount,
                                       'price': rate,
                                       'daily_order': daily_order
@@ -233,13 +233,13 @@ class Bitstamp(ExchangeWrapper):
         '''submit market sell order'''
 
         pair = self.format_pair(pair)
-        return self.private_api('sell/market/{}/'.format(pair),
+        return self.private_api('v2/sell/market/{}/'.format(pair),
                                 data={'amount': amount})
 
     def cancel_order(self, order_id):
         '''cancel order by <order_id>'''
 
-        return self.private_api('cancel_order', data={'id': order_id})
+        return self.private_api('v2/cancel_order/', data={'id': order_id})
 
     def cancel_all_orders(self):
         '''cancel all active orders'''
@@ -250,7 +250,7 @@ class Bitstamp(ExchangeWrapper):
         '''Get open orders.'''
 
         pair = self.format_pair(pair)
-        return self.private_api("open_orders/{}/".format(pair))
+        return self.private_api("v2/open_orders/{}/".format(pair))
 
     def get_order(self, order_id):
         '''get order information'''
@@ -263,13 +263,13 @@ class Bitstamp(ExchangeWrapper):
         if coin == 'btc':
             command = 'bitcoin_withdrawal/'
         if coin == 'ltc':
-            command = 'ltc_withdrawal/'
+            command = 'v2/ltc_withdrawal/'
         if coin == 'eth':
-            command = 'eth_withdrawal/'
+            command = 'v2/eth_withdrawal/'
         if coin == 'xrp':
             command = 'ripple_withdrawal/'
         if coin == 'bch':
-            command = 'bch_withdrawal/'
+            command = 'v2/bch_withdrawal/'
 
         return self.private_api(command, data={'amount': amount,
                                                'address': address}
@@ -288,5 +288,5 @@ class Bitstamp(ExchangeWrapper):
     def get_withdraw_history(self, coin=None, timedelta=50000000):
         '''get withdrawals history'''
 
-        return self.api_session('withdrawal-requests/',
+        return self.api_session('v2/withdrawal-requests/',
                                 data={'timedelta': timedelta})
