@@ -168,7 +168,7 @@ class Bitstamp(ExchangeWrapper):
         if not coin:
             return self.private_api("v2/balance/")
         else:
-            return self.private_api("v2/balance/{}/".format(coin.lower()))
+            return {k: v for k, v in self.private_api("v2/balance/").items() if k.startswith(coin.lower())}
 
     def get_deposit_address(self, coin=None):
         '''get deposit address'''
