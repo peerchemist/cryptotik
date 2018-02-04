@@ -112,7 +112,7 @@ def test_buy_limit(apikey, secret, id):
 
     stamp = Bitstamp(apikey, secret, id)
 
-    sell = stamp.buy('etheur', 10, 0.1)
+    sell = stamp.buy_limit('etheur', 10, 0.1)
     assert isinstance(sell, dict)
 
 
@@ -132,7 +132,7 @@ def test_sell_limit(apikey, secret, id):
 
     stamp = Bitstamp(apikey, secret, id)
 
-    sell = stamp.sell('btcusd', 10018, 0.1)
+    sell = stamp.sell_limit('btcusd', 10018, 0.1)
     assert isinstance(sell, dict)
 
 
