@@ -91,13 +91,14 @@ def test_withdraw(apikey, secret):
     with pytest.raises(AssertionError):
         hit.withdraw("ppc", 1, 'PpcEaT3Rd0NTsendftMKDAKr331DXgHe3L')
 
+
 @private
 def test_buy_limit(apikey, secret):
 
     hit = Hitbtc(apikey, secret)
 
     with pytest.raises(AssertionError):
-        hit.buy("ppc_btc", 0.05, 1)
+        hit.buy_limit("ppc_btc", 0.05, 1)
 
 
 @private
@@ -106,7 +107,8 @@ def test_sell_limit(apikey, secret):
     hit = Hitbtc(apikey, secret)
 
     with pytest.raises(AssertionError):
-        hit.sell("ltc_btc", 1, 0.25)
+        hit.sell_limit("ltc_btc", 1, 0.25)
+
 
 @private
 def test_cancel_order(apikey, secret):
