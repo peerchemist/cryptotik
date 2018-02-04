@@ -289,5 +289,5 @@ class Bitstamp(ExchangeWrapper):
     def get_withdraw_history(self, coin=None, timedelta=50000000):
         '''get withdrawals history'''
 
-        return self.api_session('v2/withdrawal-requests/',
+        return self.private_api('v2/withdrawal-requests/',
                                 data={'timedelta': timedelta})
