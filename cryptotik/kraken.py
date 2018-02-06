@@ -23,12 +23,16 @@ class Kraken(ExchangeWrapper):
 
         return "".join(findall(r"[^\W\d_]+|\d+", pair)).upper()
 
-    def __init__(self, apikey=None, secret=None, timeout=None):
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize class'''
 
         if apikey and secret:
             self.apikey = apikey.encode('utf-8')
             self.secret = secret.encode('utf-8')
+
+        if proxy:
+            assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
+        self.proxy = {'https': proxy}
 
         if not timeout:
             self.timeout = (8, 15)
@@ -42,18 +46,18 @@ class Kraken(ExchangeWrapper):
 
         try:
             result = self.api_session.get(url, headers=self.headers, 
-                                    params=params, timeout=self.timeout)
+                                    params=params, timeout=self.timeout,
+                                    proxies=self.proxy)
             assert result.status_code == 200, {'error: ' + str(result.json())}
             return result.json()['result']
         except requests.exceptions.RequestException as e:
             print("Error!", e)
 
-    def get_markets(self, filter=None):
-        '''Find supported markets on this exchange,
-            use <filter> if needed'''
+    def get_markets(self):
+        '''Find supported markets on this exchange'''
 
         r = self.api(self.url + "public/AssetPairs")
-        return [i for i in r]
+        return [i.lower() for i in r]
 
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
@@ -122,7 +126,7 @@ class Kraken(ExchangeWrapper):
         
         result = self.api_session.post(url, data=data, headers={
             'API-Key': self.apikey, 'API-Sign': sigdigest.decode()},
-            timeout=self.timeout)
+            timeout=self.timeout, proxies=self.proxy)
         assert result.status_code == 200, {'error: ' + str(result.json())}
         return result.json()
 

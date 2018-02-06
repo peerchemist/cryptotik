@@ -21,7 +21,7 @@ def test_get_markets():
     '''test get_markets'''
 
     assert isinstance(kraken.get_markets(), list)
-    assert "BCHEUR" in kraken.get_markets()
+    assert "bcheur" in kraken.get_markets()
 
 def test_get_market_ticker():
     '''test get_market_ticker'''
