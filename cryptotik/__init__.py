@@ -10,3 +10,4 @@ from cryptotik.bitstamp import Bitstamp
 from cryptotik.binance import Binance
 from cryptotik.bitkonan import Bitkonan
 from cryptotik.kraken import Kraken
+from cryptotik.cryptopia import Cryptopia
