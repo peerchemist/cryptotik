@@ -105,27 +105,33 @@ class Poloniex(ExchangeWrapper):
 
         return pair
 
+    def _verify_response(self, response):
+        '''verify if API responded properly and raise apropriate error.'''
+
+        if "error" in response.json().keys():
+            raise APIError(response.json()['error'])
+
     def api(self, params):
         '''API calls'''
 
         assert params["command"] in self.public_commands
 
         try:
-            result = self.api_session.get(self.url + "public?", params=params,
-                                          headers=self.headers, timeout=self.timeout,
-                                          proxies=self.proxy)
-            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-            return result.json()
+            response = self.api_session.get(self.url + "public?", params=params,
+                                            headers=self.headers, timeout=self.timeout,
+                                            proxies=self.proxy)
+            response.raise_for_status()
+
         except requests.exceptions.RequestException as e:
-            raise APIError(e)
+            print(e)
+
+        self._verify_response(response)
+        return response.json()
 
     def private_api(self, data):
         '''private API methods which require authentication'''
 
         assert data["command"] in self.private_commands
-
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
 
         data["nonce"] = self.get_nonce()  # add nonce to post data
         pdata = requests.compat.urlencode(data).encode("utf-8")
@@ -135,13 +141,16 @@ class Poloniex(ExchangeWrapper):
              })
 
         try:
-            result = self.api_session.post(self.url + "tradingApi", data=data,
-                                           headers=self.headers, timeout=self.timeout,
-                                           proxies=self.proxy)
-            #assert result.status_code == 200
-            return result.json()
+            response = self.api_session.post(self.url + "tradingApi", data=data,
+                                             headers=self.headers, timeout=self.timeout,
+                                             proxies=self.proxy)
+            response.raise_for_status()
+
         except requests.exceptions.RequestException as e:
-            return APIError(e)
+            print(e)
+
+        self._verify_response(response)
+        return response.json()
 
     def get_markets(self):
         '''return all supported markets.'''
