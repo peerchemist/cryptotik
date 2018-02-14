@@ -84,9 +84,6 @@ class Bittrex(ExchangeWrapper):
     def private_api(self, url, params):
         '''handles private api methods'''
 
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
-
         params.update({"apikey": self.apikey, "nonce": self.get_nonce()})
         url += "?" + requests.compat.urlencode(params)
         self.headers.update({"apisign": hmac.new(self.secret, url.
