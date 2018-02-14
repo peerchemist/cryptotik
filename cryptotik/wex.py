@@ -84,7 +84,6 @@ class Wex(ExchangeWrapper):
         except requests.exceptions.HTTPError as e:
             print(e)
 
-        self._verify_response(result)
         return result.json()
 
     def private_api(self, params):
