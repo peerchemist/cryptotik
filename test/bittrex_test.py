@@ -135,7 +135,7 @@ def test_buy_limit(apikey, secret):
     '''test buy'''
 
     btrx = Bittrex(apikey, secret)
-    buy = btrx.buy("btc_ppc", 0.0000001, 0.0001)
+    buy = btrx.buy_limit("btc_ppc", 0.0000001, 0.0001)
 
     assert buy == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
                    'result': None,
@@ -148,7 +148,7 @@ def test_sell_limit(apikey, secret):
     '''test buy'''
 
     btrx = Bittrex(apikey, secret)
-    sell = btrx.sell("btc_ppc", 0.0000001, 0.0001)
+    sell = btrx.sell_limit("btc_ppc", 0.0000001, 0.0001)
 
     assert sell == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
                     'result': None,
