@@ -67,17 +67,30 @@ class Bitstamp(ExchangeWrapper):
         else:
             return pair
 
+    def _verify_response(self, response):
+        '''verify if API responded properly and raise apropriate error.'''
+
+        if 'v2' in response.url:  # works only for v2 calls
+            try:
+                if response.json()['error']:
+                    raise APIError(response.json()['reason'])
+            except (KeyError, TypeError):
+                pass
+
     def api(self, command):
         """call remote API"""
 
         try:
-            result = self.api_session.get(self.api_url + 'v2/' + command, headers=self.headers,
-                                          timeout=self.timeout, proxies=self.proxy)
+            response = self.api_session.get(self.api_url + 'v2/' + command, headers=self.headers,
+                                            timeout=self.timeout, proxies=self.proxy)
 
-            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-            return result.json()
-        except requests.exceptions.RequestException as e:
+            response.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
             raise APIError(e)
+
+        self._verify_response(response)
+        return response.json()
 
     def private_api(self, command, data={}):
         '''handles private api methods'''
@@ -96,15 +109,20 @@ class Bitstamp(ExchangeWrapper):
         data['signature'] = sig
         data['nonce'] = nonce
 
-        result = self.api_session.post(url=self.api_url + command,
-                                       data=data,
-                                       headers=self.headers,
-                                       timeout=self.timeout,
-                                       proxies=self.proxy)
+        try:
+            response = self.api_session.post(url=self.api_url + command,
+                                             data=data,
+                                             headers=self.headers,
+                                             timeout=self.timeout,
+                                             proxies=self.proxy)
 
-        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
+            response.raise_for_status()
 
-        return result.json()
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(response)
+        return response.json()
 
     def get_markets(self):
         '''get all market pairs supported by the exchange'''
