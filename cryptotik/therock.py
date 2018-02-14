@@ -39,17 +39,59 @@ class TheRock(ExchangeWrapper):
 
         return "".join(findall(r"[^\W\d_]+|\d+", pair)).upper()
 
+    def _verify_response(self, response):
+        '''verify if API responded properly and raise apropriate error.'''
+
+        try:
+            if 'errors' in response.json().keys():
+                raise APIError(response.json()['errors']['message'])
+        except KeyError:
+            pass
+
     def api(self, url):
         '''call api'''
 
         try:
             result = self.api_session.get(url, headers=self.headers,
                                           timeout=self.timeout, proxies=self.proxy)
-            assert result.status_code == 200
-            return result.json()
 
-        except requests.exceptions.RequestException as e:
-            raise APIError(e)
+            result.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(result)
+        return result.json()
+
+    def private_api(self, url, http_method='GET', params={}):
+        '''handles private api methods'''
+
+        if not self.apikey or not self.secret:
+            raise ValueError("A Key and Secret needed!")
+
+        nonce = str(self.get_nonce())
+        if params:
+            url += "?" + requests.compat.urlencode(sorted(params.items()))
+        nonce_plus_url = str(nonce) + url
+        signature = hmac.new(self.secret,
+                             nonce_plus_url.encode("utf-8"),
+                             hashlib.sha512).hexdigest()
+
+        head = {"Content-Type": "application/json",
+                "X-TRT-KEY": self.apikey,
+                "X-TRT-SIGN": signature,
+                "X-TRT-NONCE": nonce}
+
+        try:
+            result = self.api_session.request(http_method, url, headers=head,
+                                              proxies=self.proxy)
+            result.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(result)
+        return result.json()
 
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
@@ -96,34 +138,6 @@ class TheRock(ExchangeWrapper):
         ''' return volume of last 24h'''
 
         return self.get_market_ticker(self.format_pair(pair))["volume"]
-
-    def private_api(self, url, http_method='GET', params={}):
-        '''handles private api methods'''
-
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
-
-        nonce = str(self.get_nonce())
-        if params:
-            url += "?" + requests.compat.urlencode(sorted(params.items()))
-        nonce_plus_url = str(nonce) + url
-        signature = hmac.new(self.secret,
-                             nonce_plus_url.encode("utf-8"),
-                             hashlib.sha512).hexdigest()
-
-        head = {"Content-Type": "application/json",
-                "X-TRT-KEY": self.apikey,
-                "X-TRT-SIGN": signature,
-                "X-TRT-NONCE": nonce}
-
-        try:
-            result = self.api_session.request(http_method, url, headers=head,
-                                              proxies=self.proxy)
-            assert result.status_code == 200, {'error: ' + str(result.json())}
-        except requests.exceptions.RequestException as e:
-            raise APIError(e)
-
-        return result.json()
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -206,10 +220,10 @@ class TheRock(ExchangeWrapper):
            or all open orders if called without an argument.'''
 
         if not pair:
-            all_pairs=[]
+            all_pairs = []
             for market in self.get_markets():
                 all_pairs += self.private_api(self.url + "funds/" + 
-                                            self.format_pair(market) + "/orders")
+                                              self.format_pair(market) + "/orders")
                 return all_pairs
         else:
             return self.private_api(self.url + "funds/" + self.format_pair(pair) 
@@ -224,13 +238,13 @@ class TheRock(ExchangeWrapper):
     def cancel_order(self, order_id, symbol):
         """cancel order with <order_id> for <symbol>"""
 
-        return self.private_api(self.url + "funds/" + symbol + 
+        return self.private_api(self.url + "funds/" + symbol +
                                 "/orders/" + order_id,
                                 http_method='DELETE')
 
     def cancel_all_orders(self, symbol):
         """cancel all orders for <symbol> """
 
-        return self.private_api(self.url + "funds/" + symbol + 
+        return self.private_api(self.url + "funds/" + symbol +
                                 "/orders/remove_all",
                                 http_method='DELETE')
