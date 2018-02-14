@@ -122,7 +122,7 @@ class Poloniex(ExchangeWrapper):
                                             proxies=self.proxy)
             response.raise_for_status()
 
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.HTTPError as e:
             print(e)
 
         self._verify_response(response)
@@ -146,7 +146,7 @@ class Poloniex(ExchangeWrapper):
                                              proxies=self.proxy)
             response.raise_for_status()
 
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.HTTPError as e:
             print(e)
 
         self._verify_response(response)
