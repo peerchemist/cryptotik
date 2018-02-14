@@ -64,26 +64,22 @@ class Hitbtc(ExchangeWrapper):
         except requests.exceptions.RequestException as e:
             raise APIError(e)
 
-    @classmethod
     def get_market_ticker(cls, pair):
         '''returns simple current market status report'''
 
         return cls.api(cls.url + "public/"+ "ticker/" + cls.format_pair(pair))
 
-    @classmethod
     def get_market_trade_history(cls, pair, limit=1000):
         '''get market trade history'''
 
         return cls.api(cls.url + "public/trades/" + cls.format_pair(pair), 
                         params={'limit': limit})
 
-    @classmethod
     def get_market_orders(cls, pair):
         '''return order book for the market'''
 
         return cls.api(cls.url + "public/orderbook/" + cls.format_pair(pair))
 
-    @classmethod
     def get_market_spread(cls, pair):
         '''return first buy order and first sell order'''
 
@@ -94,7 +90,6 @@ class Hitbtc(ExchangeWrapper):
 
         return Decimal(ask) - Decimal(bid)
 
-    @classmethod
     def get_markets(cls):
         '''Find supported markets on this exchange'''
 
@@ -103,13 +98,11 @@ class Hitbtc(ExchangeWrapper):
         pairs = [i["id"].lower() for i in r]
         return pairs
 
-    @classmethod
     def get_market_volume(cls, pair):
         ''' return volume of last 24h'''
 
         return cls.get_market_ticker(cls.format_pair(pair))["volume"]
 
-    @classmethod
     def get_market_depth(cls, pair):
         '''return sum of all bids and asks'''
 
@@ -149,7 +142,7 @@ class Hitbtc(ExchangeWrapper):
         transactions = self.private_api(self.url + "account/transactions", 
                                         params={"currency": currency.upper()})
         return [i for i in transactions if i["type"] == 'payout']
-    
+
     def withdraw(self, coin, amount, address):
         '''withdraw <coin> <amount> to <address>'''
 
