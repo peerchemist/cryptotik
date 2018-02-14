@@ -17,16 +17,23 @@ class Hitbtc(ExchangeWrapper):
 
     api_session = requests.Session()
 
-    def __init__(self, apikey=None, secret=None, timeout=None):
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize object from Hitbtc class'''
 
         if apikey and secret:
             self.apikey = apikey.encode("utf-8")
             self.secret = secret.encode("utf-8")
-    try:
-        assert timeout is not None
-    except:
-        timeout = (8, 15)
+
+        if proxy:
+            assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
+        self.proxy = {'https': proxy}
+
+        if not timeout:
+            self.timeout = (8, 15)
+        else:
+            self.timeout = timeout
+
+        self.api_session = requests.Session()
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -46,12 +53,12 @@ class Hitbtc(ExchangeWrapper):
         pair = pair.replace("-", cls.delimiter).upper()
         return pair
 
-    @classmethod
-    def api(cls, url, params={}):
+    def api(self, url, params={}):
         '''call api'''
 
         try:
-            result = requests.get(url, params=params, headers=cls.headers, timeout=3)
+            result = requests.get(url, params=params, headers=self.headers,
+                                  timeout=self.timeout, proxies=self.proxy)
             assert result.status_code == 200, {'error: ' + str(result.json()['error'])}
             return result.json()
         except requests.exceptions.RequestException as e:
@@ -87,7 +94,6 @@ class Hitbtc(ExchangeWrapper):
 
         return Decimal(ask) - Decimal(bid)
 
-
     @classmethod
     def get_markets(cls):
         '''Find supported markets on this exchange'''
@@ -116,19 +122,17 @@ class Hitbtc(ExchangeWrapper):
     def private_api(self, url, params={}, http_method='GET'):
         '''handles private api methods'''
 
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
-
         if http_method == 'GET':
-            result = requests.get(url, auth=(self.apikey, self.secret))
+            result = self.api_session.get(url, auth=(self.apikey, self.secret), proxies=self.proxy)
         elif http_method == 'POST':
             if not bool(params):
                 raise AttributeError("Data parameters required for POST request")
-            result = requests.post(url, data=params , auth=(self.apikey, self.secret))
+            result = self.api_session.post(url, data=params, auth=(self.apikey, self.secret))
         elif http_method == 'PUT':
-            result = requests.put(url, auth=(self.apikey, self.secret))
+            result = self.api_session.put(url, auth=(self.apikey, self.secret), proxies=self.proxy)
         elif http_method == 'DELETE':
-            result = requests.delete(url, auth=(self.apikey, self.secret))
+            result = self.api_session.delete(url, auth=(self.apikey, self.secret), proxies=self.proxy)
+
         assert result.status_code == 200, {'error: ' + str(result.json()['error'])}
         return result.json()
 
