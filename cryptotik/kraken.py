@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import hmac
-import json
 import hashlib
 import time
 import base64
@@ -9,6 +8,7 @@ import requests
 from cryptotik.common import APIError, headers, ExchangeWrapper
 from re import findall
 from decimal import Decimal
+
 
 class Kraken(ExchangeWrapper):
 
