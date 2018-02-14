@@ -27,6 +27,11 @@ class ExchangeWrapper:
     def get_nonce(self):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def _verify_response(self):
+        '''verify if API responded properly and raise apropriate error.'''
+        raise NotImplementedError
+
     @abc.abstractclassmethod
     def format_pair(self):
         raise NotImplementedError

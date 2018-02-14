@@ -60,21 +60,29 @@ class Bittrex(ExchangeWrapper):
         else:
             return pair
 
+    def _verify_response(self, response):
+        '''verify if API responded properly and raise apropriate error.'''
+
+        if not response.json()['success'] is True:
+            raise APIError(response.json()['message'])
+
     def api(self, url, params):
         """call api"""
 
-        result = self.api_session.get(url, params=params, headers=self.headers,
-                                      timeout=self.timeout, proxies=self.proxy)
+        try:
+            response = self.api_session.get(url, params=params, headers=self.headers,
+                                            timeout=self.timeout, proxies=self.proxy)
 
-        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-        assert result.json()["success"] is True, {'error': result.json()["message"]}
-        return result.json()
+            response.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(response)
+        return response.json()
 
     def private_api(self, url, params):
         '''handles private api methods'''
-
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
 
         params.update({"apikey": self.apikey, "nonce": self.get_nonce()})
         url += "?" + requests.compat.urlencode(params)
@@ -83,13 +91,17 @@ class Bittrex(ExchangeWrapper):
                                                  ).hexdigest()
                              })
 
-        result = self.api_session.get(url, headers=self.headers,
-                                      timeout=self.timeout,
-                                      proxies=self.proxy)
+        try:
+            response = self.api_session.get(url, headers=self.headers,
+                                            timeout=self.timeout,
+                                            proxies=self.proxy)
 
-        assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-        assert result.json()["success"] is True, {'error': result.json()["message"]}
-        return result.json()
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(response)
+        return response.json()
 
     def get_markets(self):
         '''find out supported markets on this exhange.'''

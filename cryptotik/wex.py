@@ -65,6 +65,12 @@ class Wex(ExchangeWrapper):
         else:
             return pair
 
+    def _verify_response(self, response):
+        '''verify if API responded properly and raise apropriate error.'''
+
+        if not response.json()['success'] is 1:
+            raise APIError(response.json()['error'])
+
     def api(self, command):
         """call remote API"""
 
@@ -73,17 +79,15 @@ class Wex(ExchangeWrapper):
             result = self.api_session.get(self.url + command, headers=self.headers,
                                           timeout=self.timeout, proxies=self.proxy)
 
-            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-            return result.json()
+            result.raise_for_status()
 
-        except requests.exceptions.RequestException as e:
-            raise APIError(e)
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        return result.json()
 
     def private_api(self, params):
         '''handles private api methods'''
-
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
 
         params["nonce"] = self.get_nonce()
         encoded_params = requests.compat.urlencode(params)
@@ -101,13 +105,13 @@ class Wex(ExchangeWrapper):
             result = self.api_session.post(self.trade_url, data=params, headers=headers,
                                            timeout=self.timeout, proxies=self.proxy)
 
-            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-            if result.json()['success'] != 1:
-                raise ValueError(result.json()['error'])
-            return result.json()
+            result.raise_for_status()
 
-        except requests.exceptions.RequestException as e:
-            raise APIError(e)
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(result)
+        return result.json()
 
     def get_markets(self):
         '''get all pairs supported by the exchange'''
