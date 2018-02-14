@@ -36,16 +36,49 @@ class Binance(ExchangeWrapper):
 
         self.api_session = requests.Session()
 
+    def _verify_response(self, response):
+        '''verify if API responded properly and raise apropriate error.'''
+
+        if "msg" in response.json() and "code" in response.json():
+            raise APIError(response.json()['msg'])
+
     def api(self, url, params):
         '''call api'''
 
         try:
-            result = self.api_session.get(url, params=params, headers=self.headers,
-                                          timeout=self.timeout, proxies=self.proxy)
-            assert result.status_code == 200, {'error: ' + str(result.json())}
-            return result.json()
-        except requests.exceptions.RequestException as e:
-            raise APIError(e)
+            response = self.api_session.get(url, params=params, headers=self.headers,
+                                            timeout=self.timeout, proxies=self.proxy)
+            response.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(response)
+        return response.json()
+
+    def private_api(self, url, params={}, http_method='GET'):
+        '''handles private api methods'''
+
+        query = requests.compat.urlencode(sorted(params.items()))
+        query += "&timestamp={}".format(int(time.time() * 1000))
+
+        signature = hmac.new(self.secret, query.encode("utf-8"),
+                             hashlib.sha256).hexdigest()
+
+        query += "&signature={}".format(signature)
+
+        try:
+            response = self.api_session.request(http_method,
+                                            url + "?" + query,
+                                            headers={"X-MBX-APIKEY": self.apikey},
+                                            proxies=self.proxy)
+            response.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(response)
+        return response.json()
 
     @classmethod
     def format_pair(self, pair):
@@ -113,28 +146,6 @@ class Binance(ExchangeWrapper):
         ''' return volume of last 24h'''
 
         return self.get_market_ticker(self.format_pair(pair))["volume"]
-
-    def private_api(self, url, params={}, http_method='GET'):
-        '''handles private api methods'''
-
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
-
-        query = requests.compat.urlencode(sorted(params.items()))
-        query += "&timestamp={}".format(int(time.time() * 1000))
-
-        signature = hmac.new(self.secret, query.encode("utf-8"),
-                             hashlib.sha256).hexdigest()
-
-        query += "&signature={}".format(signature)
-
-        result = self.api_session.request(http_method,
-                                          url + "?" + query,
-                                          headers={"X-MBX-APIKEY": self.apikey},
-                                          proxies=self.proxy)
-
-        assert result.status_code == 200, {'error: ' + str(result.json())}
-        return result.json()
 
     def get_balances(self):
         """get all balances from your account"""
