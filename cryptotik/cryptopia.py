@@ -46,17 +46,54 @@ class Cryptopia(ExchangeWrapper):
 
         self.api_session = requests.Session()
 
+    def get_nonce(self):
+        '''return nonce integer'''
+
+        return int(1000*time.time())
+
+    def _verify_response(self, response):
+        '''verify if API responded properly and raise apropriate error.'''
+
+        if not response.json()['Success'] or response.json()['Error']:
+            raise APIError(response.json()['Error'])
+
     def api(self, url, params=None):
         '''call api'''
 
         try:
             result = self.api_session.get(url, headers=self.headers, 
-                                    params=params, timeout=self.timeout,
-                                    proxies=self.proxy)
-            assert result.status_code == 200, {'error: ' + str(result.json())}
-            return result.json()['Data']
-        except requests.exceptions.RequestException as e:
-            print("Error!", e)
+                                          params=params, timeout=self.timeout,
+                                          proxies=self.proxy)
+            result.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(result)
+        return result.json()['Data']
+
+    def private_api(self, url, params={}):
+        '''handles private api methods'''
+
+        nonce = str(self.get_nonce())
+        md5 = hashlib.md5()
+        md5.update(json.dumps(params).encode('utf-8'))
+        rcb64 = base64.b64encode(md5.digest()).decode('utf-8')
+        signature = self.apikey + "POST" + requests.compat.quote_plus(url).lower() + nonce + rcb64 
+        hmacsignature = base64.b64encode(hmac.new(base64.b64decode(self.secret),
+                        signature.encode('utf-8'),
+                        hashlib.sha256).digest())
+        header_value = "amx " + self.apikey + ":" + hmacsignature.decode('utf-8') + ":" + nonce
+
+        try:
+            result = self.api_session.post(url, json=params,
+                                           headers={'Authorization': header_value},
+                                           timeout=self.timeout, proxies=self.proxy)
+            result.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(result)
+        return result.json()['Data']
 
     def get_markets(self):
         '''Find supported markets on this exchange'''
@@ -66,7 +103,7 @@ class Cryptopia(ExchangeWrapper):
 
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
-        
+
         r = self.api(self.url + "api/getMarket/" + self.format_pair(pair))
         result={}
         result['bid']=r['BidPrice']
@@ -114,34 +151,6 @@ class Cryptopia(ExchangeWrapper):
         bids = sum([Decimal(i['Volume']) for i in order_book['bids']])
 
         return {"bids": bids, "asks": asks}
-    
-    def get_nonce(self):
-        '''return nonce integer'''
-
-        return int(1000*time.time())
-
-    def private_api(self, url, params={}):
-        '''handles private api methods'''
-        
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
-
-        nonce = str(self.get_nonce())
-        md5 = hashlib.md5()
-        md5.update(json.dumps(params).encode('utf-8'))
-        rcb64 = base64.b64encode(md5.digest()).decode('utf-8')
-        signature = self.apikey + "POST" + requests.compat.quote_plus(url).lower() + nonce + rcb64 
-        hmacsignature = base64.b64encode(hmac.new(base64.b64decode(self.secret),
-        signature.encode('utf-8'),
-        hashlib.sha256).digest())
-        header_value = "amx " + self.apikey + ":" + hmacsignature.decode('utf-8') + ":" + nonce
-
-        result = self.api_session.post(url, json=params, headers={ 'Authorization': header_value },
-            timeout=self.timeout, proxies=self.proxy)
-        assert result.status_code == 200, {'error: ' + str(result.json())}
-        if not result.json()['Success']:
-            raise APIError(str(result.json()['Error']))
-        return result.json()['Data']
 
     def get_balances(self):
         
