@@ -7,8 +7,8 @@ import time
 import base64
 import requests
 from cryptotik.common import APIError, headers, ExchangeWrapper
-from re import findall
 from decimal import Decimal
+
 
 class Cryptopia(ExchangeWrapper):
 
@@ -212,5 +212,3 @@ class Cryptopia(ExchangeWrapper):
         """cancel all orders"""
         return self.private_api(self.url + "Api/CancelTrade", params={
                             'Type': 'All'})
-
-
