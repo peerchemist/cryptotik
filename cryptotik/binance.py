@@ -164,6 +164,16 @@ class Binance(ExchangeWrapper):
                                         'price': price},
                                 http_method='POST')
 
+    def buy_market(self, pair, quantity):
+        '''execute market buy order'''
+
+        return self.private_api(self.url + "api/v3/order",
+                                params={'symbol': self.format_pair(pair),
+                                        'side': 'BUY', 'type': 'market',
+                                        quantity': quantity,
+                                        },
+                                http_method='POST')
+
     def get_deposit_address(self, currency):
         ''' get deposit address for <currency> '''
 
@@ -188,6 +198,16 @@ class Binance(ExchangeWrapper):
                                         'side': 'SELL', 'type': 'limit',
                                         'timeInForce': 'GTC', 'quantity': quantity,
                                         'price': price},
+                                http_method='POST')
+
+    def sell_market(self, pair, quantity):
+        '''execute market sell order'''
+
+        return self.private_api(self.url + "api/v3/order",
+                                params={'symbol': self.format_pair(pair),
+                                        'side': 'SELL', 'type': 'market',
+                                        quantity': quantity,
+                                        },
                                 http_method='POST')
 
     def withdraw(self, coin, amount, address, address_tag=None):
