@@ -170,7 +170,7 @@ class Binance(ExchangeWrapper):
         return self.private_api(self.url + "api/v3/order",
                                 params={'symbol': self.format_pair(pair),
                                         'side': 'BUY', 'type': 'market',
-                                        quantity': quantity,
+                                        'quantity': quantity
                                         },
                                 http_method='POST')
 
@@ -206,7 +206,7 @@ class Binance(ExchangeWrapper):
         return self.private_api(self.url + "api/v3/order",
                                 params={'symbol': self.format_pair(pair),
                                         'side': 'SELL', 'type': 'market',
-                                        quantity': quantity,
+                                        'quantity': quantity
                                         },
                                 http_method='POST')
 
