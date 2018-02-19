@@ -17,27 +17,27 @@ Library supports other useful features like wrapper around Coinmarketcap.com pub
 
 You only need to learn commands once, for example `get_markets` will work anywhere:
 
-`Bittrex.get_markets()`
+`Bittrex().get_markets()`
 
-`Poloniex.get_markets()`
+`Poloniex().get_markets()`
 
-`Wex.get_markets()`
+`Wex().get_markets()`
 
-`Binance.get_markets()`
+`Binance().get_markets()`
 
 and will yield similar results. However parsing and interpreting them is left to user.
 
 ## More examples
 
-`Wex.get_market_ticker("ppc-btc")`
+`Wex().get_market_ticker("ppc-btc")`
 
-`Poloniex.get_market_order_book("btc-nxt")`
+`Poloniex().get_market_order_book("btc-nxt")`
 
-`Bittrex.get_market_depth("btc-maid")`
+`Bittrex().get_market_depth("btc-maid")`
 
 ## Private API methods (the ones that require authentication)
 
-Library also supports private API methods for Poloniex, Binance, TheRockExchange, Bittrex, Wex and some others.
+Library also supports private API methods for Poloniex, Binance, Bitstamp, Kraken, TheRockExchange, Bittrex, Wex and some others.
 To use them you need to make class instance though with your API credentials.
 
 `polo = Poloniex(yourkey, yoursecret)`
