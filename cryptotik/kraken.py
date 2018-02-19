@@ -158,22 +158,40 @@ class Kraken(ExchangeWrapper):
         return result[0]['address']
 
     def buy_limit(self, pair, price, quantity):
-        '''creates buy order for <pair> at <price> for <quantity>'''
+        '''creates buy limit order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + 'private/AddOrder',
-                            params={'pair': self.format_pair(pair),
-                                'type': 'buy', 'ordertype': 'limit',
-                                'price': price, 'volume': quantity
-                            })
+                                params={'pair': self.format_pair(pair),
+                                        'type': 'buy', 'ordertype': 'limit',
+                                        'price': price, 'volume': quantity
+                                        })
+
+    def buy_market(self, pair, price, quantity):
+        '''creates buy market order for <pair> at <price> for <quantity>'''
+
+        return self.private_api(self.url + 'private/AddOrder',
+                                params={'pair': self.format_pair(pair),
+                                        'type': 'buy', 'ordertype': 'market',
+                                        'volume': quantity
+                                        })
 
     def sell_limit(self, pair, price, quantity):
         '''creates sell order for <pair> at <price> for <quantity>'''
-        
+
         return self.private_api(self.url + 'private/AddOrder',
-                            params={'pair': self.format_pair(pair),
-                                'type': 'sell', 'ordertype': 'limit',
-                                'price': price, 'volume': quantity
-                            })
+                                params={'pair': self.format_pair(pair),
+                                        'type': 'sell', 'ordertype': 'limit',
+                                        'price': price, 'volume': quantity
+                                        })
+
+    def sell_market(self, pair, price, quantity):
+        '''creates sell market order for <pair> at <price> for <quantity>'''
+
+        return self.private_api(self.url + 'private/AddOrder',
+                                params={'pair': self.format_pair(pair),
+                                        'type': 'sell', 'ordertype': 'market',
+                                        'volume': quantity
+                                        })
 
     def withdraw(self, currency, amount, withdrawal_key_name):
         '''withdraw <currency> <amount> to <withdrawal_key_name>, 
