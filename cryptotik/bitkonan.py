@@ -62,6 +62,9 @@ class Bitkonan(ExchangeWrapper):
         else:
             return pair
 
+    def _verify_response(self, response):
+        raise NotImplementedError
+
     def api(self, command, params={}):
         """call remote API"""
 
@@ -70,10 +73,12 @@ class Bitkonan(ExchangeWrapper):
                                           headers=self.headers, timeout=self.timeout,
                                           proxies=self.proxy)
 
-            assert result.status_code == 200, {"error": "http_error: " + str(result.status_code)}
-            return result.json()
-        except requests.exceptions.RequestException as e:
-            raise APIError(e)
+            result.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        return result.json()
 
     def private_api(self, command):
         '''handles private api methods'''
