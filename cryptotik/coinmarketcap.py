@@ -3,7 +3,7 @@ import requests
 
 
 class CoinMarketCap():
-    
+
     url = 'https://api.coinmarketcap.com/v1/'
     headers = headers
 
@@ -21,17 +21,22 @@ class CoinMarketCap():
 
         self.api_session = requests.Session()
 
+    def _verify_response(self, response):
+        raise NotImplementedError
+
     def api(self, url, params=None):
         '''call api'''
 
         try:
             result = self.api_session.get(url, headers=self.headers, 
-                                    params=params, timeout=self.timeout,
-                                    proxies=self.proxy)
-            assert result.status_code == 200, {'error: ' + str(result.json())}
-            return result.json()
-        except requests.exceptions.RequestException as e:
-            print("Error!", e)
+                                          params=params, timeout=self.timeout,
+                                          proxies=self.proxy)
+            result.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        return result.json()
 
     def get_ticker(self, coin, convert_currency=None):
         ''' Get ticker for <currency>, convert price to <convert_currency> if needed
@@ -52,12 +57,6 @@ class CoinMarketCap():
 
     def get_global(self, convert_currency=None):
         ''' Get global data, convert to <convert_currency> if needed'''
-
-        if not convert_currency:
-            return self.api(self.url + "global/")
-        else:
-            return self.api(self.url + "global/?convert=" +
-                            convert_currency.upper())ency> if needed'''
 
         if not convert_currency:
             return self.api(self.url + "global/")
