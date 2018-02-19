@@ -1,16 +1,11 @@
+from cryptotik.common import APIError, headers, ExchangeWrapper
 import requests
+
 
 class CoinMarketCap():
     
     url = 'https://api.coinmarketcap.com/v1/'
-    headers = {    # common HTTPS headers
-    'Accept': 'application/json',
-    'Accept-Charset': 'utf-8',
-    'Accept-Encoding': 'identity',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-    "Content-type": "application/x-www-form-urlencoded"
-    }
+    headers = headers
 
     def __init__(self, timeout=None, proxy=None):
         '''initialize class'''
