@@ -53,16 +53,62 @@ class Hitbtc(ExchangeWrapper):
         pair = pair.replace("-", cls.delimiter).upper()
         return pair
 
+    def _verify_response(self, response):
+
+        if response.json()['error']:
+            raise APIError(response.json()['error'])
+
     def api(self, url, params={}):
         '''call api'''
 
         try:
             result = requests.get(url, params=params, headers=self.headers,
                                   timeout=self.timeout, proxies=self.proxy)
-            assert result.status_code == 200, {'error: ' + str(result.json()['error'])}
-            return result.json()
-        except requests.exceptions.RequestException as e:
-            raise APIError(e)
+            result.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        return result.json()
+
+    def private_api(self, url, params={}, http_method='GET'):
+        '''handles private api methods'''
+
+        if http_method == 'GET':
+            try:
+                result = self.api_session.get(url, auth=(self.apikey, self.secret), proxies=self.proxy)
+                result.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                print(e)
+
+        elif http_method == 'POST':
+            if not bool(params):
+                raise AttributeError("Data parameters required for POST request")
+            try:
+                result = self.api_session.post(url, data=params, auth=(self.apikey, self.secret))
+                result.raise_for_status()
+
+            except requests.exceptions.HTTPError as e:
+                print(e)
+
+        elif http_method == 'PUT':
+            try:
+                result = self.api_session.put(url, auth=(self.apikey, self.secret), proxies=self.proxy)
+                result.raise_for_status()
+
+            except requests.exceptions.HTTPError as e:
+                print(e)
+
+        elif http_method == 'DELETE':
+            try:
+                result = self.api_session.delete(url, auth=(self.apikey, self.secret), proxies=self.proxy)
+                result.raise_for_status()
+
+            except requests.exceptions.HTTPError as e:
+                print(e)
+
+        self._verify_response(result)
+        return result.json()['result']
 
     def get_market_ticker(cls, pair):
         '''returns simple current market status report'''
@@ -111,23 +157,6 @@ class Hitbtc(ExchangeWrapper):
         bid = sum([Decimal(i['size']) for i in order_book['bid']])
 
         return {"bids": bid, "asks": asks}
-
-    def private_api(self, url, params={}, http_method='GET'):
-        '''handles private api methods'''
-
-        if http_method == 'GET':
-            result = self.api_session.get(url, auth=(self.apikey, self.secret), proxies=self.proxy)
-        elif http_method == 'POST':
-            if not bool(params):
-                raise AttributeError("Data parameters required for POST request")
-            result = self.api_session.post(url, data=params, auth=(self.apikey, self.secret))
-        elif http_method == 'PUT':
-            result = self.api_session.put(url, auth=(self.apikey, self.secret), proxies=self.proxy)
-        elif http_method == 'DELETE':
-            result = self.api_session.delete(url, auth=(self.apikey, self.secret), proxies=self.proxy)
-
-        assert result.status_code == 200, {'error: ' + str(result.json()['error'])}
-        return result.json()
 
     def get_balances(self):
         """get all balances from your account"""
