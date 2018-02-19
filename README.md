@@ -77,3 +77,14 @@ And Wex:
 ## Wex
 
 `pytest wex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
+
+____________________________________________________________
+
+## Contributing
+
+1. Fork it (https://github.com/peerchemist/cryptotik/fork)
+2. Study how it's implemented
+3. Create your feature branch (`git checkout -b my-new-feature`)
+4. Commit your changes (`git commit -am 'Add some feature'`)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create a new Pull Request
