@@ -8,6 +8,24 @@ Standardized common API for several cryptocurrency exchanges.
 
 `pip install git+git://github.com/peerchemist/cryptotik.git`
 
+# Supported Exchanges
+
+| Exchange       | API  | Public Methods    | Private Methods    | Raw Methods| Tests |
+|----------------|------|-------------------|--------------------|------------|-------|
+| Binance        | Done | Done              | Done               | TODO       | Done  |
+| Bitkonan       | Done | Done              | Done               | TODO       | Done  |
+| Bitstamp       | Done | Done              | Done               | TODO       | Done  |
+| Bittrex        | Done | Done              | Done               | TODO       | Done  |
+| Cryptopia      | Done | Done              | Done               | TODO       | Done  |
+| Hitbtc         | Done | Done              | Done               | TODO       | Done  |
+| Kraken         | Done | Done              | Done               | TODO       | Done  |
+| Livecoin       | Done | Done              | Done               | TODO       | Done  |
+| Okcoin         | Done | Done              | Done               | TODO       | Done  |
+| Poloniex       | Done | Done              | Done               | TODO       | Done  |
+| TheRockTrading | Done | Done              | Done               | TODO       | Done  |
+| Wex            | Done | Done              | Done               | TODO       | Done  |
+
+
 ## Examples
 
 Right now library supports: Wex.nz, Poloniex.com, Bitstamp.com, Kraken.com Bittrex.com, Binance, TheRockTrading, HitBtc with elementary support for Bitkonan and Livecoin.
