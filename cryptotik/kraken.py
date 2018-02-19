@@ -102,7 +102,7 @@ class Kraken(ExchangeWrapper):
         bid = sum([Decimal(i[1]) for i in order_book['bids']])
 
         return {"bids": bid, "asks": asks}
-    
+
     def get_nonce(self):
         '''return nonce integer'''
 
@@ -110,7 +110,7 @@ class Kraken(ExchangeWrapper):
 
     def private_api(self, url, params={}):
         '''handles private api methods'''
-        
+
         if not self.apikey or not self.secret:
             raise ValueError("A Key and Secret needed!")
 
@@ -123,28 +123,27 @@ class Kraken(ExchangeWrapper):
         signature = hmac.new(base64.b64decode(self.secret),
                     message, hashlib.sha512)
         sigdigest = base64.b64encode(signature.digest())
-        
+
         result = self.api_session.post(url, data=data, headers={
             'API-Key': self.apikey, 'API-Sign': sigdigest.decode()},
             timeout=self.timeout, proxies=self.proxy)
         assert result.status_code == 200, {'error: ' + str(result.json())}
         return result.json()
 
-
     def get_balances(self):
-        
+
         balances = self.private_api(self.url + "private/Balance")
         return balances['result']
 
     def get_deposit_method(self, currency):
-        
+
         return self.private_api(self.url + "private/DepositMethods",
                                 params={'asset': currency.upper()}
                                 )['result'][0]['method']
 
     def get_deposit_address(self, currency):
         ''' get deposit address for <currency> '''
-        
+
         result = self.private_api(self.url + "private/DepositAddresses",
                                 params={'asset': currency.upper(),
                                 'method': self.get_deposit_method(currency)}
@@ -225,21 +224,19 @@ class Kraken(ExchangeWrapper):
 
     def get_order(self, orderId):
         """retrieve a single order by orderId."""
-        
+
         return self.private_api(self.url + "private/QueryOrders",
                             params={'trades': 'true',
                             'txid': orderId})
 
     def cancel_order(self, orderId):
         """cancel order with <orderId>"""
-        
+
         return self.private_api(self.url + "private/CancelOrder",
                             params={'txid': orderId})
 
     def cancel_all_orders(self):
         """cancel all orders"""
-            
+
         for txid in self.get_open_orders():
               self.cancel_order(txid)
-
-
