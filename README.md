@@ -10,7 +10,8 @@ Standardized common API for several cryptocurrency exchanges.
 
 ## Examples
 
-Right now library supports: Wex.nz, Poloniex.com, Bittrex.com, Binance and TheRockTrading; with elementary support for HitBtc and Livecoin.
+Right now library supports: Wex.nz, Poloniex.com, Bitstamp.com, Kraken.com Bittrex.com, Binance, TheRockTrading, HitBtc with elementary support for Bitkonan and Livecoin.
+Library supports other useful features like wrapper around Coinmarketcap.com public API.
 
 `from cryptotik import Wex, Bittrex, Poloniex`
 
