@@ -13,6 +13,7 @@ from decimal import Decimal
 class Kraken(ExchangeWrapper):
 
     url = 'https://api.kraken.com/0/'
+    name = 'kraken'
     delimiter = ""
     headers = headers
     taker_fee, maker_fee = 0.00, 0.00
