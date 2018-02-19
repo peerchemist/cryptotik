@@ -10,20 +10,20 @@ Standardized common API for several cryptocurrency exchanges.
 
 # Supported Exchanges
 
-| Exchange       | API  | Public Methods    | Private Methods    | Raw Methods| Tests |
-|----------------|------|-------------------|--------------------|------------|-------|
-| Binance        | Done | Done              | Done               | TODO       | Done  |
-| Bitkonan       | Done | Done              | Done               | TODO       | Done  |
-| Bitstamp       | Done | Done              | Done               | TODO       | Done  |
-| Bittrex        | Done | Done              | Done               | TODO       | Done  |
-| Cryptopia      | Done | Done              | Done               | TODO       | Done  |
-| Hitbtc         | Done | Done              | Done               | TODO       | Done  |
-| Kraken         | Done | Done              | Done               | TODO       | Done  |
-| Livecoin       | Done | Done              | Done               | TODO       | Done  |
-| Okcoin         | Done | Done              | Done               | TODO       | Done  |
-| Poloniex       | Done | Done              | Done               | TODO       | Done  |
-| TheRockTrading | Done | Done              | Done               | TODO       | Done  |
-| Wex            | Done | Done              | Done               | TODO       | Done  |
+| Exchange            | API  | Public Methods    | Private Methods    | Raw Methods| Tests |
+|---------------------|------|-------------------|--------------------|------------|-------|
+| www.binance.com     | Done | Done              | Done               | TODO       | Done  |
+| bitkonan.com        | Done | Done              | Done               | TODO       | Done  |
+| www.bitstamp.net    | Done | Done              | Done               | TODO       | Done  |
+| bittrex.com         | Done | Done              | Done               | TODO       | Done  |
+| www.cryptopia.co.nz | Done | Done              | Done               | TODO       | Done  |
+| hitbtc.com          | Done | Done              | Done               | TODO       | Done  |
+| www.kraken.com      | Done | Done              | Done               | TODO       | Done  |
+| www.livecoin.net    | Done | Done              | Done               | TODO       | Done  |
+| www.okcoin.cn       | Done | Done              | Done               | TODO       | Done  |
+| poloniex.com        | Done | Done              | Done               | TODO       | Done  |
+| therocktrading.com  | Done | Done              | Done               | TODO       | Done  |
+| wex.nz              | Done | Done              | Done               | TODO       | Done  |
 
 
 ## Examples
