@@ -41,17 +41,57 @@ class Kraken(ExchangeWrapper):
 
         self.api_session = requests.Session()
 
+    def _verify_response(self, response):
+
+        if response.json()['error']:
+            raise APIError(response.json()['error'])
+
     def api(self, url, params=None):
         '''call api'''
 
         try:
             result = self.api_session.get(url, headers=self.headers, 
-                                    params=params, timeout=self.timeout,
-                                    proxies=self.proxy)
-            assert result.status_code == 200, {'error: ' + str(result.json())}
-            return result.json()['result']
-        except requests.exceptions.RequestException as e:
-            print("Error!", e)
+                                          params=params, timeout=self.timeout,
+                                          proxies=self.proxy)
+
+            result.raise_for_status()
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(result)
+        return result.json()['result']
+
+    def get_nonce(self):
+        '''return nonce integer'''
+
+        return int(1000 * time.time())
+
+    def private_api(self, url, params={}):
+        '''handles private api methods'''
+
+        urlpath = url[22:]
+        data = params
+        data['nonce'] = self.get_nonce()
+        postdata = requests.compat.urlencode(data)
+        encoded = (str(data['nonce']) + postdata).encode()
+        message = urlpath.encode() + hashlib.sha256(encoded).digest()
+        signature = hmac.new(base64.b64decode(self.secret),
+                    message, hashlib.sha512)
+        sigdigest = base64.b64encode(signature.digest())
+
+        try:
+            result = self.api_session.post(url, data=data, headers={
+                                           'API-Key': self.apikey,
+                                           'API-Sign': sigdigest.decode()},
+                                           timeout=self.timeout,
+                                           proxies=self.proxy)
+
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(result)
+        return result.json()['result']
 
     def get_markets(self):
         '''Find supported markets on this exchange'''
@@ -102,33 +142,6 @@ class Kraken(ExchangeWrapper):
         bid = sum([Decimal(i[1]) for i in order_book['bids']])
 
         return {"bids": bid, "asks": asks}
-
-    def get_nonce(self):
-        '''return nonce integer'''
-
-        return int(1000*time.time())
-
-    def private_api(self, url, params={}):
-        '''handles private api methods'''
-
-        if not self.apikey or not self.secret:
-            raise ValueError("A Key and Secret needed!")
-
-        urlpath=url[22:]
-        data=params
-        data['nonce'] = self.get_nonce()
-        postdata = requests.compat.urlencode(data)
-        encoded = (str(data['nonce']) + postdata).encode()
-        message = urlpath.encode() + hashlib.sha256(encoded).digest()
-        signature = hmac.new(base64.b64decode(self.secret),
-                    message, hashlib.sha512)
-        sigdigest = base64.b64encode(signature.digest())
-
-        result = self.api_session.post(url, data=data, headers={
-            'API-Key': self.apikey, 'API-Sign': sigdigest.decode()},
-            timeout=self.timeout, proxies=self.proxy)
-        assert result.status_code == 200, {'error: ' + str(result.json())}
-        return result.json()
 
     def get_balances(self):
 
