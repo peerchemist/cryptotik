@@ -33,18 +33,31 @@ class CoinMarketCap():
         except requests.exceptions.RequestException as e:
             print("Error!", e)
 
-    def get_ticker(self, currency, convert_currency=None):
+    def get_ticker(self, coin, convert_currency=None):
         ''' Get ticker for <currency>, convert price to <convert_currency> if needed
             Important: currency name is used instead of symbol'''
 
         if not convert_currency:
-            return self.api(self.url + "ticker/" + currency.lower())[0]
-        else:
-            return self.api(self.url + "ticker/" + currency.lower() + 
-                            "?convert=" + convert_currency.upper())[0]
+            l = self.api(self.url + "ticker/")
+            if coin:
+                l = [i for i in l if i['symbol'] == coin.upper()]
+            return l
+
+        if convert_currency:
+            l = self.api(self.url + "ticker/" +
+                            "?convert=" + convert_currency.upper())
+            if coin:
+                l = [i for i in l if i['symbol'] == coin.upper()]
+            return l
 
     def get_global(self, convert_currency=None):
         ''' Get global data, convert to <convert_currency> if needed'''
+
+        if not convert_currency:
+            return self.api(self.url + "global/")
+        else:
+            return self.api(self.url + "global/?convert=" +
+                            convert_currency.upper())ency> if needed'''
 
         if not convert_currency:
             return self.api(self.url + "global/")
