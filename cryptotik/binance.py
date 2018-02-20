@@ -210,22 +210,28 @@ class Binance(ExchangeWrapper):
                                         },
                                 http_method='POST')
 
-    def withdraw(self, coin, amount, address, address_tag=None):
-        '''withdraw <coin> <amount> to <address> with <address_tag> if needed'''
+    def withdraw(self, coin, amount, address, name=None, address_tag=None):
+        '''withdraw <coin> <amount> to <address> with <address_tag> if needed
+        : name is description of the address.'''
 
         if address_tag:
-            return self.private_api(self.url + "/wapi/v3/withdraw.html",
-                                    params={'asset': coin.upper(),
-                                            'address': address,
-                                            'addressTag': address_tag,
-                                            'name': coin.upper(),
-                                            'amount': amount},
-                                    http_method='POST')
+            query = {'asset': coin.upper(),
+                     'address': address,
+                     'addressTag': address_tag,
+                     'amount': amount}
+
+        else:
+            query = {'asset': coin.upper(),
+                     'address': address,
+                     'amount': amount}
+
+        if not name:
+            query['name'] = coin.upper()
+        else:
+            query['name'] = name
 
         return self.private_api(self.url + "/wapi/v3/withdraw.html",
-                                params={'asset': coin.upper(),
-                                        'address': address, 
-                                        'amount': amount},
+                                params=query,
                                 http_method='POST')
 
     def get_withdraw_history(self, currency=None):
