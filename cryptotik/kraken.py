@@ -146,8 +146,7 @@ class Kraken(ExchangeWrapper):
 
     def get_balances(self):
 
-        balances = self.private_api(self.url + "private/Balance")
-        return balances['result']
+        return self.private_api(self.url + "private/Balance")
 
     def get_deposit_method(self, currency):
 
@@ -161,13 +160,14 @@ class Kraken(ExchangeWrapper):
         result = self.private_api(self.url + "private/DepositAddresses",
                                 params={'asset': currency.upper(),
                                 'method': self.get_deposit_method(currency)}
-                                )['result']
+                                )
         if result == []:
             result = self.private_api(self.url + "private/DepositAddresses",
                                 params={'asset': currency.upper(),
                                 'method': self.get_deposit_method(currency),
                                 'new': 'true'}
-                                )['result']
+                                )
+
         return result[0]['address']
 
     def buy_limit(self, pair, price, quantity):
@@ -219,7 +219,7 @@ class Kraken(ExchangeWrapper):
         '''Retrieves withdrawal history for <currency>'''
 
         return self.private_api(self.url + "private/WithdrawStatus", 
-                            params={'asset': currency.upper()})['result']
+                            params={'asset': currency.upper()})
 
     def get_deposit_history(self, currency):
         '''Retreive deposit history for <currency>.'''
@@ -227,14 +227,14 @@ class Kraken(ExchangeWrapper):
         return self.private_api(self.url + "private/DepositStatus", 
                             params={'asset': currency.upper(),
                             'method': self.get_deposit_method(currency)
-                            })['result']
+                            })
 
     def get_open_orders(self):
         '''get open orders.'''
 
         return self.private_api(self.url + "private/OpenOrders",
                             params={'trades': 'true'}
-                            )['result']['open']
+                            )['open']
 
     def get_order(self, orderId):
         """retrieve a single order by orderId."""
