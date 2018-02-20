@@ -152,7 +152,7 @@ class Kraken(ExchangeWrapper):
 
         return self.private_api(self.url + "private/DepositMethods",
                                 params={'asset': currency.upper()}
-                                )['result'][0]['method']
+                                )[0]['method']
 
     def get_deposit_address(self, currency):
         ''' get deposit address for <currency> '''
