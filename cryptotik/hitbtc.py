@@ -12,6 +12,7 @@ class Hitbtc(ExchangeWrapper):
     ''' Hitbct exchange '''
 
     url = 'https://api.hitbtc.com/api/2/'
+    name = "hitbtc"
     delimiter = ""
     headers = headers
 
