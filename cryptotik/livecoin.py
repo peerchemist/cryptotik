@@ -6,6 +6,7 @@ from cryptotik.common import APIError, headers
 class Livecoin:
 
     url = 'https://api.livecoin.net'
+    name = 'livecoin'
     delimiter = "/"
     headers = headers
 

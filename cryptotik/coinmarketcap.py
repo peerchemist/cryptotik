@@ -5,6 +5,7 @@ import requests
 class CoinMarketCap():
 
     url = 'https://api.coinmarketcap.com/v1/'
+    name = 'coinmarketcap'
     headers = headers
 
     def __init__(self, timeout=None, proxy=None):

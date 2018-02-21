@@ -13,6 +13,7 @@ from decimal import Decimal
 class Cryptopia(ExchangeWrapper):
 
     url = 'https://www.cryptopia.co.nz/'
+    namre = 'cryptopia'
     delimiter = "_"
     headers = headers
     taker_fee, maker_fee = 0.00, 0.00

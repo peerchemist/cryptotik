@@ -12,6 +12,7 @@ from decimal import Decimal
 class TheRock(ExchangeWrapper):
 
     url = 'https://api.therocktrading.com/v1/'
+    name = 'therock'
     delimiter = ""
     headers = headers
 
