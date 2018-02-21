@@ -23,6 +23,22 @@ class ExchangeWrapper:
         self.apikey = apikey
         self.secret = secret
 
+    @property
+    @abc.abstractmethod
+    def name(self):
+        '''lowercase name of the exchange.'''
+        self.name
+
+    @property
+    @abc.abstractmethod
+    def url(self):
+        self.url
+
+    @property
+    @abc.abstractmethod
+    def delimiter(self):
+        self.delimiter
+
     @abc.abstractmethod
     def get_nonce(self):
         raise NotImplementedError
