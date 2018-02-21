@@ -6,6 +6,10 @@ Standardized common API for several cryptocurrency exchanges.
 
 ## Install
 
+`pip install cryptotik`
+
+or latest development version:
+
 `pip install git+git://github.com/peerchemist/cryptotik.git`
 
 ## Examples
