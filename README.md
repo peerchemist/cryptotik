@@ -18,8 +18,6 @@ Standardized common API for several cryptocurrency exchanges.
 | www.cryptopia.co.nz | Done | Done              | Done               | TODO         | Done  |
 | [hitbtc.com](https://hitbtc.com/)          | Done | Done              | Done                 | TODO       | Done  |
 | www.kraken.com      | Done | Done              | Done               | TODO         | Done  |
-| www.livecoin.net    | Done | Done              | Done               | TODO         | Done  |
-| www.okcoin.cn       | Done | Done              | Done               | TODO         | Done  |
 | [poloniex.com](https://poloniex.com/)        | Done | Done              | Done               | TODO         | Done  |
 | [therocktrading.com](https://therocktrading.com/)  | Done | Done              | Done               | TODO         | Done  |
 | [wex.nz](https://wex.nz/)              | Done | Done              | Done               | TODO         | Done  |
