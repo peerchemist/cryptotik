@@ -13,17 +13,17 @@ Standardized common API for several cryptocurrency exchanges.
 | Exchange            | API  | Public Methods    | Private Methods    | Raw Methods| Tests |
 |---------------------|------|-------------------|--------------------|------------|-------|
 | www.binance.com     | Done | Done              | Done               | TODO       | Done  |
-| bitkonan.com        | Done | Done              | Done               | TODO       | Done  |
+| [bitkonan.com](https://bitkonan.com/)        | Done | Done              | Done               | TODO       | Done  |
 | www.bitstamp.net    | Done | Done              | Done               | TODO       | Done  |
-| bittrex.com         | Done | Done              | Done               | TODO       | Done  |
+| [bittrex.com](https://bittrex.com/)         | Done | Done              | Done               | TODO       | Done  |
 | www.cryptopia.co.nz | Done | Done              | Done               | TODO       | Done  |
-| hitbtc.com          | Done | Done              | Done               | TODO       | Done  |
+| [hitbtc.com](https://hitbtc.com/)          | Done | Done              | Done               | TODO       | Done  |
 | www.kraken.com      | Done | Done              | Done               | TODO       | Done  |
 | www.livecoin.net    | Done | Done              | Done               | TODO       | Done  |
 | www.okcoin.cn       | Done | Done              | Done               | TODO       | Done  |
-| poloniex.com        | Done | Done              | Done               | TODO       | Done  |
-| therocktrading.com  | Done | Done              | Done               | TODO       | Done  |
-| wex.nz              | Done | Done              | Done               | TODO       | Done  |
+| [poloniex.com](https://poloniex.com/)        | Done | Done              | Done               | TODO       | Done  |
+| [therocktrading.com](https://therocktrading.com/)  | Done | Done              | Done               | TODO       | Done  |
+| [wex.nz](https://wex.nz/)              | Done | Done              | Done               | TODO       | Done  |
 
 
 ## Examples
