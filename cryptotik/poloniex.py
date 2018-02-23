@@ -111,6 +111,10 @@ class Poloniex(ExchangeWrapper):
         if "error" in response.json().keys():
             raise APIError(response.json()['error'])
 
+    def _generate_signature(self, pdata):
+
+        return hmac.new(self.secret, pdata, hashlib.sha512).hexdigest()
+
     def api(self, params):
         '''API calls'''
 
@@ -136,7 +140,7 @@ class Poloniex(ExchangeWrapper):
         data["nonce"] = self.get_nonce()  # add nonce to post data
         pdata = requests.compat.urlencode(data).encode("utf-8")
         self.headers.update(
-            {"Sign": hmac.new(self.secret, pdata, hashlib.sha512).hexdigest(),
+            {"Sign": self._generate_signature(pdata),
              "Key": self.apikey
              })
 
