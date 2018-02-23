@@ -47,6 +47,11 @@ class Kraken(ExchangeWrapper):
         if response.json()['error']:
             raise APIError(response.json()['error'])
 
+    def _generate_signature(self, message):
+
+        sig = hmac.new(base64.b64decode(self.secret), message, hashlib.sha512)
+        return base64.b64encode(sig.digest()).decode()
+
     def api(self, url, params=None):
         '''call api'''
 
@@ -77,14 +82,12 @@ class Kraken(ExchangeWrapper):
         postdata = requests.compat.urlencode(data)
         encoded = (str(data['nonce']) + postdata).encode()
         message = urlpath.encode() + hashlib.sha256(encoded).digest()
-        signature = hmac.new(base64.b64decode(self.secret),
-                    message, hashlib.sha512)
-        sigdigest = base64.b64encode(signature.digest())
+        signature = self._generate_signature(message)
 
         try:
             result = self.api_session.post(url, data=data, headers={
                                            'API-Key': self.apikey,
-                                           'API-Sign': sigdigest.decode()},
+                                           'API-Sign': signature},
                                            timeout=self.timeout,
                                            proxies=self.proxy)
 
