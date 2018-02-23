@@ -77,6 +77,12 @@ class Bitstamp(ExchangeWrapper):
             except (KeyError, TypeError):
                 pass
 
+    def _generate_signature(self, message):
+
+        return hmac.new(self._secret.encode('utf-8'),
+                        msg=message.encode('utf-8'),
+                        digestmod=hashlib.sha256).hexdigest().upper()
+
     def api(self, command):
         """call remote API"""
 
@@ -101,12 +107,7 @@ class Bitstamp(ExchangeWrapper):
         nonce = self.get_nonce()
         data['key'] = self._apikey
         message = str(nonce) + self._customer_id + self._apikey
-
-        sig = hmac.new(self._secret.encode('utf-8'),
-                       msg=message.encode('utf-8'),
-                       digestmod=hashlib.sha256).hexdigest().upper()
-
-        data['signature'] = sig
+        data['signature'] = self._generate_signature(message)
         data['nonce'] = nonce
 
         try:
