@@ -48,6 +48,11 @@ class ExchangeWrapper:
         '''verify if API responded properly and raise apropriate error.'''
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def _generate_signature(self):
+        '''generate signed signature for the private api methods.'''
+        raise NotImplementedError
+
     @abc.abstractclassmethod
     def format_pair(self):
         raise NotImplementedError
