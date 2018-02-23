@@ -71,6 +71,12 @@ class Wex(ExchangeWrapper):
         if not response.json()['success'] is 1:
             raise APIError(response.json()['error'])
 
+    def _generate_signature(self, params):
+
+        return hmac.new(self.secret,
+                        params.encode("utf-8"),
+                        hashlib.sha512).hexdigest()
+
     def api(self, command):
         """call remote API"""
 
@@ -92,13 +98,9 @@ class Wex(ExchangeWrapper):
         params["nonce"] = self.get_nonce()
         encoded_params = requests.compat.urlencode(params)
 
-        sig = hmac.new(self.secret,
-                       encoded_params.encode("utf-8"),
-                       hashlib.sha512)
-
         self.headers.update({
             "Key": self.apikey,
-            "Sign": sig.hexdigest()
+            "Sign": self._generate_signature(encoded_params)
         })
 
         try:
