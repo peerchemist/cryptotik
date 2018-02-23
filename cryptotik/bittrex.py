@@ -66,6 +66,10 @@ class Bittrex(ExchangeWrapper):
         if not response.json()['success'] is True:
             raise APIError(response.json()['message'])
 
+    def _generate_signature(self, url):
+
+        return hmac.new(self.secret, url.encode(), hashlib.sha512).hexdigest()
+
     def api(self, url, params):
         """call api"""
 
@@ -86,11 +90,8 @@ class Bittrex(ExchangeWrapper):
 
         params.update({"apikey": self.apikey, "nonce": self.get_nonce()})
         url += "?" + requests.compat.urlencode(params)
-        self.headers.update({"apisign": hmac.new(self.secret, url.
-                                                 encode(), hashlib.sha512
-                                                 ).hexdigest()
+        self.headers.update({"apisign": self._generate_signature(url)
                              })
-
         try:
             response = self.api_session.get(url, headers=self.headers,
                                             timeout=self.timeout,
