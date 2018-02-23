@@ -49,6 +49,12 @@ class TheRock(ExchangeWrapper):
         except KeyError:
             pass
 
+    def _generate_signature(self, data):
+
+        return hmac.new(self.secret,
+                        data.encode("utf-8"),
+                        hashlib.sha512).hexdigest()
+
     def api(self, url):
         '''call api'''
 
@@ -74,13 +80,10 @@ class TheRock(ExchangeWrapper):
         if params:
             url += "?" + requests.compat.urlencode(sorted(params.items()))
         nonce_plus_url = str(nonce) + url
-        signature = hmac.new(self.secret,
-                             nonce_plus_url.encode("utf-8"),
-                             hashlib.sha512).hexdigest()
 
         head = {"Content-Type": "application/json",
                 "X-TRT-KEY": self.apikey,
-                "X-TRT-SIGN": signature,
+                "X-TRT-SIGN": self._generate_signature(nonce_plus_url),
                 "X-TRT-NONCE": nonce}
 
         try:
