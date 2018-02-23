@@ -42,6 +42,11 @@ class Binance(ExchangeWrapper):
         if "msg" in response.json() and "code" in response.json():
             raise APIError(response.json()['msg'])
 
+    def _generate_signature(self, query):
+
+        return hmac.new(self.secret, query,
+                        hashlib.sha256).hexdigest()
+
     def api(self, url, params):
         '''call api'''
 
@@ -61,11 +66,7 @@ class Binance(ExchangeWrapper):
 
         query = requests.compat.urlencode(sorted(params.items()))
         query += "&timestamp={}".format(int(time.time() * 1000))
-
-        signature = hmac.new(self.secret, query.encode("utf-8"),
-                             hashlib.sha256).hexdigest()
-
-        query += "&signature={}".format(signature)
+        query += "&signature={}".format(self._generate_signature(query.encode('utf-8')))
 
         try:
             response = self.api_session.request(http_method,
