@@ -59,6 +59,9 @@ class Hitbtc(ExchangeWrapper):
         if response.json()['error']:
             raise APIError(response.json()['error'])
 
+    def _generate_signature(self):
+        pass  # not required for this exchange
+
     def api(self, url, params={}):
         '''call api'''
 
