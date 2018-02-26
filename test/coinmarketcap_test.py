@@ -5,8 +5,8 @@ mcap = CoinMarketCap()
 
 def test_get_ticker():
 
-    assert isinstance(mcap.get_ticker('peercoin'), dict)
-    assert 'price_eur' in mcap.get_ticker('peercoin', 'eur')
+    assert isinstance(mcap.get_ticker('PPC'), list)
+    assert 'price_eur' in mcap.get_ticker('PPC', 'eur')[0]
 
 def test_get_global():
     
