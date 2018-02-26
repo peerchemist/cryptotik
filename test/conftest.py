@@ -6,6 +6,8 @@ def pytest_addoption(parser):
                      help="API secret.")
     parser.addoption("--id", action="store",
                      help="API user id.")
+    parser.addoption("--exchange", action="store",
+                     help="Class name for exchange module")
 
 
 def pytest_generate_tests(metafunc):
