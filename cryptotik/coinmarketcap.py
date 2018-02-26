@@ -39,19 +39,20 @@ class CoinMarketCap():
 
         return result.json()
 
-    def get_ticker(self, coin, convert_currency=None):
+    def get_ticker(self, coin=None, convert_currency=None):
         ''' Get ticker for <currency>, convert price to <convert_currency> if needed
             Important: currency name is used instead of symbol'''
 
         if not convert_currency:
-            l = self.api(self.url + "ticker/")
+            l = self.api(self.url + "/ticker/?limit=0")
             if coin:
                 l = [i for i in l if i['symbol'] == coin.upper()]
             return l
 
         if convert_currency:
             l = self.api(self.url + "ticker/" +
-                            "?convert=" + convert_currency.upper())
+                            "?convert=" + convert_currency.upper() +
+                            "&limit=0")
             if coin:
                 l = [i for i in l if i['symbol'] == coin.upper()]
             return l
