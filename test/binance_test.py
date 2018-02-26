@@ -1,13 +1,15 @@
 import pytest
 from cryptotik.binance import Binance
 from decimal import Decimal
+from cryptotik.common import APIError
 
 private = pytest.mark.skipif(
     not pytest.config.getoption("--apikey"),
     reason="needs --apikey option to run."
 )
 
-bnb = Binance()
+bnb = Binance(pytest.config.getoption("--apikey"), 
+            pytest.config.getoption("--secret"))
 
 
 def test_format_pair():
@@ -81,8 +83,7 @@ def test_get_market_spread():
 @private
 def test_get_balances(apikey, secret):
 
-    bin = Binance(apikey, secret)
-    balances = bin.get_balances()
+    balances = bnb.get_balances()
 
     assert isinstance(balances, list)
 
@@ -90,53 +91,37 @@ def test_get_balances(apikey, secret):
 @private
 def test_get_deposit_address(apikey, secret):
 
-    bin = Binance(apikey, secret)
-
-    assert isinstance(bin.get_deposit_address("eth"), dict)
+    assert isinstance(bnb.get_deposit_address("eth"), dict)
 
 
 @private
 def test_get_withdraw_history(apikey, secret):
 
-    bin = Binance(apikey, secret)
-
-    assert isinstance(bin.get_withdraw_history("eth"), list)
+    assert isinstance(bnb.get_withdraw_history("eth"), list)
 
 
-@pytest.mark.xfail
 @private
 def test_withdraw(apikey, secret):
 
-    print('This is made to fail because of lack of permissions' + 
-            ', so make sure your testing API key does not allow that.')
-    bin = Binance(apikey, secret)
-
-    with pytest.raises(AssertionError):
-        bin.withdraw("eth", 1, 'PpcEaT3Rd0NTsendftMKDAKr331DXgHe3L')
+    assert bnb.withdraw("eth", 1, 'PpcEaT3Rd0NTsendftMKDAKr331DXgHe3L')['msg'] == 'Insufficient balance.'
 
 
 @private
 def test_buy_limit(apikey, secret):
 
-    bin = Binance(apikey, secret)
-
-    with pytest.raises(AssertionError):
-        bin.buy_limit("eth_btc", 0.05, 1)
+    with pytest.raises(APIError):
+        bnb.buy_limit("eth_btc", 0.05, 1)
 
 
 @private
 def test_sell_limit(apikey, secret):
 
-    bin = Binance(apikey, secret)
-
-    with pytest.raises(AssertionError):
-        bin.sell_limit("ltc_btc", 1, 0.25)
+    with pytest.raises(APIError):
+        bnb.sell_limit("ltc_btc", 1, 0.25)
 
 
 @private
 def test_cancel_order(apikey, secret):
 
-    bin = Binance(apikey, secret)
-
-    with pytest.raises(AssertionError):
-        bin.cancel_order('invalid', 'btc')
+    with pytest.raises(APIError):
+        bnb.cancel_order('invalid', 'btc')
