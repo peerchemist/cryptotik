@@ -67,30 +67,78 @@ class ExchangeWrapper:
 
     @abc.abstractmethod
     def get_markets(self):
+        '''
+        :params:
+            -
+        :return: 
+            list -> str
+            example: ['bcheur', 'bchusd', 'bchxbt']
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_market_ticker(self):
+    def get_market_ticker(self, pair):
+        '''
+        :params:
+            pair: str
+        :return: 
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': Decimal, 'bid': Decimal, 'last': Decimal}
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_market_trade_history(self):
+    def get_market_trade_history(self, pair, limit):
+        '''
+        :params:
+            pair: str, limit: int
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': Decimal,
+                        'amount': Decimal,
+                        'trade_id': any]
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_market_orders(self):
+    def get_market_orders(self, pair, limit):
+        '''
+        :params:
+            pair: str, limit: int
+        :return:
+            dict['bids': list, 'asks': list]
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_market_depth(self):
+    def get_market_depth(self, pair):
+        '''
+        :params:
+            pair: str
+        :return:
+            dict['bids': Decimal, 'asks': Decimal]
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_market_spread(self):
+    def get_market_spread(self, pair):
+        '''
+        :params:
+            pair: str
+        :return:
+            Decimal
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_market_volume(self):
+    def get_market_volume(self, pair):
+        '''
+        :params:
+            pair: str
+        :return:
+            float
+        '''
         raise NotImplementedError
 
     @abc.abstractmethod
