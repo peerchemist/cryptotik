@@ -13,7 +13,7 @@ from decimal import Decimal
 class Cryptopia(ExchangeWrapper):
 
     url = 'https://www.cryptopia.co.nz/'
-    namre = 'cryptopia'
+    name = 'cryptopia'
     delimiter = "_"
     headers = headers
     taker_fee, maker_fee = 0.00, 0.00
@@ -58,6 +58,18 @@ class Cryptopia(ExchangeWrapper):
         if not response.json()['Success'] or response.json()['Error']:
             raise APIError(response.json()['Error'])
 
+    def _generate_signature(self, url, params):
+        
+        nonce = str(self.get_nonce())
+        md5 = hashlib.md5()
+        md5.update(json.dumps(params).encode('utf-8'))
+        rcb64 = base64.b64encode(md5.digest()).decode('utf-8')
+        signature = self.apikey + "POST" + requests.compat.quote_plus(url).lower() + nonce + rcb64 
+        hmacsignature = base64.b64encode(hmac.new(base64.b64decode(self.secret),
+                        signature.encode('utf-8'),
+                        hashlib.sha256).digest())
+        return "amx " + self.apikey + ":" + hmacsignature.decode('utf-8') + ":" + nonce
+
     def api(self, url, params=None):
         '''call api'''
 
@@ -70,24 +82,14 @@ class Cryptopia(ExchangeWrapper):
             print(e)
 
         self._verify_response(result)
-        return result.json()['Data']
+        return result.json()['Data']   
 
     def private_api(self, url, params={}):
         '''handles private api methods'''
 
-        nonce = str(self.get_nonce())
-        md5 = hashlib.md5()
-        md5.update(json.dumps(params).encode('utf-8'))
-        rcb64 = base64.b64encode(md5.digest()).decode('utf-8')
-        signature = self.apikey + "POST" + requests.compat.quote_plus(url).lower() + nonce + rcb64 
-        hmacsignature = base64.b64encode(hmac.new(base64.b64decode(self.secret),
-                        signature.encode('utf-8'),
-                        hashlib.sha256).digest())
-        header_value = "amx " + self.apikey + ":" + hmacsignature.decode('utf-8') + ":" + nonce
-
         try:
             result = self.api_session.post(url, json=params,
-                                           headers={'Authorization': header_value},
+                                           headers={'Authorization': self._generate_signature(url, params)},
                                            timeout=self.timeout, proxies=self.proxy)
             result.raise_for_status()
         except requests.exceptions.HTTPError as e:
