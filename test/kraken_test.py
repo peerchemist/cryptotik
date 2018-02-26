@@ -2,6 +2,7 @@ import pytest
 from cryptotik.kraken import Kraken
 from decimal import Decimal
 import time
+from cryptotik.common import APIError
 
 
 private = pytest.mark.skipif(
@@ -64,55 +65,41 @@ def test_get_market_spread():
 
 @private
 def test_get_balances(apikey, secret):
-
     
     balances = kraken.get_balances()
-
     assert isinstance(balances, dict)
 
 @private
 def test_get_deposit_address(apikey, secret):
-    
 
     assert isinstance(kraken.get_deposit_address("bch"), str)
 
 @private
 def test_get_withdraw_history(apikey, secret):
-    
-    
 
     assert isinstance(kraken.get_withdraw_history("bch"), list)
 
 @private
 def test_withdraw(apikey, secret):
-    
-    print('This is made to fail because of fake address')
-    
 
-    response = kraken.withdraw("eur", 0.01, 'fake_address')
-    assert response['error'][0] == 'EFunding:Unknown withdraw key'
+    with pytest.raises(APIError):
+        kraken.withdraw("eur", 0.01, 'fake_address')
 
 @private
 def test_buy(apikey, secret):
     
-    
-
-    response = kraken.buy_limit("bch-eur", 0.0005, 0.0005)
-    assert response['error'][0] == 'EOrder:Invalid price:BCHEUR price can only be specified up to 1 decimals.'
+    with pytest.raises(APIError):
+        kraken.buy_limit("bch-eur", 0.0005, 0.0005)
 
 @private
 def test_sell_limit(apikey, secret):
     
-    
-
-    response = kraken.sell_limit("bch-eur", 0.0005, 0.0005)
-    assert response['error'][0] == 'EOrder:Invalid price:BCHEUR price can only be specified up to 1 decimals.'
+    with pytest.raises(APIError):
+        kraken.sell_limit("bch-eur", 0.0005, 0.0005)
 
 
 @private
 def test_cancel_order(apikey, secret):
     
-    
-
-    response = kraken.cancel_order('invalid')
-    assert response['error'][0] == 'EOrder:Invalid order'
+    with pytest.raises(APIError):
+        kraken.cancel_order('invalid')
