@@ -284,3 +284,9 @@ class Bittrex(ExchangeWrapper):
 
         return self.private_api(self.url + "account" + "/getdeposithistory",
                                 params=params)["result"]
+
+
+class BittrexNormalized(Bittrex):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(BittrexNormalized, self).__init__(apikey, secret, timeout, proxy)

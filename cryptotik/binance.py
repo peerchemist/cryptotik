@@ -286,3 +286,9 @@ class Binance(ExchangeWrapper):
 
     def get_nonce(self):
         pass
+
+
+class BinanceNormalized(Binance):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(BinanceNormalized, self).__init__(apikey, secret, timeout, proxy)

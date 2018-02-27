@@ -331,3 +331,9 @@ class Wex(ExchangeWrapper):
             return {k: v for k, v in hist.items() if v['currency'] == coin.upper()}
 
         return hist
+
+
+class WexNormalized(Wex):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(WexNormalized, self).__init__(apikey, secret, timeout, proxy)

@@ -242,3 +242,9 @@ class Hitbtc(ExchangeWrapper):
                                     'side': 'buy', 'quantity': quantity,
                                     'price': price},
                                 http_method='POST')
+
+
+class HitbtcNormalized(Hitbtc):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(HitbtcNormalized, self).__init__(apikey, secret, timeout, proxy)

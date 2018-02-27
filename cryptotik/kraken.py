@@ -262,4 +262,10 @@ class Kraken(ExchangeWrapper):
         """cancel all orders"""
 
         for txid in self.get_open_orders():
-              self.cancel_order(txid)
+            self.cancel_order(txid)
+
+
+class KrakenNormalized(Kraken):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(KrakenNormalized, self).__init__(apikey, secret, timeout, proxy)

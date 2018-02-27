@@ -257,3 +257,9 @@ class TheRock(ExchangeWrapper):
         return self.private_api(self.url + "funds/" + symbol +
                                 "/orders/remove_all",
                                 http_method='DELETE')
+
+
+class TheRockNormalized(TheRock):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(TheRockNormalized, self).__init__(apikey, secret, timeout, proxy)

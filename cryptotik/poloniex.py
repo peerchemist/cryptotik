@@ -575,3 +575,9 @@ class Poloniex(ExchangeWrapper):
                                  'fromAccount': fromac,
                                  'toAccount': toac
                                  })
+
+
+class PoloniexNormalized(Poloniex):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(PoloniexNormalized, self).__init__(apikey, secret, timeout, proxy)

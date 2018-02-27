@@ -315,3 +315,9 @@ class Bitstamp(ExchangeWrapper):
 
         return self.private_api('v2/withdrawal-requests/',
                                 data={'timedelta': timedelta})
+
+
+class BitstampNormalized(Bitstamp):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(BitstampNormalized, self).__init__(apikey, secret, customer_id, timeout, proxy)
