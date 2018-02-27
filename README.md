@@ -3,7 +3,6 @@ Standardized common API for several cryptocurrency exchanges.
 Cryptotik is python2 and python3 compatible collection of cryptocurrency exchange wrappers.
 Main goal of cryptotik is to deliver unified common interface to some of the most popular cryptocurrency exchanges, cryptotik accommplishes that by standardizing names of the methods and expected inputs and outputs.
 
-
 [![PyPI](https://img.shields.io/pypi/l/cryptotik.svg?style=flat-square)]()
 [![PyPI](https://img.shields.io/pypi/v/cryptotik.svg?style=flat-square)](https://pypi.python.org/pypi/cryptotik/)
 
