@@ -39,6 +39,8 @@ class Bitkonan(ExchangeWrapper):
     headers = headers
     _markets = 'btc-usd', 'ltc-usd'
     maker_fee, taker_fee = 0.0029, 0.0029
+    quote_order = 0
+    base_currencies = ['usd', 'eur']
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -50,6 +52,9 @@ class Bitkonan(ExchangeWrapper):
         # concurrency multi-threaded apps always call with the largest nonce).
         self._nonce = max(int(time.time()), nonce)
         return self._nonce
+
+    def get_base_currencies(self):
+        raise NotImplementedError
 
     @classmethod
     def format_pair(cls, pair):
