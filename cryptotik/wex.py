@@ -3,7 +3,7 @@
 import requests
 from decimal import Decimal
 import time
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
 import hmac
 import hashlib
 
@@ -39,6 +39,20 @@ class Wex(ExchangeWrapper):
     case = "lower"
     headers = headers
     maker_fee, taker_fee = 0.002, 0.002
+    base_currencies = ['eur', 'dsh', 'ltc', 'usd', 'rur', 'zec', 'btc']
+    quote_order = 0
+
+    def get_base_currencies(self):
+        '''return base markets supported by this exchange.'''
+
+        markets = [i for i in self.get_markets() if "et" not in i]  # drop tokens
+        bases = list(set([i.split('_')[1].lower() for i in markets]))
+        try:
+            assert sorted(bases) == sorted(self.base_currencies)
+        except AssertionError:
+            raise OutdatedBaseCurrenciesError('Update the hardcoded base currency clist!',
+                                              {'actual': bases,
+                                               'hardcoded': self.base_currencies})
 
     def get_nonce(self):
         '''return nonce integer'''

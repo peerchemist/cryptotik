@@ -16,6 +16,11 @@ def test_format_pair():
     assert wex.format_pair("ppc-usd") == "ppc_usd"
 
 
+def test_get_base_currencies():
+
+    wex.get_base_currencies()
+
+
 def test_get_markets():
     '''test get_markets'''
 
