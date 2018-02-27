@@ -18,6 +18,8 @@ class Binance(ExchangeWrapper):
     delimiter = ""
     headers = headers
     taker_fee, maker_fee = 0.001, 0.001
+    base_currencies = ['btc', 'eth', 'bnb', 'usdt']
+    quote_order = 0
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
 
@@ -35,6 +37,9 @@ class Binance(ExchangeWrapper):
             self.timeout = timeout
 
         self.api_session = requests.Session()
+
+    def get_base_currencies(self):
+        raise NotImplementedError
 
     def _verify_response(self, response):
         '''verify if API responded properly and raise apropriate error.'''
