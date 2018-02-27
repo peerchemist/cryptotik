@@ -16,6 +16,11 @@ def test_format_pair():
     assert btrx.format_pair("btc_ppc") == "btc-ppc"
 
 
+def test_get_base_currencies():
+
+    btrx.get_base_currencies()
+
+
 def test_get_markets():
     '''test get_markets'''
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
 import time
 import hmac
 import hashlib
@@ -19,6 +19,8 @@ class Bittrex(ExchangeWrapper):
                         'buymarket', 'buylimit')
     public_commands = ('getbalances', 'getbalance', 'getdepositaddress',
                        'withdraw')
+    base_currencies = ['btc', 'eth', 'usdt']
+    quote_order = 1
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize bittrex class'''
@@ -37,6 +39,17 @@ class Bittrex(ExchangeWrapper):
             self.timeout = timeout
 
         self.api_session = requests.Session()
+
+    def get_base_currencies(self):
+        '''return base markets supported by this exchange.'''
+
+        bases = list(set([i.split('-')[0] for i in self.get_markets()]))
+        try:
+            assert sorted(bases) == sorted(self.base_currencies)
+        except AssertionError:
+            raise OutdatedBaseCurrenciesError('Update the hardcoded base currency clist!',
+                                              {'actual': bases,
+                                               'hardcoded': self.base_currencies})
 
     def get_nonce(self):
         '''return nonce integer'''
