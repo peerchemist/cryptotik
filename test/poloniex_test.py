@@ -18,6 +18,11 @@ def test_format_pair():
     assert polo.format_pair("btc-ppc") == "BTC_PPC"
 
 
+def test_get_base_currencies():
+
+    polo.get_base_currencies()
+
+
 def test_get_markets():
     '''test get_markets'''
 

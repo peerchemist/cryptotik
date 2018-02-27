@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
 import datetime, time
 import requests
 import hmac, hashlib
@@ -54,6 +54,19 @@ class Poloniex(ExchangeWrapper):
     delimiter = "_"
     case = "upper"
     headers = headers
+    base_currencies = ['btc', 'eth', 'usdt', 'xmr']
+    quote_order = 1
+
+    def get_base_currencies(self):
+        '''return base markets supported by this exchange.'''
+
+        bases = list(set([i.split('_')[0].lower() for i in self.get_markets()]))
+        try:
+            assert sorted(bases) == sorted(self.base_currencies)
+        except AssertionError:
+            raise OutdatedBaseCurrenciesError('Update the hardcoded base currency clist!',
+                                              {'actual': bases,
+                                               'hardcoded': self.base_currencies})
 
     def get_nonce(self):
         '''return nonce integer'''
