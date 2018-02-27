@@ -10,7 +10,7 @@ from cryptotik.common import APIError, headers, ExchangeWrapper
 from decimal import Decimal
 
 
-class Cryptopia():
+class Cryptopia(ExchangeWrapper):
 
     url = 'https://www.cryptopia.co.nz/'
     name = 'cryptopia'
