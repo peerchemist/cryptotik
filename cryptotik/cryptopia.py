@@ -59,7 +59,7 @@ class Cryptopia(ExchangeWrapper):
             raise APIError(response.json()['Error'])
 
     def _generate_signature(self, url, params):
-        
+
         nonce = str(self.get_nonce())
         md5 = hashlib.md5()
         md5.update(json.dumps(params).encode('utf-8'))
