@@ -70,6 +70,9 @@ class Bitkonan(ExchangeWrapper):
     def _verify_response(self, response):
         raise NotImplementedError
 
+    def _generate_signature(self):
+        raise NotImplementedError
+
     def api(self, command, params={}):
         """call remote API"""
 
