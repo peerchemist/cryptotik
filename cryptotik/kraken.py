@@ -10,19 +10,25 @@ from re import findall
 from decimal import Decimal
 
 
-class Kraken(ExchangeWrapper):
+class Kraken():
 
     url = 'https://api.kraken.com/0/'
     name = 'kraken'
     delimiter = ""
     headers = headers
     taker_fee, maker_fee = 0.00, 0.00
+    quote_order = 0
+    base_currencies = ['xbt', 'eur', 'usd', 'eth', 'cad', 'gbp', 'jpy']
+
 
     @classmethod
     def format_pair(cls, pair):
         """format the pair argument to format understood by remote API."""
 
         return "".join(findall(r"[^\W\d_]+|\d+", pair)).upper()
+
+    def get_base_currencies(self):
+        raise NotImplementedError
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize class'''
