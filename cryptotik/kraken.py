@@ -10,7 +10,7 @@ from re import findall
 from decimal import Decimal
 
 
-class Kraken():
+class Kraken(ExchangeWrapper):
 
     url = 'https://api.kraken.com/0/'
     name = 'kraken'
