@@ -10,13 +10,15 @@ from cryptotik.common import APIError, headers, ExchangeWrapper
 from decimal import Decimal
 
 
-class Cryptopia(ExchangeWrapper):
+class Cryptopia():
 
     url = 'https://www.cryptopia.co.nz/'
     name = 'cryptopia'
-    delimiter = "_"
+    delimiter = "/"
     headers = headers
     taker_fee, maker_fee = 0.00, 0.00
+    quote_order = 0
+    base_currencies = ['btc']
 
     @classmethod
     def format_pair(cls, pair):
@@ -28,6 +30,10 @@ class Cryptopia(ExchangeWrapper):
             return pair.upper()
         else:
             return pair
+
+    def get_base_currencies(self):
+        '''return base markets supported by this exchange.'''
+        raise NotImplementedError
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize class'''
