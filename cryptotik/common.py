@@ -1,8 +1,14 @@
 import abc
 import six
 
+
 class APIError(Exception):
     "Raise exception when the remote API returned an error."
+    pass
+
+
+class OutdatedBaseCurrenciesError(Exception):
+    "Raise exception when hardcoded base currencies are outdated."
     pass
 
 
@@ -28,6 +34,26 @@ class ExchangeWrapper:
     def name(self):
         '''lowercase name of the exchange.'''
         self.name
+
+    @property
+    @abc.abstractmethod
+    def quote_order(self):
+        '''does quote come before or after the delimiter [0, 1]'''
+        self.quote_order
+
+    @property
+    @abc.abstractmethod
+    def base_currencies(self):
+        '''The base currency – also called the transaction currency -
+        is the first currency appearing in a currency pair quotation,
+        followed by the second part of the quotation, called the quote
+        currency or the counter currency.'''
+        self.base_currencies
+
+    @abc.abstractmethod
+    def get_base_currencies(self):
+        '''get the list of base currencies on this exchange.'''
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod
