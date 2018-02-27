@@ -44,6 +44,8 @@ class Bitstamp(ExchangeWrapper):
     headers = headers
     _markets = 'btcusd, btceur, eurusd, xrpusd, xrpeur, xrpbtc, ltcusd, ltceur, ltcbtc, ethusd, etheur, ethbtc'.split(', ')
     maker_fee, taker_fee = 0.002, 0.002
+    quote_order = 0
+    base_currencies = ['usd', 'eur', 'btc']
 
     def get_nonce(self):
         '''return nonce integer'''
@@ -55,6 +57,9 @@ class Bitstamp(ExchangeWrapper):
         # concurrency multi-threaded apps always call with the largest nonce).
         self._nonce = max(int(time.time() * 1000000), nonce)
         return self._nonce
+
+    def get_base_currencies(self):
+        raise NotImplementedError
 
     @classmethod
     def format_pair(cls, pair):
