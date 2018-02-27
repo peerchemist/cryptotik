@@ -15,6 +15,8 @@ class TheRock(ExchangeWrapper):
     name = 'therock'
     delimiter = ""
     headers = headers
+    quote_order = 0
+    base_currencies = ['eur', 'btc']
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize bittrex class'''
@@ -33,6 +35,9 @@ class TheRock(ExchangeWrapper):
             self.timeout = timeout
 
         self.api_session = requests.Session()
+
+    def get_base_currencies(self):
+        raise NotImplementedError
 
     @classmethod
     def format_pair(self, pair):
