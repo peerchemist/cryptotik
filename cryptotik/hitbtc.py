@@ -15,8 +15,8 @@ class Hitbtc(ExchangeWrapper):
     name = "hitbtc"
     delimiter = ""
     headers = headers
-
-    api_session = requests.Session()
+    base_currencies = ['btc', 'eth', 'usd']
+    quote_order = 0
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         '''initialize object from Hitbtc class'''
@@ -53,6 +53,9 @@ class Hitbtc(ExchangeWrapper):
 
         pair = pair.replace("-", cls.delimiter).upper()
         return pair
+
+    def get_base_currencies(self):
+        raise NotImplementedError
 
     def _verify_response(self, response):
 
