@@ -297,3 +297,18 @@ class TheRockNormalized(TheRock):
                     quotes.append(i.replace(base, '') + '-' + base)
 
         return quotes
+
+    def get_market_ticker(self, market):
+        '''
+        :return :
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': float, 'bid': float, 'last': float}
+        '''
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['ask'],
+            'bid': ticker['bid'],
+            'last': ticker['last']
+        }
