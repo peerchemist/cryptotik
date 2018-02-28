@@ -3,6 +3,7 @@
 import requests
 from decimal import Decimal
 import time
+from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
 import hmac
 import hashlib
@@ -337,3 +338,22 @@ class WexNormalized(Wex):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(WexNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+    @classmethod
+    def format_pair(self, market_pair):
+        """
+        Expected input is quote - base.
+        Normalize the pair inputs and
+        format the pair argument to a format understood by the remote API."""
+
+        market_pair = market_pair.lower()  # wex takes lowercase
+
+        if "-" not in market_pair:
+            raise InvalidDelimiterError('Agreed upon delimiter is "-".')
+
+        quote, base = market_pair.split('-')
+
+        if base not in self.base_currencies:
+            raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
+
+        return quote + self.delimiter + base  # for wex quote comes first
