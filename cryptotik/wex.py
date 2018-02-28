@@ -366,6 +366,12 @@ class WexNormalized(Wex):
 
         return quote + self.delimiter + base  # for wex quote comes first
 
+    def get_markets(self):
+
+        upstream = super().get_markets()
+
+        return [i.replace('_', ('-')) for i in upstream if "et_" not in i]
+
     def get_market_ticker(self, market):
 
         ticker = super().get_market_ticker(market)
