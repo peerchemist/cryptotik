@@ -2,11 +2,12 @@
 
 import requests
 from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
-from common import is_sale, iso_string_to_datetime
+from common import is_sale
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 import time
 import hmac
 import hashlib
+from datetime import datetime
 from decimal import Decimal
 
 
@@ -293,6 +294,15 @@ class BittrexNormalized(Bittrex):
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(BittrexNormalized, self).__init__(apikey, secret, timeout, proxy)
 
+    @staticmethod
+    def _iso_string_to_datetime(ts):
+        '''convert ISO timestamp to unix timestamp'''
+
+        try:
+            return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%f")
+        except:
+            return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+
     @classmethod
     def format_pair(self, market_pair):
         """
@@ -336,7 +346,7 @@ class BittrexNormalized(Bittrex):
         for data in upstream:
 
             downstream.append({
-                'timestamp': iso_string_to_datetime(data['TimeStamp']),
+                'timestamp': self._iso_string_to_datetime(data['TimeStamp']),
                 'is_sale': is_sale(data['OrderType']),
                 'rate': data['Price'],
                 'amount': data['Quantity'],
