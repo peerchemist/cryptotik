@@ -81,7 +81,8 @@ class ExchangeWrapper:
         '''generate signed signature for the private api methods.'''
         raise NotImplementedError
 
-    @abc.abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def format_pair(self):
         raise NotImplementedError
 
