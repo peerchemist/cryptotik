@@ -142,7 +142,7 @@ class TheRock(ExchangeWrapper):
         r = self.api(self.url + "funds")['funds']
         pairs = [i["id"].lower() for i in r]
 
-        return pairs
+        return [i for i in pairs if not i.startswith('noku') and not i.endswith('eurn')]
 
     def get_market_volume(self, pair):
         ''' return volume of last 24h'''
@@ -284,3 +284,16 @@ class TheRockNormalized(TheRock):
             return base + self.delimiter + quote  # unless it's xrp, which comes second
         else:
             return quote + self.delimiter + base  # for therock quote comes first
+
+    def get_markets(self):
+
+        upstream = super().get_markets()
+
+        quotes = []
+
+        for i in upstream:
+            for base in self.base_currencies:
+                if base in i:
+                    quotes.append(i.replace(base, '') + '-' + base)
+
+        return quotes
