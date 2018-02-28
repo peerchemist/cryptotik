@@ -2,6 +2,7 @@
 
 import requests
 from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
+from common import is_sale, iso_string_to_datetime
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 import time
 import hmac
@@ -326,3 +327,20 @@ class BittrexNormalized(Bittrex):
         ticker = super().get_market_ticker(market)
 
         return {k.lower(): v for k, v in ticker.items()}
+
+    def get_market_trade_history(self, market):
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': iso_string_to_datetime(data['TimeStamp']),
+                'is_sale': is_sale(data['OrderType']),
+                'rate': data['Price'],
+                'amount': data['Quantity'],
+                'trade_id': data['Id']
+            })
+
+        return downstream
