@@ -366,6 +366,16 @@ class WexNormalized(Wex):
 
         return quote + self.delimiter + base  # for wex quote comes first
 
+    def get_market_ticker(self, market):
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['sell'],
+            'bid': ticker['buy'],
+            'last': ticker['last']
+        }
+
     def get_market_trade_history(self, market):
 
         upstream = super().get_market_trade_history(market)
