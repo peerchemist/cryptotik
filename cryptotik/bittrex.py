@@ -12,6 +12,7 @@ class Bittrex(ExchangeWrapper):
 
     name = 'bittrex'
     url = 'https://bittrex.com/api/v1.1/'
+    url2 = 'https://bittrex.com/Api/v2.0/'
     delimiter = "-"
     headers = headers
     taker_fee, maker_fee = 0.0025, 0.0025
@@ -116,6 +117,25 @@ class Bittrex(ExchangeWrapper):
 
         self._verify_response(response)
         return response.json()
+
+    def get_market_ohlcv(self, market, interval, since=None):
+        '''
+        Gets the candles for a <market>.
+        : market - market pair
+        : interval must be in: [“oneMin”, “fiveMin”, “thirtyMin”, “hour”, “day”]
+        : since - unix timestmap
+
+        This method is using the v2 of the Bittrex public API.
+        '''
+
+        if interval not in ['oneMin', 'fiveMin', 'thirtyMin', 'hour', 'day']:
+            raise APIError('Unsupported OHLCV interval.')
+
+        res = self.api(self.url2 + 'pub/market/GetTicks',
+                       params={'marketName': self.format_pair(market),
+                               'tickInterval': interval})['result']
+
+        return res
 
     def get_markets(self):
         '''find out supported markets on this exhange.'''
