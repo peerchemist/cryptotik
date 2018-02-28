@@ -122,8 +122,11 @@ class Poloniex(ExchangeWrapper):
     def _verify_response(self, response):
         '''verify if API responded properly and raise apropriate error.'''
 
-        if "error" in response.json().keys():
-            raise APIError(response.json()['error'])
+        try:
+            if "error" in response.json().keys():
+                raise APIError(response.json()['error'])
+        except AttributeError:  # response has no error key
+            pass
 
     def _generate_signature(self, pdata):
 
