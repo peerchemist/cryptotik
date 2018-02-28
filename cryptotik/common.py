@@ -211,3 +211,14 @@ class ExchangeWrapper:
     @abc.abstractmethod
     def get_withdraw_history(self):
         raise NotImplementedError
+
+
+def is_sale(t):
+    '''if <t> is sale, return True'''
+
+    t = t.lower()
+
+    if t == "sell" or t == "bid":
+        return True
+    else:
+        return False
