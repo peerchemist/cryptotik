@@ -136,6 +136,8 @@ class ExchangeWrapper:
             dict['bids': list[price, quantity],
                  'asks': list[price, quantity]
                 ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
         '''
         raise NotImplementedError
 
