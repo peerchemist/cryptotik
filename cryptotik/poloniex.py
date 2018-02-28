@@ -2,6 +2,7 @@
 
 from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from common import is_sale
 import datetime, time
 import requests
 import hmac, hashlib
@@ -586,6 +587,12 @@ class PoloniexNormalized(Poloniex):
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(PoloniexNormalized, self).__init__(apikey, secret, timeout, proxy)
 
+    @staticmethod
+    def _string_to_datetime(string):
+        '''convert datetime string to datetime object'''
+
+        return datetime.datetime.strptime(string, "%Y-%m-%d %H:%M:%S")
+
     @classmethod
     def format_pair(self, market_pair):
         """
@@ -621,3 +628,20 @@ class PoloniexNormalized(Poloniex):
                 'bid': ticker['highestBid'],
                 'last': ticker['last']
                 }
+
+    def get_market_trade_history(self, market):
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._string_to_datetime(data['date']),
+                'is_sale': is_sale(data['type']),
+                'rate': data['rate'],
+                'amount': data['amount'],
+                'trade_id': data['globalTradeID']
+            })
+
+        return downstream
