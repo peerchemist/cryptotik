@@ -361,6 +361,8 @@ class BittrexNormalized(Bittrex):
             dict['bids': list[price, quantity],
                  'asks': list[price, quantity]
                 ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
         '''
 
         orders = super().get_market_orders(market, depth=20)
