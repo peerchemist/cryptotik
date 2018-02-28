@@ -1,6 +1,5 @@
 import abc
 import six
-from datetime import datetime
 
 
 class APIError(Exception):
@@ -212,23 +211,3 @@ class ExchangeWrapper:
     @abc.abstractmethod
     def get_withdraw_history(self):
         raise NotImplementedError
-
-
-def iso_string_to_datetime(ts):
-    '''convert ISO timestamp to unix timestamp'''
-
-    try:
-        return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%f")
-    except:
-        return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
-
-
-def is_sale(t):
-    '''if <t> is sale, return True'''
-
-    t = t.lower()
-
-    if t == "sell" or t == "bid":
-        return True
-    else:
-        return False
