@@ -354,3 +354,18 @@ class BittrexNormalized(Bittrex):
             })
 
         return downstream
+
+    def get_market_orders(self, market, depth=20):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        '''
+
+        orders = super().get_market_orders(market, depth=20)
+
+        return {
+            'bids': [[i['Rate'], i['Quantity']] for i in orders['buy']],
+            'asks': [[i['Rate'], i['Quantity']] for i in orders['sell']]
+        }
