@@ -133,7 +133,9 @@ class ExchangeWrapper:
         :params:
             pair: str, limit: int
         :return:
-            dict['bids': list, 'asks': list]
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
         '''
         raise NotImplementedError
 
