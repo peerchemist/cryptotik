@@ -609,3 +609,12 @@ class PoloniexNormalized(Poloniex):
             m.append(quote.lower() + '-' + base.lower())
 
         return m
+
+    def get_market_ticker(self, market):
+
+        ticker = super().get_market_ticker(market)
+
+        return {'ask': ticker['lowestAsk'],
+                'bid': ticker['highestBid'],
+                'last': ticker['last']
+                }
