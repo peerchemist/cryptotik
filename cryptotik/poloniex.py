@@ -645,3 +645,14 @@ class PoloniexNormalized(Poloniex):
             })
 
         return downstream
+
+    def get_market_orders(self, market, depth=20):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+        return super().get_market_orders(market, depth)
