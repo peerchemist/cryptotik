@@ -122,8 +122,8 @@ class ExchangeWrapper:
         :return:
             list -> dict['timestamp': datetime.datetime,
                         'is_sale': bool,
-                        'rate': Decimal,
-                        'amount': Decimal,
+                        'rate': float,
+                        'amount': float,
                         'trade_id': any]
         '''
         raise NotImplementedError
