@@ -3,10 +3,12 @@
 import requests
 from decimal import Decimal
 import time
+from common import is_sale
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
 import hmac
 import hashlib
+from datetime import datetime
 
 
 class Wex(ExchangeWrapper):
@@ -339,6 +341,12 @@ class WexNormalized(Wex):
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(WexNormalized, self).__init__(apikey, secret, timeout, proxy)
 
+    @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.fromtimestamp(timestamp)
+
     @classmethod
     def format_pair(self, market_pair):
         """
@@ -357,3 +365,20 @@ class WexNormalized(Wex):
             raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
 
         return quote + self.delimiter + base  # for wex quote comes first
+
+    def get_market_trade_history(self, market):
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                    'timestamp': self._tstamp_to_datetime(data['timestamp']),
+                    'is_sale': is_sale(data['type']),
+                    'rate': data['price'],
+                    'amount': data['amount'],
+                    'trade_id': data['tid']
+            })
+
+        return downstream
