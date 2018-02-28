@@ -320,3 +320,9 @@ class BittrexNormalized(Bittrex):
             m.append(quote + '-' + base)
 
         return m
+
+    def get_market_ticker(self, market):
+
+        ticker = super().get_market_ticker(market)
+
+        return {k.lower(): v for k, v in ticker.items()}
