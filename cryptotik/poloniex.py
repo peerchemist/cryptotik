@@ -599,3 +599,13 @@ class PoloniexNormalized(Poloniex):
             raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
 
         return base.upper() + self.delimiter + quote.upper()  # for poloniex quote comes second
+
+    def get_markets(self):
+        '''normalized Poloniex.get_markets'''
+
+        m = []
+        for i in super().get_markets():
+            base, quote = i.split('_')
+            m.append(quote.lower() + '-' + base.lower())
+
+        return m
