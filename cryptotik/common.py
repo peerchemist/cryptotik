@@ -109,7 +109,7 @@ class ExchangeWrapper:
             pair: str
         :return: 
             dict['ask': float, 'bid': float, 'last': float]
-            example: {'ask': Decimal, 'bid': Decimal, 'last': Decimal}
+            example: {'ask': float, 'bid': float, 'last': float}
         '''
         raise NotImplementedError
 
