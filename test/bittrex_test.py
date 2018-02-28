@@ -34,6 +34,15 @@ def test_get_summaries():
     assert isinstance(btrx.get_summaries()[0], dict)
 
 
+@pytest.mark.parametrize("market", ['btc-ppc', 'eth-omg'])
+def test_get_market_ohlcv(market):
+
+    ohlcv = btrx.get_market_ohlcv(market, 'day')
+
+    assert isinstance(ohlcv, list)
+    assert isinstance(ohlcv[0], dict)
+
+
 def test_get_market_ticker():
     '''test get_market_ticker'''
 
