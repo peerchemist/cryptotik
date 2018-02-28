@@ -310,3 +310,13 @@ class BittrexNormalized(Bittrex):
             raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
 
         return base + '-' + quote  # for bittrex quote comes second
+
+    def get_markets(self):
+        '''normalized Bittrex.get_markets'''
+
+        m = []
+        for i in super().get_markets():
+            base, quote = i.split('-')
+            m.append(quote + '-' + base)
+
+        return m
