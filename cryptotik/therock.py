@@ -312,3 +312,20 @@ class TheRockNormalized(TheRock):
             'bid': ticker['bid'],
             'last': ticker['last']
         }
+
+    def get_market_orders(self, market):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+
+        upstream = super().get_market_orders(market)
+
+        return {
+            'bids': [[i['price'], i['amount']] for i in upstream['bids']],
+            'asks': [[i['price'], i['amount']] for i in upstream['asks']]
+        }
