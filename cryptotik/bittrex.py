@@ -289,7 +289,7 @@ class Bittrex(ExchangeWrapper):
                                 params=params)["result"]
 
 
-class BittrexNormalized(Bittrex):
+class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(BittrexNormalized, self).__init__(apikey, secret, timeout, proxy)
