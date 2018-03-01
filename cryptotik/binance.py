@@ -101,10 +101,10 @@ class Binance(ExchangeWrapper):
 
         return self.api(self.url + "api/v1/ticker/24hr", params)
 
-    def get_market_trade_history(self, pair, limit=100):
+    def get_market_trade_history(self, pair, limit=500):
         '''get market trade history'''
 
-        return self.api(self.url + "api/v1/aggTrades", 
+        return self.api(self.url + "api/v1/trades",
                         params=(('symbol', self.format_pair(pair)), ('limit', limit),))
 
     def get_summaries(self):
