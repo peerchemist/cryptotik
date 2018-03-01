@@ -102,7 +102,9 @@ class Binance(ExchangeWrapper):
         return self.api(self.url + "api/v1/ticker/24hr", params)
 
     def get_market_trade_history(self, pair, limit=500):
-        '''get market trade history'''
+        '''get market trade history
+        https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#recent-trades-list
+        '''
 
         return self.api(self.url + "api/v1/trades",
                         params=(('symbol', self.format_pair(pair)), ('limit', limit),))
