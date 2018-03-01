@@ -4,7 +4,7 @@ import hmac
 import hashlib
 import time
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 from cryptotik.common import is_sale
 import dateutil.parser
@@ -120,23 +120,6 @@ class TheRock(ExchangeWrapper):
         '''return order book for the market'''
 
         return self.api(self.url + "funds/" + self.format_pair(pair) + "/orderbook")
-
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
-
-        order_book = self.get_market_orders(pair)
-
-        ask = order_book["asks"][0]['price']
-        bid = order_book["bids"][0]['price']
-
-        return Decimal(ask) - Decimal(bid)
-
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        ob = self.get_market_orders(pair)
-        return {"bids": Decimal(ob['bids'][-1]['depth']),
-                "asks": Decimal(ob['asks'][-1]['depth'])}
 
     def get_markets(self):
         '''Find supported markets on this exchange'''
@@ -262,7 +245,7 @@ class TheRock(ExchangeWrapper):
                                 http_method='DELETE')
 
 
-class TheRockNormalized(TheRock):
+class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(TheRockNormalized, self).__init__(apikey, secret, timeout, proxy)
@@ -362,3 +345,20 @@ class TheRockNormalized(TheRock):
             'bids': [[i['price'], i['amount']] for i in upstream['bids']],
             'asks': [[i['price'], i['amount']] for i in upstream['asks']]
         }
+
+    def get_market_depth(self, market):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(market)
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
+
+    def get_market_spread(self, market):
+        '''returns market spread'''
+
+        order_book = self.get_market_orders(market, 1)
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)
