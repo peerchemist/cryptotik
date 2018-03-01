@@ -148,6 +148,8 @@ class ExchangeWrapper:
             pair: str
         :return:
             dict['bids': Decimal, 'asks': Decimal]
+        bids are to be expressed in the base_currency
+        asks are to be expressed in the quote currency
         '''
         raise NotImplementedError
 
