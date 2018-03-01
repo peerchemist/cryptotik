@@ -6,6 +6,7 @@ import time
 import requests
 from cryptotik.common import APIError, headers, ExchangeWrapper
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+import dateutil.parser
 from re import findall
 from decimal import Decimal
 
@@ -264,6 +265,12 @@ class TheRockNormalized(TheRock):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(TheRockNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+    @staticmethod
+    def _iso_to_datetime(iso):
+        '''convert ISO style date expression to datetime object'''
+
+        return dateutil.parser.parse(iso)
 
     @classmethod
     def format_pair(self, market_pair):
