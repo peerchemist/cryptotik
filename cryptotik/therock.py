@@ -6,6 +6,7 @@ import time
 import requests
 from cryptotik.common import APIError, headers, ExchangeWrapper
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from cryptotik.common import is_sale
 import dateutil.parser
 from re import findall
 from decimal import Decimal
@@ -285,7 +286,7 @@ class TheRockNormalized(TheRock):
         quote, base = market_pair.split('-')
 
         if base not in self.base_currencies:
-            raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
+            raise InvalidBaseCurrencyError("""Expected input is quote-base, you have provided with {pair}""".format(pair=market_pair))
 
         if quote == "xrp":
             return base + self.delimiter + quote  # unless it's xrp, which comes second
@@ -319,6 +320,31 @@ class TheRockNormalized(TheRock):
             'bid': ticker['bid'],
             'last': ticker['last']
         }
+
+    def get_market_trade_history(self, market):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._iso_to_datetime(data['date']),
+                'is_sale': is_sale(data['side']),
+                'rate': data['price'],
+                'amount': data['amount'],
+                'trade_id': data['id']
+            })
+
+        return downstream
 
     def get_market_orders(self, market):
         '''
