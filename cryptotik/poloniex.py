@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
+from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper, NormalizedExchangeWrapper
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 from common import is_sale
 import datetime, time
@@ -258,24 +258,6 @@ class Poloniex(ExchangeWrapper):
 
         return {k: v for k, v in r.items() if k in ['asks', 'bids']}
 
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-        asks = sum([Decimal(i[1]) for i in order_book["asks"]])
-        bid = sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]])
-
-        return {"bids": bid, "asks": asks}  # bids are expressed in base pair
-
-    def get_market_spread(self, pair):
-        '''returns market spread'''
-
-        order_book = self.get_market_orders(self.format_pair(pair), 1)
-        ask = order_book["asks"][0][0]
-        bid = order_book["bids"][0][0]
-
-        return Decimal(ask) - Decimal(bid)
-    
     def get_market_volume(self, pair=None):
         '''Returns the volume for past 24h'''
 
@@ -582,7 +564,7 @@ class Poloniex(ExchangeWrapper):
                                  })
 
 
-class PoloniexNormalized(Poloniex):
+class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(PoloniexNormalized, self).__init__(apikey, secret, timeout, proxy)
@@ -656,3 +638,20 @@ class PoloniexNormalized(Poloniex):
         asks[0] should be first next to the spread
         '''
         return super().get_market_orders(market, depth)
+
+    def get_market_depth(self, market):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(market)
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
+
+    def get_market_spread(self, market):
+        '''returns market spread'''
+
+        order_book = self.get_market_orders(market, 1)
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)
