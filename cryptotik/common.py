@@ -142,28 +142,6 @@ class ExchangeWrapper:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_market_depth(self, pair):
-        '''
-        :params:
-            pair: str
-        :return:
-            dict['bids': Decimal, 'asks': Decimal]
-        bids are to be expressed in the base_currency
-        asks are to be expressed in the quote currency
-        '''
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_market_spread(self, pair):
-        '''
-        :params:
-            pair: str
-        :return:
-            Decimal
-        '''
-        raise NotImplementedError
-
-    @abc.abstractmethod
     def get_market_volume(self, pair):
         '''
         :params:
@@ -216,6 +194,32 @@ class ExchangeWrapper:
 
     @abc.abstractmethod
     def get_withdraw_history(self):
+        raise NotImplementedError
+
+
+@six.add_metaclass(abc.ABCMeta)
+class NormalizedExchangeWrapper(ExchangeWrapper):
+
+    @abc.abstractmethod
+    def get_market_depth(self, pair):
+        '''
+        :params:
+            pair: str
+        :return:
+            dict['bids': Decimal, 'asks': Decimal]
+        bids are to be expressed in the base_currency
+        asks are to be expressed in the quote currency
+        '''
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_market_spread(self, pair):
+        '''
+        :params:
+            pair: str
+        :return:
+            Decimal
+        '''
         raise NotImplementedError
 
 
