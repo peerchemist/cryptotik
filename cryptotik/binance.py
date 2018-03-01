@@ -9,6 +9,7 @@ import requests
 from decimal import Decimal
 from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from datetime import datetime
 
 
 class Binance(ExchangeWrapper):
@@ -295,6 +296,73 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
             raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
 
         return quote + self.delimiter + base  # for binance quote comes first
+
+    @staticmethod
+    def _is_sale(isBuyerMaker):
+
+        if isBuyerMaker:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.fromtimestamp(timestamp / 1000)
+
+    def get_markets(self):
+
+        upstream = super().get_markets()
+
+        quotes = []
+
+        for i in upstream:
+            for base in self.base_currencies:
+                if base in i:
+                    quotes.append(i.replace(base, '') + '-' + base)
+
+        return quotes
+
+    def get_market_ticker(self, market):
+        '''
+        :return :
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': float, 'bid': float, 'last': float}
+        '''
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['askPrice'],
+            'bid': ticker['bidPrice'],
+            'last': ticker['lastPrice']
+        }
+
+    def get_market_trade_history(self, market):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._tstamp_to_datetime(data['time']),
+                'is_sale': self._is_sale(data['isBuyerMaker']),
+                'rate': data['price'],
+                'amount': data['qty'],
+                'trade_id': data['id']
+            })
+
+        return downstream
 
     def get_market_spread(self, pair):
         '''return first buy order and first sell order'''
