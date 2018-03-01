@@ -283,9 +283,9 @@ class TheRockNormalized(TheRock):
         if "-" not in market_pair:
             raise InvalidDelimiterError('Agreed upon delimiter is "-".')
 
-        quote, base = market_pair.split('-')
+        quote, base = market_pair.upper().split('-')
 
-        if base not in self.base_currencies:
+        if base.lower() not in self.base_currencies:
             raise InvalidBaseCurrencyError("""Expected input is quote-base, you have provided with {pair}""".format(pair=market_pair))
 
         if quote == "xrp":
