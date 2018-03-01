@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
+from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper, NormalizedExchangeWrapper
 from common import is_sale
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 import time
@@ -163,14 +163,6 @@ class Bittrex(ExchangeWrapper):
 
         return order_book
 
-    def get_market_depth(self, pair):
-        '''returns market depth'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-        return {"bids": sum([Decimal(i["Quantity"]) * Decimal(i["Rate"]) for i in order_book["buy"]]),
-                "asks": sum([Decimal(i["Quantity"]) for i in order_book["sell"]])
-                }
-
     def get_market_summary(self, pair):
         '''return basic market information'''
 
@@ -183,12 +175,6 @@ class Bittrex(ExchangeWrapper):
         smry = self.get_market_summary(pair)
 
         return {'BTC': smry['BaseVolume'], pair.split(self.delimiter)[1].upper(): smry['Volume']}
-
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
-
-        d = self.get_market_summary(self.format_pair(pair))
-        return Decimal(d["Ask"]) - Decimal(d["Bid"])
 
     def buy_limit(self, pair, rate, amount):  # buy_limit as default
         """creates buy order for <pair> at <rate> for <amount>"""
@@ -371,3 +357,17 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
             'bids': [[i['Rate'], i['Quantity']] for i in orders['buy']],
             'asks': [[i['Rate'], i['Quantity']] for i in orders['sell']]
         }
+
+    def get_market_depth(self, market):
+        '''returns market depth'''
+
+        order_book = self.get_market_orders(market)
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
+
+    def get_market_spread(self, market):
+        '''return first buy order and first sell order'''
+
+        d = self.get_market_summary(market)
+        return Decimal(d["Ask"]) - Decimal(d["Bid"])
