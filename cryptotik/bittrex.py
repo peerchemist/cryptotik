@@ -369,5 +369,8 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
 
-        d = self.get_market_summary(market)
-        return Decimal(d["Ask"]) - Decimal(d["Bid"])
+        order_book = self.get_market_orders(market, 1)
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)
