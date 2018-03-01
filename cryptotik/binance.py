@@ -282,14 +282,14 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
         Normalize the pair inputs and
         format the pair argument to a format understood by the remote API."""
 
-        market_pair = market_pair.lower()  # binance takes lowercase
+        market_pair = market_pair.upper()  # binance takes uppercase
 
         if "-" not in market_pair:
             raise InvalidDelimiterError('Agreed upon delimiter is "-".')
 
         quote, base = market_pair.split('-')
 
-        if base not in self.base_currencies:
+        if base.lower() not in self.base_currencies:
             raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
 
         return quote + self.delimiter + base  # for binance quote comes first
