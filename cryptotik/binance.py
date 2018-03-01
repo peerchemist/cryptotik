@@ -7,7 +7,7 @@ import hashlib
 import time
 import requests
 from decimal import Decimal
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 
 
@@ -119,25 +119,6 @@ class Binance(ExchangeWrapper):
         params = (('symbol', self.format_pair(pair)), ('limit', limit),)
 
         return self.api(self.url + 'api/v1/depth', params)
-
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-
-        ask = order_book['asks'][0][0]
-        bid = order_book['bids'][0][0]
-
-        return Decimal(ask) - Decimal(bid)
-
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-        asks = sum([Decimal(i[1]) for i in order_book['asks']])
-        bid = sum([Decimal(i[1]) for i in order_book['bids']])
-
-        return {"bids": bid, "asks": asks}
 
     def get_markets(self, filter=None):
         '''Find supported markets on this exchange,
@@ -289,7 +270,7 @@ class Binance(ExchangeWrapper):
         pass
 
 
-class BinanceNormalized(Binance):
+class BinanceNormalized(Binance, NormalizedExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(BinanceNormalized, self).__init__(apikey, secret, timeout, proxy)
@@ -312,3 +293,22 @@ class BinanceNormalized(Binance):
             raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
 
         return quote + self.delimiter + base  # for binance quote comes first
+
+    def get_market_spread(self, pair):
+        '''return first buy order and first sell order'''
+
+        order_book = self.get_market_orders(self.format_pair(pair))
+
+        ask = order_book['asks'][0][0]
+        bid = order_book['bids'][0][0]
+
+        return Decimal(ask) - Decimal(bid)
+
+    def get_market_depth(self, pair):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(self.format_pair(pair))
+        asks = sum([Decimal(i[1]) for i in order_book['asks']])
+        bid = sum([Decimal(i[1]) for i in order_book['bids']])
+
+        return {"bids": bid, "asks": asks}
