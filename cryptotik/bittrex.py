@@ -355,7 +355,7 @@ class BittrexNormalized(Bittrex):
 
         return downstream
 
-    def get_market_orders(self, market, depth=20):
+    def get_market_orders(self, market, depth=50):
         '''
         :return:
             dict['bids': list[price, quantity],
@@ -365,7 +365,7 @@ class BittrexNormalized(Bittrex):
         asks[0] should be first next to the spread
         '''
 
-        orders = super().get_market_orders(market, depth=20)
+        orders = super().get_market_orders(market, depth)
 
         return {
             'bids': [[i['Rate'], i['Quantity']] for i in orders['buy']],
