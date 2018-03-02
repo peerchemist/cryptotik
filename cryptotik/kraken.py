@@ -105,8 +105,8 @@ class Kraken(ExchangeWrapper):
     def get_markets(self):
         '''Find supported markets on this exchange'''
 
-        r = self.api(self.url + "public/AssetPairs")
-        return [i.lower() for i in r]
+        markets = self.api(self.url + "public/AssetPairs")
+        return [markets[i]['altname'].lower() for i in markets.keys()]
 
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
@@ -268,3 +268,16 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(KrakenNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+    def get_markets(self):
+
+        upstream = super().get_markets()
+
+        quotes = []
+
+        for i in upstream:
+            for base in self.base_currencies:
+                if base in i:
+                    quotes.append(i.replace(base, '') + '-' + base)
+
+        return quotes
