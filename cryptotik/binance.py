@@ -198,20 +198,29 @@ class Binance(ExchangeWrapper):
 
         return [i for i in balances if i["free"] != '0.00000000']
 
-    def buy_limit(self, pair, price, quantity):
+    def buy_limit(self, pair, price, quantity, test=False):
         '''creates buy order for <pair> at <price> for <quantity>'''
 
-        return self.private_api(self.url + "api/v3/order",
+        api_endpoint = "api/v3/order"
+        if test:
+            api_endpoint += '/test'
+
+        return self.private_api(self.url + api_endpoint,
                                 params={'symbol': self.format_pair(pair),
                                         'side': 'BUY', 'type': 'limit',
-                                        'timeInForce': 'GTC', 'quantity': quantity,
+                                        'timeInForce': 'GTC',
+                                        'quantity': quantity,
                                         'price': price},
                                 http_method='POST')
 
-    def buy_market(self, pair, quantity):
+    def buy_market(self, pair, quantity, test=False):
         '''execute market buy order'''
 
-        return self.private_api(self.url + "api/v3/order",
+        api_endpoint = "api/v3/order"
+        if test:
+            api_endpoint += '/test'
+
+        return self.private_api(self.url + api_endpoint,
                                 params={'symbol': self.format_pair(pair),
                                         'side': 'BUY', 'type': 'market',
                                         'quantity': quantity
@@ -234,20 +243,29 @@ class Binance(ExchangeWrapper):
                                     params={'symbol': pair.upper()})
         return self.private_api(self.url + "/api/v3/openOrders")
 
-    def sell_limit(self, pair, price, quantity):
+    def sell_limit(self, pair, price, quantity, test=False):
         '''creates sell order for <pair> at <price> for <quantity>'''
 
-        return self.private_api(self.url + "api/v3/order",
+        api_endpoint = "api/v3/order"
+        if test:
+            api_endpoint += '/test'
+
+        return self.private_api(self.url + api_endpoint,
                                 params={'symbol': self.format_pair(pair),
                                         'side': 'SELL', 'type': 'limit',
-                                        'timeInForce': 'GTC', 'quantity': quantity,
+                                        'timeInForce': 'GTC',
+                                        'quantity': quantity,
                                         'price': price},
                                 http_method='POST')
 
-    def sell_market(self, pair, quantity):
+    def sell_market(self, pair, quantity, test=False):
         '''execute market sell order'''
 
-        return self.private_api(self.url + "api/v3/order",
+        api_endpoint = "api/v3/order"
+        if test:
+            api_endpoint += '/test'
+
+        return self.private_api(self.url + api_endpoint,
                                 params={'symbol': self.format_pair(pair),
                                         'side': 'SELL', 'type': 'market',
                                         'quantity': quantity

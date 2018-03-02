@@ -115,17 +115,21 @@ def test_withdraw(apikey, secret):
 
 
 @private
-def test_buy_limit(apikey, secret):
+@pytest.mark.parametrize("pair", ['salt-eth', 'zec-btc'])
+def test_buy_market(apikey, secret, pair):
 
-    with pytest.raises(APIError):
-        bnb.buy_limit("eth_btc", 0.05, 1)
+    bnb = Binance(apikey, secret)
+
+    assert isinstance(bnb.buy_market(pair, 1, test=True), dict)
 
 
 @private
-def test_sell_limit(apikey, secret):
+@pytest.mark.parametrize("pair", ['trx-btc', 'omg-eth'])
+def test_sell_market(apikey, secret, pair):
 
-    with pytest.raises(APIError):
-        bnb.sell_limit("ltc_btc", 1, 0.25)
+    bnb = Binance(apikey, secret)
+
+    assert isinstance(bnb.sell_market(pair, 1, test=True), dict)
 
 
 @private
