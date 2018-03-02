@@ -93,6 +93,14 @@ class Binance(ExchangeWrapper):
         pair = pair.replace("-", self.delimiter).upper()
         return pair
 
+    def ping(self):
+        '''Test connectivity to the Rest API.'''
+
+        ping = self.api(self.url + 'api/v1/ping', params={})
+
+        if ping == {}:
+            return True
+
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
 
