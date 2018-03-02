@@ -25,6 +25,14 @@ def test_get_markets():
     assert "ethbtc" in bnb.get_markets()
 
 
+@pytest.mark.parametrize("interval", ["15m", "30m", "1h"])
+def test_get_market_ohlcv_data(interval):
+
+    ohlcv = bnb.get_market_ohlcv_data('dash-eth', interval, limit=1)
+
+    assert isinstance(ohlcv, list)
+
+
 def test_get_summaries():
 
     assert isinstance(bnb.get_summaries(), list)
