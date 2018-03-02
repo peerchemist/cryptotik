@@ -118,7 +118,7 @@ class Bittrex(ExchangeWrapper):
         self._verify_response(response)
         return response.json()
 
-    def get_market_ohlcv(self, market, interval, since=None):
+    def get_market_ohlcv_data(self, market, interval, since=None):
         '''
         Gets the candles for a <market>.
         : market - market pair
