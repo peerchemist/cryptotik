@@ -304,3 +304,18 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
                     quotes.append("".join(i.rsplit(base, 1)) + '-' + base)
 
         return quotes
+
+    def get_market_ticker(self, market):
+        '''
+        :return :
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': float, 'bid': float, 'last': float}
+        '''
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['a'][0],
+            'bid': ticker['b'][0],
+            'last': ticker['c'][0]
+        }
