@@ -138,6 +138,31 @@ class Binance(ExchangeWrapper):
 
         return {"bids": bid, "asks": asks}
 
+    def get_market_ohlcv_data(self, pair, interval, since=None,
+                              until=None, limit=500):
+        '''
+        https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
+
+        Kline/candlestick bars for a symbol. Klines are uniquely identified by their open time.
+        If since and until are not sent, the most recent klines are returned.
+
+        : market [str]: market pair
+        : interval [str]: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
+        : limit [int]: Default 500; max 500.
+        : since [int]: timestamp
+        : util [int]: timestamp
+        '''
+
+        if interval not in "1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M".split(', '):
+            raise APIError('Unsupported interval.')
+
+        return self.api(self.url + "api/v1/klines", params={'symbol': self.format_pair(pair),
+                                                            'interval': interval,
+                                                            'limit': 500,
+                                                            'startTime': since,
+                                                            'endTime': until
+                                                            })
+
     def get_markets(self, filter=None):
         '''Find supported markets on this exchange,
             use <filter> if needed'''
