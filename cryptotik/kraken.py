@@ -5,7 +5,7 @@ import hashlib
 import time
 import base64
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
 from re import findall
 from decimal import Decimal
 
@@ -19,7 +19,6 @@ class Kraken(ExchangeWrapper):
     taker_fee, maker_fee = 0.00, 0.00
     quote_order = 0
     base_currencies = ['xbt', 'eur', 'usd', 'eth', 'cad', 'gbp', 'jpy']
-
 
     @classmethod
     def format_pair(cls, pair):
@@ -265,7 +264,7 @@ class Kraken(ExchangeWrapper):
             self.cancel_order(txid)
 
 
-class KrakenNormalized(Kraken):
+class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(KrakenNormalized, self).__init__(apikey, secret, timeout, proxy)
