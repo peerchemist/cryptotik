@@ -101,6 +101,11 @@ class Binance(ExchangeWrapper):
         if ping == {}:
             return True
 
+    def get_exchange_information(self):
+        '''Current exchange trading rules and symbol information'''
+
+        return self.api(self.url + 'api/v1/exchangeInfo', params={})
+
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
 
