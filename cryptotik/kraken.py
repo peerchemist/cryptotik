@@ -278,6 +278,6 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
         for i in upstream:
             for base in self.base_currencies:
                 if base in i:
-                    quotes.append(i.replace(base, '') + '-' + base)
+                    quotes.append("".join(i.rsplit(base, 1)) + '-' + base)
 
         return quotes
