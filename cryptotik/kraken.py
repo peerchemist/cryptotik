@@ -9,6 +9,7 @@ from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExcha
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 from re import findall
 from decimal import Decimal
+from datetime import datetime
 
 
 class Kraken(ExchangeWrapper):
@@ -120,11 +121,11 @@ class Kraken(ExchangeWrapper):
 
         return self.get_market_ticker(self.format_pair(pair))['v'][1]
 
-    def get_market_trade_history(self, pair, limit=10):
+    def get_market_trade_history(self, pair, limit=200):
         '''get market trade history'''
 
         p = self.format_pair(pair)
-        return self.api(self.url + "public/Trades", 
+        return self.api(self.url + "public/Trades",
                         params={'pair': p})[p][:limit]
 
     def get_market_orders(self, pair, limit=100):
@@ -292,6 +293,20 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
 
         return quote + self.delimiter + base  # for kraken quote comes first
 
+    @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.fromtimestamp(timestamp)
+
+    @staticmethod
+    def _is_sale(s):
+
+        if s == "s":
+            return True
+        else:
+            return False
+
     def get_markets(self):
 
         upstream = super().get_markets()
@@ -319,3 +334,28 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             'bid': ticker['b'][0],
             'last': ticker['c'][0]
         }
+
+    def get_market_trade_history(self, market):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._tstamp_to_datetime(data[2]),
+                'is_sale': self._is_sale(data[3]),
+                'rate': data[0],
+                'amount': data[1],
+                'trade_id': data[2]
+            })
+
+        return downstream
