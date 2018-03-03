@@ -447,6 +447,14 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
             'asks': [[i[0], i[1]] for i in upstream['asks']]
         }
 
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
+
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
 

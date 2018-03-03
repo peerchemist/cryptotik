@@ -157,6 +157,14 @@ class Bitstamp(ExchangeWrapper):
         pair = self.format_pair(pair)
         return self.api("order_book/" + pair)
 
+    def get_market_sell_orders(self, pair):
+
+        return self.get_market_orders(pair)['asks']
+
+    def get_market_buy_orders(self, pair):
+
+        return self.get_market_orders(pair)['bids']
+
     def get_market_trade_history(self, pair, since="hour"):
         """get market trade history; since {minute, hour, day}"""
 
@@ -400,6 +408,14 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
             'bids': [[i[0], i[1]] for i in upstream['bids']],
             'asks': [[i[0], i[1]] for i in upstream['asks']]
         }
+
+    def get_market_sell_orders(self, market):
+
+        return self.get_market_orders(market)['asks']
+
+    def get_market_buy_orders(self, market):
+
+        return self.get_market_orders(market)['bids']
 
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''

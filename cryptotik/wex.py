@@ -148,8 +148,8 @@ class Wex(ExchangeWrapper):
         pair = self.format_pair(pair)
         return self.api("ticker" + "/" + pair)[pair]
 
-    def get_market_orders(self, pair, depth=None):
-        """returns market order book on selected pair"""
+    def get_market_orders(self, pair, depth=100):
+        """returns market order book on selected pair."""
 
         pair = self.format_pair(pair)
 
@@ -160,6 +160,14 @@ class Wex(ExchangeWrapper):
             raise ValueError("Wex API allows maximum depth of 5000 orders")
 
         return self.api("depth" + "/" + pair + "/?limit={0}".format(depth))[pair]
+
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
 
     def get_market_trade_history(self, pair, limit=1000):
         """get market trade history"""
@@ -391,6 +399,17 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
 
         return super().get_market_orders(market, depth)
 
+<<<<<<< HEAD
+=======
+    def get_market_sell_orders(self, market, depth=100):
+
+        return self.get_market_orders(market, depth)['asks']
+
+    def get_market_buy_orders(self, market, depth=100):
+
+        return self.get_market_orders(market, depth)['bids']
+
+>>>>>>> buy_sell_orders
     def get_market_depth(self, market):
         '''return sum of all bids and asks'''
 

@@ -144,16 +144,24 @@ class Kraken(ExchangeWrapper):
         return self.api(self.url + "public/Trades",
                         params={'pair': p})[p][:limit]
 
-    def get_market_orders(self, pair, limit=100):
+    def get_market_orders(self, pair, depth=100):
         '''return order book for the market'''
 
         p = self.format_pair(pair)
         r = self.api(self.url + "public/Depth",
-                     params={'pair': p, 'count': limit})
+                     params={'pair': p, 'count': depth})
 
         pair_full_name = list(r.keys())[0]  # hack around this crazy naming scheme
 
         return r[pair_full_name]
+
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
 
     def get_balances(self):
 
@@ -377,6 +385,14 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             'bids': [[i[0], i[1]] for i in upstream['bids']],
             'asks': [[i[0], i[1]] for i in upstream['asks']]
         }
+
+    def get_market_sell_orders(self, market, depth=100):
+
+        return self.get_market_orders(market, depth)['asks']
+
+    def get_market_buy_orders(self, market, depth=100):
+
+        return self.get_market_orders(market, depth)['bids']
 
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
