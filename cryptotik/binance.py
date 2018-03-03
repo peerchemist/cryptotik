@@ -156,12 +156,12 @@ class Binance(ExchangeWrapper):
         return self.api(self.url + 'api/v1/ticker/24hr',
                         params=())
 
-    def get_market_orders(self, pair, limit=100):
+    def get_market_orders(self, pair, depth=100):
         '''return sum of all bids and asks'''
 
-        params = (('symbol', self.format_pair(pair)), ('limit', limit),)
-
-        return self.api(self.url + 'api/v1/depth', params)
+        return self.api(self.url + 'api/v1/depth',
+                        params={'symbol': self.format_pair(pair),
+                                'limit': depth})
 
     def get_markets(self, filter=None):
         '''Find supported markets on this exchange,
