@@ -409,6 +409,14 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
             'asks': [[i[0], i[1]] for i in upstream['asks']]
         }
 
+    def get_market_sell_orders(self, market):
+
+        return self.get_market_orders(market)['asks']
+
+    def get_market_buy_orders(self, market):
+
+        return self.get_market_orders(market)['bids']
+
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
 
