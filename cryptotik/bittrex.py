@@ -187,6 +187,32 @@ class Bittrex(ExchangeWrapper):
 
         return order_book
 
+    def get_market_sell_orders(self, pair, depth=50):
+        '''return market order book, sell side, default <depth> is 50'''
+
+        if depth > 50:
+            raise ValueError("Bittrex API allows maximum depth of last 50 offers.")
+
+        order_book = self.api(self.url + "public" + "/getorderbook",
+                              params={'market': self.format_pair(pair),
+                                      'type': 'sell',
+                                      'depth': depth})["result"]
+
+        return order_book
+
+    def get_market_buy_orders(self, pair, depth=50):
+        '''return market order book, sell side, default <depth> is 50'''
+
+        if depth > 50:
+            raise ValueError("Bittrex API allows maximum depth of last 50 offers.")
+
+        order_book = self.api(self.url + "public" + "/getorderbook",
+                              params={'market': self.format_pair(pair),
+                                      'type': 'buy',
+                                      'depth': depth})["result"]
+
+        return order_book
+
     def get_market_summary(self, pair):
         '''return basic market information'''
 
