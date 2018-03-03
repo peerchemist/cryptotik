@@ -125,6 +125,14 @@ class TheRock(ExchangeWrapper):
 
         return self.api(self.url + "funds/" + self.format_pair(pair) + "/orderbook")
 
+    def get_market_sell_orders(self, pair):
+
+        return self.get_market_orders(pair)['asks']
+
+    def get_market_buy_orders(self, pair):
+
+        return self.get_market_orders(pair)['bids']
+
     def get_markets(self):
         '''Find supported markets on this exchange'''
 
