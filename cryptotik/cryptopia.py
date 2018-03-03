@@ -133,14 +133,22 @@ class Cryptopia(ExchangeWrapper):
         return self.api(self.url + "api/getMarketHistory/" + 
                         self.format_pair(pair))[:limit]
 
-    def get_market_orders(self, pair, limit=100):
+    def get_market_orders(self, pair, depth=100):
         '''return order book for the market'''
 
-        result = self.api(self.url + "api/GetMarketOrders/" + 
-                        self.format_pair(pair) + "/" + str(limit))
+        result = self.api(self.url + "api/GetMarketOrders/" +
+                          self.format_pair(pair) + "/" + str(depth))
         result['asks'] = result.pop('Buy')
         result['bids'] = result.pop('Sell')
         return result
+
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
 
     def get_market_spread(self, pair):
         '''return first buy order and first sell order'''
