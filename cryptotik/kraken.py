@@ -386,6 +386,14 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             'asks': [[i[0], i[1]] for i in upstream['asks']]
         }
 
+    def get_market_sell_orders(self, market, depth=100):
+
+        return self.get_market_orders(market, depth)['asks']
+
+    def get_market_buy_orders(self, market, depth=100):
+
+        return self.get_market_orders(market, depth)['bids']
+
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
 
