@@ -7,8 +7,10 @@ import hashlib
 import time
 import requests
 from decimal import Decimal
-from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
-from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from cryptotik.common import (headers, ExchangeWrapper,
+                              NormalizedExchangeWrapper)
+from cryptotik.exceptions import (InvalidBaseCurrencyError,
+                                  InvalidDelimiterError, APIError)
 from datetime import datetime
 
 

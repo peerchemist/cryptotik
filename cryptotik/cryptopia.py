@@ -6,7 +6,8 @@ import hashlib
 import time
 import base64
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import headers, ExchangeWrapper
+from cryptotik.exceptions import APIError
 from decimal import Decimal
 
 

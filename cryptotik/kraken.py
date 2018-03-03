@@ -5,8 +5,11 @@ import hashlib
 import time
 import base64
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
-from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from cryptotik.common import (headers, ExchangeWrapper,
+                              NormalizedExchangeWrapper)
+from cryptotik.exceptions import (InvalidBaseCurrencyError,
+                                  InvalidDelimiterError,
+                                  APIError)
 from re import findall
 from decimal import Decimal
 from datetime import datetime
@@ -21,10 +24,6 @@ class Kraken(ExchangeWrapper):
     taker_fee, maker_fee = 0.00, 0.00
     quote_order = 0
     base_currencies = ['xbt', 'eur', 'usd', 'eth', 'cad', 'gbp', 'jpy']
-<<<<<<< HEAD
-
-=======
->>>>>>> normalized
 
     @classmethod
     def format_pair(cls, pair):

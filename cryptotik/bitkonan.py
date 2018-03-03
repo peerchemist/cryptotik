@@ -5,7 +5,8 @@
 import requests
 from decimal import Decimal
 import time
-from cryptotik.common import headers, ExchangeWrapper, APIError
+from cryptotik.common import headers, ExchangeWrapper
+from cryptotik.exceptions import APIError
 
 
 class Bitkonan(ExchangeWrapper):

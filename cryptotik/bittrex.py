@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper, NormalizedExchangeWrapper
+from cryptotik.common import (headers, ExchangeWrapper,
+                              NormalizedExchangeWrapper)
+from cryptotik.exceptions import (InvalidBaseCurrencyError,
+                                  InvalidDelimiterError,
+                                  APIError,
+                                  OutdatedBaseCurrenciesError)
 from common import is_sale
-from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 import time
 import hmac
 import hashlib
