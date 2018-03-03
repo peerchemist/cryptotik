@@ -341,3 +341,18 @@ class BitstampNormalized(Bitstamp):
             raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
 
         return quote + self.delimiter + base  # for bistamp quote comes first
+
+    def get_market_ticker(self, market):
+        '''
+        :return :
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': float, 'bid': float, 'last': float}
+        '''
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['ask'],
+            'bid': ticker['bid'],
+            'last': ticker['last']
+        }
