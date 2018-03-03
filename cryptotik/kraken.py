@@ -113,6 +113,19 @@ class Kraken(ExchangeWrapper):
         markets = self.api(self.url + "public/AssetPairs")
         return [markets[i]['altname'].lower() for i in markets.keys()]
 
+    def get_market_ohlcv_data(self, pair, interval, since=None):
+        '''Get OHLC data
+        :pair [str] - market pair
+        :interval [int] - 1 (default), 5, 15, 30, 60, 240, 1440, 10080, 21600 minutes
+        '''
+
+        if str(interval) not in "1, 5, 15, 30, 60, 240, 1440, 10080, 21600".split(', '):
+            raise APIError('Unsupported interval.')
+
+        return self.api(self.url + 'public/OHLC', params={'pair': self.format_pair(pair),
+                                                          'interval': interval,
+                                                          'since': since})
+
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
         p = self.format_pair(pair)

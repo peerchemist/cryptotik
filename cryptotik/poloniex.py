@@ -6,7 +6,7 @@ from cryptotik.exceptions import (InvalidBaseCurrencyError,
                                   InvalidDelimiterError,
                                   APIError,
                                   OutdatedBaseCurrenciesError)
-from common import is_sale
+from cryptotik.common import is_sale
 import datetime, time
 import requests
 import hmac, hashlib

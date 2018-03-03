@@ -3,7 +3,7 @@
 import requests
 from decimal import Decimal
 import time
-from common import is_sale
+from cryptotik.common import is_sale
 from cryptotik.common import (headers, ExchangeWrapper,
                               NormalizedExchangeWrapper)
 from cryptotik.exceptions import (InvalidBaseCurrencyError,
