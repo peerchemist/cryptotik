@@ -161,22 +161,6 @@ class Bitstamp(ExchangeWrapper):
 
         return self.api("transactions/" + pair + "/?time={0}".format(since))
 
-    def get_market_depth(self, pair):
-        """get market order book depth"""
-
-        pair = self.format_pair(pair)
-        order_book = self.get_market_orders(pair)
-        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
-                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])}
-
-    def get_market_spread(self, pair):
-        """get market spread"""
-
-        pair = self.format_pair(pair)
-
-        order_book = self.get_market_orders(pair)
-        return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
-
     def get_market_volume(self, pair):
         '''return market volume [of last 24h]'''
 
