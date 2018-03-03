@@ -384,7 +384,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
 
-        order_book = super().get_market_orders(market)
+        order_book = self.get_market_orders(market)
 
         ask = order_book['asks'][0][0]
         bid = order_book['bids'][0][0]
