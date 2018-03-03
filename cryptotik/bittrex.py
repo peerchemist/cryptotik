@@ -408,6 +408,26 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
             'asks': [[i['Rate'], i['Quantity']] for i in orders['sell']]
         }
 
+    def get_market_sell_orders(self, market, depth=50):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+
+        orders = super().get_market_sell_orders(market, depth)
+
+        return [[i['Rate'], i['Quantity']] for i in orders]
+
+    def get_market_buy_orders(self, market, depth=50):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+
+        orders = super().get_market_buy_orders(market, depth)
+
+        return [[i['Rate'], i['Quantity']] for i in orders]
+
     def get_market_depth(self, market):
         '''returns market depth'''
 
