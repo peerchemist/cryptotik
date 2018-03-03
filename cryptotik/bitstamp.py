@@ -320,7 +320,7 @@ class Bitstamp(ExchangeWrapper):
 
 class BitstampNormalized(Bitstamp):
 
-    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+    def __init__(self, apikey=None, secret=None, customer_id=None, timeout=None, proxy=None):
         super(BitstampNormalized, self).__init__(apikey, secret, customer_id, timeout, proxy)
 
     @classmethod
