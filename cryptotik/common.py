@@ -3,17 +3,6 @@
 import abc
 import six
 
-
-class APIError(Exception):
-    "Raise exception when the remote API returned an error."
-    pass
-
-
-class OutdatedBaseCurrenciesError(Exception):
-    "Raise exception when hardcoded base currencies are outdated."
-    pass
-
-
 headers = {    # common HTTPS headers
     'Accept': 'application/json',
     'Accept-Charset': 'utf-8',
