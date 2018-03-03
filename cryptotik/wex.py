@@ -399,8 +399,6 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
 
         return super().get_market_orders(market, depth)
 
-<<<<<<< HEAD
-=======
     def get_market_sell_orders(self, market, depth=100):
 
         return self.get_market_orders(market, depth)['asks']
@@ -409,7 +407,6 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
 
         return self.get_market_orders(market, depth)['bids']
 
->>>>>>> buy_sell_orders
     def get_market_depth(self, market):
         '''return sum of all bids and asks'''
 
