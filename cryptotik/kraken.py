@@ -132,13 +132,12 @@ class Kraken(ExchangeWrapper):
         '''return order book for the market'''
 
         p = self.format_pair(pair)
-        return self.api(self.url + "public/Depth", 
-                        params={'pair': p, 'count': limit})[p]
+        r = self.api(self.url + "public/Depth",
+                     params={'pair': p, 'count': limit})
 
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
+        pair_full_name = list(r.keys())[0]  # hack around this crazy naming scheme
 
-        order_book = self.get_market_orders(self.format_pair(pair))
+        return r[pair_full_name]
 
         ask = order_book["asks"][0][0]
         bid = order_book["bids"][0][0]
