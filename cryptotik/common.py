@@ -134,6 +134,22 @@ class ExchangeWrapper:
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_market_sell_orders(self, pair):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_market_buy_orders(self, pair):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_market_volume(self, pair):
         '''
         :params:

@@ -124,6 +124,14 @@ class Bitkonan(ExchangeWrapper):
 
         return self.api(u, params={'group': group})
 
+    def get_market_sell_orders(self, pair):
+
+        return self.get_market_orders(pair)['asks']
+
+    def get_market_buy_orders(self, pair):
+
+        return self.get_market_orders(pair)['bids']
+
     def get_market_trade_history(self, pair, limit=200, sort='desc'):
         """get market trade history; limit to see only last <n> trades.
            sort - sorting by date and time (asc - ascending; desc - descending). Default: desc."""

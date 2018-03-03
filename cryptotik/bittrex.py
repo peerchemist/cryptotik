@@ -187,6 +187,32 @@ class Bittrex(ExchangeWrapper):
 
         return order_book
 
+    def get_market_sell_orders(self, pair, depth=50):
+        '''return market order book, sell side, default <depth> is 50'''
+
+        if depth > 50:
+            raise ValueError("Bittrex API allows maximum depth of last 50 offers.")
+
+        order_book = self.api(self.url + "public" + "/getorderbook",
+                              params={'market': self.format_pair(pair),
+                                      'type': 'sell',
+                                      'depth': depth})["result"]
+
+        return order_book
+
+    def get_market_buy_orders(self, pair, depth=50):
+        '''return market order book, sell side, default <depth> is 50'''
+
+        if depth > 50:
+            raise ValueError("Bittrex API allows maximum depth of last 50 offers.")
+
+        order_book = self.api(self.url + "public" + "/getorderbook",
+                              params={'market': self.format_pair(pair),
+                                      'type': 'buy',
+                                      'depth': depth})["result"]
+
+        return order_book
+
     def get_market_summary(self, pair):
         '''return basic market information'''
 
@@ -381,6 +407,26 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
             'bids': [[i['Rate'], i['Quantity']] for i in orders['buy']],
             'asks': [[i['Rate'], i['Quantity']] for i in orders['sell']]
         }
+
+    def get_market_sell_orders(self, market, depth=50):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+
+        orders = super().get_market_sell_orders(market, depth)
+
+        return [[i['Rate'], i['Quantity']] for i in orders]
+
+    def get_market_buy_orders(self, market, depth=50):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+
+        orders = super().get_market_buy_orders(market, depth)
+
+        return [[i['Rate'], i['Quantity']] for i in orders]
 
     def get_market_depth(self, market):
         '''returns market depth'''

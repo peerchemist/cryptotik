@@ -156,12 +156,20 @@ class Binance(ExchangeWrapper):
         return self.api(self.url + 'api/v1/ticker/24hr',
                         params=())
 
-    def get_market_orders(self, pair, limit=100):
+    def get_market_orders(self, pair, depth=100):
         '''return sum of all bids and asks'''
 
-        params = (('symbol', self.format_pair(pair)), ('limit', limit),)
+        return self.api(self.url + 'api/v1/depth',
+                        params={'symbol': self.format_pair(pair),
+                                'limit': depth})
 
-        return self.api(self.url + 'api/v1/depth', params)
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
 
     def get_markets(self, filter=None):
         '''Find supported markets on this exchange,
@@ -438,6 +446,14 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
             'bids': [[i[0], i[1]] for i in upstream['bids']],
             'asks': [[i[0], i[1]] for i in upstream['asks']]
         }
+
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
 
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
