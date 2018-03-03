@@ -163,6 +163,14 @@ class Binance(ExchangeWrapper):
                         params={'symbol': self.format_pair(pair),
                                 'limit': depth})
 
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
+
     def get_markets(self, filter=None):
         '''Find supported markets on this exchange,
             use <filter> if needed'''
