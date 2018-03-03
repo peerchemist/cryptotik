@@ -3,9 +3,12 @@
 import requests
 from decimal import Decimal
 import time
-from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
+from common import is_sale
+from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper, NormalizedExchangeWrapper
 import hmac
 import hashlib
+from datetime import datetime
 
 
 class Wex(ExchangeWrapper):
@@ -171,22 +174,6 @@ class Wex(ExchangeWrapper):
         else:  # simply concat pairs in the list
             return self.api("trades" + "/" + "-".join(pair) + "/?limit={0}".format(limit))
 
-    def get_market_depth(self, pair):
-        """get market order book depth"""
-
-        pair = self.format_pair(pair)
-        order_book = self.get_market_orders(pair, 5000)
-        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
-                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])}
-
-    def get_market_spread(self, pair):
-        """get market spread"""
-
-        pair = self.format_pair(pair)
-
-        order_book = self.get_market_orders(pair, 1)
-        return Decimal(order_book["asks"][0][0]) - Decimal(order_book["bids"][0][0])
-
     def get_market_volume(self, pair):
         '''return market volume [of last 24h]'''
 
@@ -331,3 +318,84 @@ class Wex(ExchangeWrapper):
             return {k: v for k, v in hist.items() if v['currency'] == coin.upper()}
 
         return hist
+
+
+class WexNormalized(Wex, NormalizedExchangeWrapper):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(WexNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+    @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.fromtimestamp(timestamp)
+
+    @classmethod
+    def format_pair(self, market_pair):
+        """
+        Expected input is quote - base.
+        Normalize the pair inputs and
+        format the pair argument to a format understood by the remote API."""
+
+        market_pair = market_pair.lower()  # wex takes lowercase
+
+        if "-" not in market_pair:
+            raise InvalidDelimiterError('Agreed upon delimiter is "-".')
+
+        quote, base = market_pair.split('-')
+
+        if base not in self.base_currencies:
+            raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
+
+        return quote + self.delimiter + base  # for wex quote comes first
+
+    def get_markets(self):
+
+        upstream = super().get_markets()
+
+        return [i.replace('_', ('-')) for i in upstream if "et_" not in i]
+
+    def get_market_ticker(self, market):
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['sell'],
+            'bid': ticker['buy'],
+            'last': ticker['last']
+        }
+
+    def get_market_trade_history(self, market):
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                    'timestamp': self._tstamp_to_datetime(data['timestamp']),
+                    'is_sale': is_sale(data['type']),
+                    'rate': data['price'],
+                    'amount': data['amount'],
+                    'trade_id': data['tid']
+            })
+
+        return downstream
+
+    def get_market_depth(self, market):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(market)
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
+
+    def get_market_spread(self, market):
+        '''returns market spread'''
+
+        order_book = self.get_market_orders(market, 1)
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)

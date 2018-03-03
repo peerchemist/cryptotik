@@ -112,7 +112,7 @@ class ExchangeWrapper:
             pair: str
         :return: 
             dict['ask': float, 'bid': float, 'last': float]
-            example: {'ask': Decimal, 'bid': Decimal, 'last': Decimal}
+            example: {'ask': float, 'bid': float, 'last': float}
         '''
         raise NotImplementedError
 
@@ -124,8 +124,8 @@ class ExchangeWrapper:
         :return:
             list -> dict['timestamp': datetime.datetime,
                         'is_sale': bool,
-                        'rate': Decimal,
-                        'amount': Decimal,
+                        'rate': float,
+                        'amount': float,
                         'trade_id': any]
         '''
         raise NotImplementedError
@@ -136,27 +136,11 @@ class ExchangeWrapper:
         :params:
             pair: str, limit: int
         :return:
-            dict['bids': list, 'asks': list]
-        '''
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_market_depth(self, pair):
-        '''
-        :params:
-            pair: str
-        :return:
-            dict['bids': Decimal, 'asks': Decimal]
-        '''
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_market_spread(self, pair):
-        '''
-        :params:
-            pair: str
-        :return:
-            Decimal
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
         '''
         raise NotImplementedError
 
@@ -214,3 +198,40 @@ class ExchangeWrapper:
     @abc.abstractmethod
     def get_withdraw_history(self):
         raise NotImplementedError
+
+
+@six.add_metaclass(abc.ABCMeta)
+class NormalizedExchangeWrapper(ExchangeWrapper):
+
+    @abc.abstractmethod
+    def get_market_depth(self, pair):
+        '''
+        :params:
+            pair: str
+        :return:
+            dict['bids': Decimal, 'asks': Decimal]
+        bids are to be expressed in the base_currency
+        asks are to be expressed in the quote currency
+        '''
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_market_spread(self, pair):
+        '''
+        :params:
+            pair: str
+        :return:
+            Decimal
+        '''
+        raise NotImplementedError
+
+
+def is_sale(t):
+    '''if <t> is sale, return True'''
+
+    t = t.lower()
+
+    if t == "sell" or t == "bid":
+        return True
+    else:
+        return False

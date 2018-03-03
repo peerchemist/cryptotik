@@ -206,10 +206,10 @@ class Cryptopia(ExchangeWrapper):
 
         return self.private_api(self.url + "Api/GetTransactions",
                             params={'Type': 'Deposit'})
-    
+
     def get_open_orders(self):
         '''get open orders'''
-        
+
         return self.private_api(self.url + "Api/GetOpenOrders",
                             params={})
 
@@ -222,7 +222,7 @@ class Cryptopia(ExchangeWrapper):
 
     def cancel_order(self, orderId):
         """cancel order with <orderId>"""
-        
+
         return self.private_api(self.url + "Api/CancelTrade", params={
                             'Type': 'Trade', 'OrderId': orderId})
 
@@ -230,3 +230,9 @@ class Cryptopia(ExchangeWrapper):
         """cancel all orders"""
         return self.private_api(self.url + "Api/CancelTrade", params={
                             'Type': 'All'})
+
+
+class CryptopiaNormalized(Cryptopia):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(CryptopiaNormalized, self).__init__(apikey, secret, timeout, proxy)

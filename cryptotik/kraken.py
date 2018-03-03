@@ -5,9 +5,11 @@ import hashlib
 import time
 import base64
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
+from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 from re import findall
 from decimal import Decimal
+from datetime import datetime
 
 
 class Kraken(ExchangeWrapper):
@@ -19,7 +21,10 @@ class Kraken(ExchangeWrapper):
     taker_fee, maker_fee = 0.00, 0.00
     quote_order = 0
     base_currencies = ['xbt', 'eur', 'usd', 'eth', 'cad', 'gbp', 'jpy']
+<<<<<<< HEAD
 
+=======
+>>>>>>> normalized
 
     @classmethod
     def format_pair(cls, pair):
@@ -106,8 +111,8 @@ class Kraken(ExchangeWrapper):
     def get_markets(self):
         '''Find supported markets on this exchange'''
 
-        r = self.api(self.url + "public/AssetPairs")
-        return [i.lower() for i in r]
+        markets = self.api(self.url + "public/AssetPairs")
+        return [markets[i]['altname'].lower() for i in markets.keys()]
 
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
@@ -120,38 +125,23 @@ class Kraken(ExchangeWrapper):
 
         return self.get_market_ticker(self.format_pair(pair))['v'][1]
 
-    def get_market_trade_history(self, pair, limit=10):
+    def get_market_trade_history(self, pair, limit=200):
         '''get market trade history'''
 
         p = self.format_pair(pair)
-        return self.api(self.url + "public/Trades", 
+        return self.api(self.url + "public/Trades",
                         params={'pair': p})[p][:limit]
 
     def get_market_orders(self, pair, limit=100):
         '''return order book for the market'''
 
         p = self.format_pair(pair)
-        return self.api(self.url + "public/Depth", 
-                        params={'pair': p, 'count': limit})[p]
+        r = self.api(self.url + "public/Depth",
+                     params={'pair': p, 'count': limit})
 
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
+        pair_full_name = list(r.keys())[0]  # hack around this crazy naming scheme
 
-        order_book = self.get_market_orders(self.format_pair(pair))
-
-        ask = order_book["asks"][0][0]
-        bid = order_book["bids"][0][0]
-
-        return Decimal(ask) - Decimal(bid)
-
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-        asks = sum([Decimal(i[1]) for i in order_book['asks']])
-        bid = sum([Decimal(i[1]) for i in order_book['bids']])
-
-        return {"bids": bid, "asks": asks}
+        return r[pair_full_name]
 
     def get_balances(self):
 
@@ -262,4 +252,135 @@ class Kraken(ExchangeWrapper):
         """cancel all orders"""
 
         for txid in self.get_open_orders():
-              self.cancel_order(txid)
+            self.cancel_order(txid)
+
+
+class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(KrakenNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+    @classmethod
+    def format_pair(self, market_pair):
+        """
+        Expected input is quote - base.
+        Normalize the pair inputs and
+        format the pair argument to a format understood by the remote API."""
+
+        market_pair = market_pair.upper()  # kraken takes uppercase
+
+        if "-" not in market_pair:
+            raise InvalidDelimiterError('Agreed upon delimiter is "-".')
+
+        quote, base = market_pair.split('-')
+
+        if base == "BTC":
+            base = "XBT"
+
+        if base.lower() not in self.base_currencies:
+            raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
+
+        return quote + self.delimiter + base  # for kraken quote comes first
+
+    @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.fromtimestamp(timestamp)
+
+    @staticmethod
+    def _is_sale(s):
+
+        if s == "s":
+            return True
+        else:
+            return False
+
+    def get_markets(self):
+
+        upstream = super().get_markets()
+
+        quotes = []
+
+        for i in upstream:
+            for base in self.base_currencies:
+                if base in i:
+                    quotes.append("".join(i.rsplit(base, 1)) + '-' + base)
+
+        return quotes
+
+    def get_market_ticker(self, market):
+        '''
+        :return :
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': float, 'bid': float, 'last': float}
+        '''
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['a'][0],
+            'bid': ticker['b'][0],
+            'last': ticker['c'][0]
+        }
+
+    def get_market_trade_history(self, market):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._tstamp_to_datetime(data[2]),
+                'is_sale': self._is_sale(data[3]),
+                'rate': data[0],
+                'amount': data[1],
+                'trade_id': data[2]
+            })
+
+        return downstream
+
+    def get_market_orders(self, market, depth=100):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+
+        upstream = super().get_market_orders(market, depth)
+
+        return {
+            'bids': [[i[0], i[1]] for i in upstream['bids']],
+            'asks': [[i[0], i[1]] for i in upstream['asks']]
+        }
+
+    def get_market_spread(self, market):
+        '''return first buy order and first sell order'''
+
+        order_book = super().get_market_orders(market, 1)
+
+        ask = order_book['asks'][0][0]
+        bid = order_book['bids'][0][0]
+
+        return Decimal(ask) - Decimal(bid)
+
+    def get_market_depth(self, market):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(market, 1000)
+
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }

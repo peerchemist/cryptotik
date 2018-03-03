@@ -4,7 +4,10 @@ import hmac
 import hashlib
 import time
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper
+from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
+from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from cryptotik.common import is_sale
+import dateutil.parser
 from re import findall
 from decimal import Decimal
 
@@ -118,30 +121,13 @@ class TheRock(ExchangeWrapper):
 
         return self.api(self.url + "funds/" + self.format_pair(pair) + "/orderbook")
 
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
-
-        order_book = self.get_market_orders(pair)
-
-        ask = order_book["asks"][0]['price']
-        bid = order_book["bids"][0]['price']
-
-        return Decimal(ask) - Decimal(bid)
-
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        ob = self.get_market_orders(pair)
-        return {"bids": Decimal(ob['bids'][-1]['depth']),
-                "asks": Decimal(ob['asks'][-1]['depth'])}
-
     def get_markets(self):
         '''Find supported markets on this exchange'''
 
         r = self.api(self.url + "funds")['funds']
         pairs = [i["id"].lower() for i in r]
 
-        return pairs
+        return [i for i in pairs if not i.startswith('noku') and not i.endswith('eurn')]
 
     def get_market_volume(self, pair):
         ''' return volume of last 24h'''
@@ -257,3 +243,122 @@ class TheRock(ExchangeWrapper):
         return self.private_api(self.url + "funds/" + symbol +
                                 "/orders/remove_all",
                                 http_method='DELETE')
+
+
+class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(TheRockNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+    @staticmethod
+    def _iso_to_datetime(iso):
+        '''convert ISO style date expression to datetime object'''
+
+        return dateutil.parser.parse(iso)
+
+    @classmethod
+    def format_pair(self, market_pair):
+        """
+        Expected input is quote - base.
+        Normalize the pair inputs and
+        format the pair argument to a format understood by the remote API."""
+
+        if "-" not in market_pair:
+            raise InvalidDelimiterError('Agreed upon delimiter is "-".')
+
+        quote, base = market_pair.upper().split('-')
+
+        if base.lower() not in self.base_currencies:
+            raise InvalidBaseCurrencyError("""Expected input is quote-base, you have provided with {pair}""".format(pair=market_pair))
+
+        if quote == "xrp":
+            return base + self.delimiter + quote  # unless it's xrp, which comes second
+        else:
+            return quote + self.delimiter + base  # for therock quote comes first
+
+    def get_markets(self):
+
+        upstream = super().get_markets()
+
+        quotes = []
+
+        for i in upstream:
+            for base in self.base_currencies:
+                if base in i:
+                    quotes.append(i.replace(base, '') + '-' + base)
+
+        return quotes
+
+    def get_market_ticker(self, market):
+        '''
+        :return :
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': float, 'bid': float, 'last': float}
+        '''
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['ask'],
+            'bid': ticker['bid'],
+            'last': ticker['last']
+        }
+
+    def get_market_trade_history(self, market):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._iso_to_datetime(data['date']),
+                'is_sale': is_sale(data['side']),
+                'rate': data['price'],
+                'amount': data['amount'],
+                'trade_id': data['id']
+            })
+
+        return downstream
+
+    def get_market_orders(self, market):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+
+        upstream = super().get_market_orders(market)
+
+        return {
+            'bids': [[i['price'], i['amount']] for i in upstream['bids']],
+            'asks': [[i['price'], i['amount']] for i in upstream['asks']]
+        }
+
+    def get_market_depth(self, market):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(market)
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
+
+    def get_market_spread(self, market):
+        '''returns market spread'''
+
+        order_book = self.get_market_orders(market, 1)
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)

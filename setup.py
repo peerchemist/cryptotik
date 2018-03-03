@@ -8,6 +8,6 @@ setup(name='cryptotik',
       author_email='peerchemist@protonmail.ch',
       license='BSD',
       packages=['cryptotik'],
-      install_requires=['requests', 'six'],
+      install_requires=['requests', 'six', 'dateutil'],
       tests_require=['pytest'],
       zip_safe=False)

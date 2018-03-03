@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper
+from cryptotik.common import APIError, OutdatedBaseCurrenciesError, headers, ExchangeWrapper, NormalizedExchangeWrapper
+from common import is_sale
+from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 import time
 import hmac
 import hashlib
+from datetime import datetime
 from decimal import Decimal
 
 
@@ -180,14 +183,6 @@ class Bittrex(ExchangeWrapper):
 
         return order_book
 
-    def get_market_depth(self, pair):
-        '''returns market depth'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-        return {"bids": sum([Decimal(i["Quantity"]) * Decimal(i["Rate"]) for i in order_book["buy"]]),
-                "asks": sum([Decimal(i["Quantity"]) for i in order_book["sell"]])
-                }
-
     def get_market_summary(self, pair):
         '''return basic market information'''
 
@@ -200,12 +195,6 @@ class Bittrex(ExchangeWrapper):
         smry = self.get_market_summary(pair)
 
         return {'BTC': smry['BaseVolume'], pair.split(self.delimiter)[1].upper(): smry['Volume']}
-
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
-
-        d = self.get_market_summary(self.format_pair(pair))
-        return Decimal(d["Ask"]) - Decimal(d["Bid"])
 
     def buy_limit(self, pair, rate, amount):  # buy_limit as default
         """creates buy order for <pair> at <rate> for <amount>"""
@@ -304,3 +293,104 @@ class Bittrex(ExchangeWrapper):
 
         return self.private_api(self.url + "account" + "/getdeposithistory",
                                 params=params)["result"]
+
+
+class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
+
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
+        super(BittrexNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+    @staticmethod
+    def _iso_string_to_datetime(ts):
+        '''convert ISO timestamp to unix timestamp'''
+
+        try:
+            return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%f")
+        except:
+            return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+
+    @classmethod
+    def format_pair(self, market_pair):
+        """
+        Expected input is quote - base.
+        Normalize the pair inputs and
+        format the pair argument to a format understood by the remote API."""
+
+        market_pair = market_pair.lower()  # bittrex takes lowercase
+
+        if "-" not in market_pair:
+            raise InvalidDelimiterError('Agreed upon delimiter is "-".')
+
+        quote, base = market_pair.split('-')
+
+        if base not in self.base_currencies:
+            raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
+
+        return base + '-' + quote  # for bittrex quote comes second
+
+    def get_markets(self):
+        '''normalized Bittrex.get_markets'''
+
+        m = []
+        for i in super().get_markets():
+            base, quote = i.split('-')
+            m.append(quote + '-' + base)
+
+        return m
+
+    def get_market_ticker(self, market):
+
+        ticker = super().get_market_ticker(market)
+
+        return {k.lower(): v for k, v in ticker.items()}
+
+    def get_market_trade_history(self, market):
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._iso_string_to_datetime(data['TimeStamp']),
+                'is_sale': is_sale(data['OrderType']),
+                'rate': data['Price'],
+                'amount': data['Quantity'],
+                'trade_id': data['Id']
+            })
+
+        return downstream
+
+    def get_market_orders(self, market, depth=50):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+
+        orders = super().get_market_orders(market, depth)
+
+        return {
+            'bids': [[i['Rate'], i['Quantity']] for i in orders['buy']],
+            'asks': [[i['Rate'], i['Quantity']] for i in orders['sell']]
+        }
+
+    def get_market_depth(self, market):
+        '''returns market depth'''
+
+        order_book = self.get_market_orders(market)
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
+
+    def get_market_spread(self, market):
+        '''return first buy order and first sell order'''
+
+        order_book = self.get_market_orders(market, 1)
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)
