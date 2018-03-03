@@ -63,6 +63,22 @@ def test_get_market_orders(depth):
     assert isinstance(market_orders["sell"], list)
 
 
+def test_get_market_buy_orders():
+    '''test get_market_orderbook'''
+
+    market_orders = btrx.get_market_buy_orders("btc-ppc")
+
+    assert isinstance(market_orders, list)
+
+
+def test_get_market_sell_orders():
+    '''test get_market_orderbook'''
+
+    market_orders = btrx.get_market_sell_orders("btc-ppc")
+
+    assert isinstance(market_orders, list)
+
+
 def test_get_market_trade_history():
     '''test get_market_trade_history'''
 
