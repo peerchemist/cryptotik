@@ -395,6 +395,10 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
 
         return downstream
 
+    def get_market_orders(self, market, depth=100):
+
+        return super().get_market_orders(market, depth)
+
     def get_market_depth(self, market):
         '''return sum of all bids and asks'''
 
