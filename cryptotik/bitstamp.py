@@ -9,6 +9,7 @@ from cryptotik.common import headers, ExchangeWrapper, APIError
 from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
 import hmac
 import hashlib
+from datetime import datetime
 
 
 class Bitstamp(ExchangeWrapper):
@@ -342,6 +343,20 @@ class BitstampNormalized(Bitstamp):
 
         return quote + self.delimiter + base  # for bistamp quote comes first
 
+    @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.fromtimestamp(timestamp)
+
+    @staticmethod
+    def _is_sale(s):
+
+        if s == 0:
+            return True
+        else:
+            return False
+
     def get_market_ticker(self, market):
         '''
         :return :
@@ -356,3 +371,28 @@ class BitstampNormalized(Bitstamp):
             'bid': ticker['bid'],
             'last': ticker['last']
         }
+
+    def get_market_trade_history(self, market):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': self._tstamp_to_datetime(int(data['date'])),
+                'is_sale': self._is_sale(data['type']),
+                'rate': data['price'],
+                'amount': data['amount'],
+                'trade_id': data['tid']
+            })
+
+        return downstream
