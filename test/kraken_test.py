@@ -2,7 +2,7 @@ import pytest
 from cryptotik.kraken import Kraken
 from decimal import Decimal
 import time
-from cryptotik.expectations import APIError
+from cryptotik.exceptions import APIError
 
 
 private = pytest.mark.skipif(
@@ -13,16 +13,27 @@ private = pytest.mark.skipif(
 kraken = Kraken(pytest.config.getoption("--apikey"), 
             pytest.config.getoption("--secret"))
 
+
 def test_format_pair():
     '''test string formating to match API expectations'''
 
     assert kraken.format_pair("bch-eur") == "BCHEUR"
+
 
 def test_get_markets():
     '''test get_markets'''
 
     assert isinstance(kraken.get_markets(), list)
     assert "bcheur" in kraken.get_markets()
+
+
+@pytest.mark.parametrize("interval", ["15", "30"])
+def test_get_market_ohlcv_data(interval):
+
+    ohlcv = kraken.get_market_ohlcv_data('eth-xbt', interval)
+
+    assert isinstance(ohlcv, dict)
+
 
 def test_get_market_ticker():
     '''test get_market_ticker'''
@@ -31,6 +42,7 @@ def test_get_market_ticker():
 
     assert isinstance(ticker, dict)
     assert sorted(ticker.keys()) == ['a', 'b', 'c', 'h', 'l', 'o', 'p', 't', 'v']
+
 
 def test_get_market_orders():
     '''test get_market_orderbook'''
