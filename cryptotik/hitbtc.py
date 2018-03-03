@@ -134,6 +134,14 @@ class Hitbtc(ExchangeWrapper):
 
         return cls.api(cls.url + "public/orderbook/" + cls.format_pair(pair))
 
+    def get_market_sell_orders(self, pair):
+
+        return self.get_market_orders(pair)['ask']
+
+    def get_market_buy_orders(self, pair):
+
+        return self.get_market_orders(pair)['bid']
+
     def get_market_spread(cls, pair):
         '''return first buy order and first sell order'''
 
