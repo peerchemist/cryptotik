@@ -359,3 +359,20 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             })
 
         return downstream
+
+    def get_market_orders(self, market, depth=100):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+
+        upstream = super().get_market_orders(market, depth)
+
+        return {
+            'bids': [[i[0], i[1]] for i in upstream['bids']],
+            'asks': [[i[0], i[1]] for i in upstream['asks']]
+        }
