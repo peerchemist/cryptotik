@@ -139,20 +139,6 @@ class Kraken(ExchangeWrapper):
 
         return r[pair_full_name]
 
-        ask = order_book["asks"][0][0]
-        bid = order_book["bids"][0][0]
-
-        return Decimal(ask) - Decimal(bid)
-
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-        asks = sum([Decimal(i[1]) for i in order_book['asks']])
-        bid = sum([Decimal(i[1]) for i in order_book['bids']])
-
-        return {"bids": bid, "asks": asks}
-
     def get_balances(self):
 
         return self.private_api(self.url + "private/Balance")
@@ -375,3 +361,22 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             'bids': [[i[0], i[1]] for i in upstream['bids']],
             'asks': [[i[0], i[1]] for i in upstream['asks']]
         }
+
+    def get_market_spread(self, market):
+        '''return first buy order and first sell order'''
+
+        order_book = super().get_market_orders(market, 1)
+
+        ask = order_book['asks'][0][0]
+        bid = order_book['bids'][0][0]
+
+        return Decimal(ask) - Decimal(bid)
+
+    def get_market_depth(self, market):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(market, 1000)
+
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
