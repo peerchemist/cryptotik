@@ -2,7 +2,7 @@ import pytest
 from cryptotik.kraken import Kraken
 from decimal import Decimal
 import time
-from cryptotik.common import APIError
+from cryptotik.expectations import APIError
 
 
 private = pytest.mark.skipif(
