@@ -262,6 +262,14 @@ class Poloniex(ExchangeWrapper):
 
         return {k: v for k, v in r.items() if k in ['asks', 'bids']}
 
+    def get_market_sell_orders(self, pair, depth=999999):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=999999):
+
+        return self.get_market_orders(pair, depth)['bids']
+
     def get_market_volume(self, pair=None):
         '''Returns the volume for past 24h'''
 
