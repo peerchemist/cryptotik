@@ -36,6 +36,7 @@ def test_get_market_orders():
     assert isinstance(market_orders["ask"], list)
     assert isinstance(market_orders["bid"], list)
 
+
 def test_get_market_trade_history():
     '''test get_market_trade_history'''
 
@@ -45,18 +46,6 @@ def test_get_market_trade_history():
     assert len(trade_history) == 10
     assert sorted(trade_history[0].keys()) == sorted(['id', 'price', 'quantity', 'side', 'timestamp'])
 
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = Hitbtc.get_market_depth("ppc-usd")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(Hitbtc.get_market_spread("ppc-usd"), Decimal)
 
 @private
 def test_get_balances(apikey, secret):
@@ -65,6 +54,7 @@ def test_get_balances(apikey, secret):
     balances = hit.get_balances()
 
     assert isinstance(balances, list)
+
 
 @private
 def test_get_deposit_address(apikey, secret):

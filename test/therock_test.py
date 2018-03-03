@@ -56,21 +56,6 @@ def test_get_market_trade_history():
                                             'date', 'fund_id', 'id', 'price', 'side']
 
 
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = rock.get_market_depth("eth-btc")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(rock.get_market_spread("eth-btc"), Decimal)
-
-
 @private
 def test_get_balances(apikey, secret):
 

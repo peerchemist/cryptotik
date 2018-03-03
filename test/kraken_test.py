@@ -62,19 +62,6 @@ def test_get_market_trade_history():
     assert len(trade_history) == 10
     assert isinstance(trade_history[0], list)
 
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = kraken.get_market_depth("bch-eur")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(kraken.get_market_spread("bch-eur"), Decimal)
-
 @private
 def test_get_balances(apikey, secret):
     

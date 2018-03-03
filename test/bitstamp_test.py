@@ -53,21 +53,6 @@ def test_get_market_trade_history():
                                                'type'])
 
 
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = stamp.get_market_depth("ethbtc")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(stamp.get_market_spread("btcusd"), Decimal)
-
-
 @private
 def test_get_balances(apikey, secret, id):
     '''test get_balances'''

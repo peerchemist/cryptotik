@@ -1,7 +1,7 @@
 import pytest
 from cryptotik.binance import Binance
 from decimal import Decimal
-from cryptotik.common import APIError
+from cryptotik.exceptions import APIError
 
 private = pytest.mark.skipif(
     not pytest.config.getoption("--apikey"),
@@ -71,21 +71,6 @@ def test_get_market_trade_history():
     assert isinstance(trade_history, list)
     assert len(trade_history) == 10
     assert sorted(trade_history[0].keys()) == sorted(['a', 'p', 'q', 'f', 'l', 'T', 'm', 'M'])
-
-
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = bnb.get_market_depth("eth-btc")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(bnb.get_market_spread("eth-btc"), Decimal)
 
 
 @private

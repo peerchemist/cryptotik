@@ -1,6 +1,6 @@
 import pytest
 from cryptotik import Poloniex
-from cryptotik.common import APIError
+from cryptotik.exceptions import APIError
 from decimal import Decimal
 
 private = pytest.mark.skipif(
@@ -83,22 +83,6 @@ def test_get_full_market_trade_history():
     assert sorted(trade_history[0].keys()) == sorted(['globalTradeID', 'tradeID',
                                              'date', 'type', 'rate', 'amount',
                                              'total'])
-
-
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = polo.get_market_depth("btc-ppc")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(polo.get_market_spread("btc-vtc"), Decimal)
-
 
 def test_get_loans():
     '''test get_loans'''

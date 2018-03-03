@@ -2,7 +2,7 @@ import pytest
 from cryptotik.cryptopia import Cryptopia
 from decimal import Decimal
 import time
-from cryptotik.common import APIError
+from cryptotik.exceptions import APIError
 
 
 private = pytest.mark.skipif(
@@ -50,18 +50,6 @@ def test_get_market_trade_history():
     assert len(trade_history) == 10
     assert isinstance(trade_history[0], dict)
 
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = cryptopia.get_market_depth("ltc-btc")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(cryptopia.get_market_spread("ltc-btc"), Decimal)
 
 @private
 def test_get_balances(apikey, secret):
@@ -69,6 +57,7 @@ def test_get_balances(apikey, secret):
     balances = cryptopia.get_balances()
 
     assert isinstance(balances, list)
+
 
 @private
 def test_get_deposit_address(apikey, secret):

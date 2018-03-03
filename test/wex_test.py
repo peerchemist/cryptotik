@@ -58,21 +58,6 @@ def test_get_market_trade_history():
                                                       'timestamp'])
 
 
-def test_get_market_depth():
-    '''test get_market_depth'''
-
-    market_depth = wex.get_market_depth("ppc_usd")
-
-    assert isinstance(market_depth, dict)
-    assert isinstance(market_depth["asks"], Decimal)
-
-
-def test_get_market_spread():
-    '''test get_market spread'''
-
-    assert isinstance(wex.get_market_spread("ppc_usd"), Decimal)
-
-
 @private
 def test_get_balances(apikey, secret):
 
