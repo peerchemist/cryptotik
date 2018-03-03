@@ -640,7 +640,7 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
         return downstream
 
-    def get_market_orders(self, market, depth=20):
+    def get_market_orders(self, market, depth=100):
         '''
         :return:
             dict['bids': list[price, quantity],
@@ -650,6 +650,20 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
         asks[0] should be first next to the spread
         '''
         return super().get_market_orders(market, depth)
+
+    def get_market_sell_orders(self, market, depth=100):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+        return super().get_market_orders(market, depth)['asks']
+
+    def get_market_buy_orders(self, market, depth=100):
+        '''
+        :return:
+            list[price, quantity]
+        '''
+        return super().get_market_orders(market, depth)['bids']
 
     def get_market_depth(self, market):
         '''return sum of all bids and asks'''
