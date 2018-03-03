@@ -4,8 +4,12 @@ import hmac
 import hashlib
 import time
 import requests
-from cryptotik.common import APIError, headers, ExchangeWrapper, NormalizedExchangeWrapper
-from cryptotik.exceptions import InvalidBaseCurrencyError, InvalidDelimiterError
+from cryptotik.common import (headers, ExchangeWrapper,
+                              NormalizedExchangeWrapper)
+from cryptotik.exceptions import (InvalidBaseCurrencyError,
+                                  InvalidDelimiterError,
+                                  APIError,
+                                  OutdatedBaseCurrenciesError)
 from cryptotik.common import is_sale
 import dateutil.parser
 from re import findall
