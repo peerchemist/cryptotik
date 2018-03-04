@@ -444,3 +444,35 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
         bid = order_book["bids"][0][0]
 
         return Decimal(ask) - Decimal(bid)
+
+    @staticmethod
+    def _format_interval(interval):
+
+        d = {"1m": "oneMin",
+             "5m": "fiveMin",
+             "30m": "thirtyMin",
+             "1h": "hour",
+             "1d": "day"}
+
+        return d[interval]
+
+    def get_market_ohlcv_data(self, market, interval):
+
+        if interval not in ['1m', '5m', '30m', '1h', '1d']:
+            raise APIError('Unsupported OHLCV interval.')
+
+        upstream = super().get_market_ohlcv_data(market,
+                                                 self._format_interval(interval))
+        r = []
+
+        for ohlcv in upstream:
+            r.append({
+                'volume': ohlcv['V'],
+                'close': ohlcv['C'],
+                'high': ohlcv['H'],
+                'low': ohlcv['L'],
+                'open': ohlcv['O'],
+                'time': self._iso_string_to_datetime(ohlcv['T'])
+            })
+
+        return r
