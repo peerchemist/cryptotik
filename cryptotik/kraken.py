@@ -225,6 +225,30 @@ class Kraken(ExchangeWrapper):
                                         'volume': quantity
                                         })
 
+    def sell_stop_loss(self, pair, price, quantity):
+        '''creates sell stop_loss order for <pair> triggered at <price>,
+        stop is executed at market.'''
+
+        return self.private_api(self.url + 'private/AddOrder',
+                                params={'pair': self.format_pair(pair),
+                                        'type': 'sell',
+                                        'ordertype': 'stop-loss',
+                                        'price': price,
+                                        'volume': quantity
+                                        })
+
+    def buy_stop_loss(self, pair, price, quantity):
+        '''creates buy stop_loss order for <pair> triggered at <price>,
+        stop is executed at market.'''
+
+        return self.private_api(self.url + 'private/AddOrder',
+                                params={'pair': self.format_pair(pair),
+                                        'type': 'buy',
+                                        'ordertype': 'stop-loss',
+                                        'price': price,
+                                        'volume': quantity
+                                        })
+
     def withdraw(self, currency, amount, withdrawal_key_name):
         '''withdraw <currency> <amount> to <withdrawal_key_name>, 
                 which has to be set up on your account'''
