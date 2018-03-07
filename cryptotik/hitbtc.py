@@ -61,8 +61,7 @@ class Hitbtc(ExchangeWrapper):
         raise NotImplementedError
 
     def _verify_response(self, response):
-
-        if response.json()['error']:
+        if type(response.json()) is dict and 'error' in response.json():
             raise APIError(response.json()['error'])
 
     def _generate_signature(self):
@@ -118,7 +117,7 @@ class Hitbtc(ExchangeWrapper):
                 print(e)
 
         self._verify_response(result)
-        return result.json()['result']
+        return result.json()
 
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
@@ -131,19 +130,18 @@ class Hitbtc(ExchangeWrapper):
         return self.api(self.url + "public/trades/" + self.format_pair(pair), 
                         params={'limit': limit})
 
-    def get_market_orders(self, pair, limit=100):
+    def get_market_orders(self, pair):
         '''return order book for the market'''
 
-        return self.api(self.url + "public/orderbook/" + self.format_pair(pair),
-                        params={'limit': limit})
+        return self.api(self.url + "public/orderbook/" + self.format_pair(pair))
 
-    def get_market_sell_orders(self, pair, limit=100):
+    def get_market_sell_orders(self, pair):
 
-        return self.get_market_orders(pair, limit)['ask']
+        return self.get_market_orders(pair)['ask']
 
-    def get_market_buy_orders(self, pair, limit=100):
+    def get_market_buy_orders(self, pair):
 
-        return self.get_market_orders(pair, limit)['bid']
+        return self.get_market_orders(pair)['bid']
 
     def get_market_spread(self, pair):
         '''return first buy order and first sell order'''
@@ -288,98 +286,11 @@ class HitbtcNormalized(Hitbtc):
             return False
 
     def get_markets(self):
-    
+        
         upstream = super().get_markets()
-
         quotes = []
-
         for i in upstream:
-            for base in self.base_currencies:
-                if base in i:
-                    quotes.append(i.replace(base, '') + '-' + base)
+            quotes.append(i.replace('/', '-'))
 
         return quotes
     
-    def get_market_ticker(self, market):
-        '''
-        :return :
-            dict['ask': float, 'bid': float, 'last': float]
-            example: {'ask': float, 'bid': float, 'last': float}
-        '''
-
-        ticker = super().get_market_ticker(market)
-
-        return {
-            'ask': ticker['ask'],
-            'bid': ticker['bid'],
-            'last': ticker['last']
-        }
-
-    def get_market_trade_history(self, market):
-        '''
-        :return:
-            list -> dict['timestamp': datetime.datetime,
-                        'is_sale': bool,
-                        'rate': float,
-                        'amount': float,
-                        'trade_id': any]
-        '''
-
-        upstream = super().get_market_trade_history(market)
-        downstream = []
-
-        for data in upstream:
-
-            downstream.append({
-                'timestamp': data['timestamp'],
-                'is_sale': self._is_sale(data['side']),
-                'rate': data['price'],
-                'amount': data['quantity'],
-                'trade_id': data['id']
-            })
-
-        return downstream
-
-    def get_market_orders(self, market, depth=100):
-        '''
-        :return:
-            dict['bids': list[price, quantity],
-                 'asks': list[price, quantity]
-                ]
-        bids[0] should be first next to the spread
-        asks[0] should be first next to the spread
-        '''
-
-        upstream = super().get_market_orders(market, depth)
-
-        return {
-            'bids': [[i['price'], i['size']] for i in upstream['bid']],
-            'asks': [[i['price'], i['size']] for i in upstream['ask']]
-        }
-
-    def get_market_sell_orders(self, pair, depth=100):
-        
-        return self.get_market_orders(pair, depth)['asks']
-
-    def get_market_buy_orders(self, pair, depth=100):
-
-        return self.get_market_orders(pair, depth)['bids']
-
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
-
-        order_book = self.get_market_orders(pair, 1)
-
-        ask = order_book["asks"][0][0]
-        bid = order_book["bids"][0][0]
-
-        return Decimal(ask) - Decimal(bid)
-    
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        order_book = self.get_market_orders(pair)
-        asks = sum([Decimal(i[1]) for i in order_book['asks']])
-        bids = sum([Decimal(i[1]) for i in order_book['bids']])
-
-        return {"bids": bids, "asks": asks}

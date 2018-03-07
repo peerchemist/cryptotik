@@ -30,7 +30,11 @@ def test_get_market_ticker():
     ticker = cryptopia.get_market_ticker("ltc-btc")
 
     assert isinstance(ticker, dict)
-    assert sorted(ticker.keys()) == ['ask', 'bid', 'last']
+    assert sorted(ticker.keys()) == ['AskPrice', 'BaseVolume', 'BidPrice', 
+                                    'BuyBaseVolume', 'BuyVolume', 'Change', 
+                                    'Close', 'High', 'Label', 'LastPrice', 
+                                    'Low', 'Open', 'SellBaseVolume', 'SellVolume', 
+                                    'TradePairId', 'Volume']
 
 def test_get_market_orders():
     '''test get_market_orderbook'''
@@ -38,8 +42,8 @@ def test_get_market_orders():
     market_orders = cryptopia.get_market_orders("ltc-btc")
 
     assert isinstance(market_orders, dict)
-    assert isinstance(market_orders["asks"], list)
-    assert isinstance(market_orders["bids"], list)
+    assert isinstance(market_orders["Sell"], list)
+    assert isinstance(market_orders["Buy"], list)
 
 def test_get_market_trade_history():
     '''test get_market_trade_history'''

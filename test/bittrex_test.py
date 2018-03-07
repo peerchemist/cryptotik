@@ -1,6 +1,7 @@
 import pytest
 from cryptotik import Bittrex
 from decimal import Decimal
+from cryptotik.exceptions import APIError
 
 private = pytest.mark.skipif(
     not pytest.config.getoption("--apikey"),
@@ -150,9 +151,10 @@ def test_buy_limit(apikey, secret):
     '''test buy'''
 
     btrx = Bittrex(apikey, secret)
-    buy = btrx.buy_limit("btc_ppc", 0.0000001, 0.0001)
+    with pytest.raises(APIError):
+        buy = btrx.buy_limit("btc_ppc", 0.0000001, 0.0001)
 
-    assert buy == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
+        assert buy == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
                    'result': None,
                    'success': False
                    }
@@ -163,16 +165,16 @@ def test_sell_limit(apikey, secret):
     '''test buy'''
 
     btrx = Bittrex(apikey, secret)
-    sell = btrx.sell_limit("btc_ppc", 0.0000001, 0.0001)
+    with pytest.raises(APIError):
+        sell = btrx.sell_limit("btc_ppc", 0.0000001, 0.0001)
 
-    assert sell == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
-                    'result': None,
-                    'success': False
-                    }
+        assert sell == {'message': 'DUST_TRADE_DISALLOWED_MIN_VALUE_50K_SAT',
+                        'result': None,
+                        'success': False
+                        }
 
 
 @private
-@pytest.mark.xfail
 def test_get_order_history(apikey, secret):
     '''test get_order_history'''
 
@@ -181,42 +183,41 @@ def test_get_order_history(apikey, secret):
 
     assert isinstance(order_history, list)
     assert sorted(order_history[0].keys()) == sorted(['Closed',
-                                                      'Commission',
-                                                      'Condition',
-                                                      'ConditionTarget',
-                                                      'Exchange',
-                                                      'ImmediateOrCancel',
-                                                      'IsConditional',
-                                                      'Limit',
-                                                      'OrderType',
-                                                      'OrderUuid',
-                                                      'Price',
-                                                      'PricePerUnit',
-                                                      'Quantity',
-                                                      'QuantityRemaining',
-                                                      'TimeStamp'])
+                                                    'Commission',
+                                                    'Condition',
+                                                    'ConditionTarget',
+                                                    'Exchange',
+                                                    'ImmediateOrCancel',
+                                                    'IsConditional',
+                                                    'Limit',
+                                                    'OrderType',
+                                                    'OrderUuid',
+                                                    'Price',
+                                                    'PricePerUnit',
+                                                    'Quantity',
+                                                    'QuantityRemaining',
+                                                    'TimeStamp'])
 
 
 @private
-@pytest.mark.xfail
 def test_get_withdrawal_history(apikey, secret):
     '''test get_withdrawal_history'''
 
     btrx = Bittrex(apikey, secret)
-    withdrawal_history = btrx.get_withdrawal_history()
+    withdrawal_history = btrx.get_withdraw_history()
 
     assert isinstance(withdrawal_history, list)
     assert sorted(withdrawal_history[0].keys()) == sorted(['PaymentUuid',
-                                                           'Currency',
-                                                           'Amount',
-                                                           'Address',
-                                                           'Opened',
-                                                           'Authorized',
-                                                           'PendingPayment',
-                                                           'TxCost',
-                                                           'TxId',
-                                                           'Canceled',
-                                                           'InvalidAddress'])
+                                                        'Currency',
+                                                        'Amount',
+                                                        'Address',
+                                                        'Opened',
+                                                        'Authorized',
+                                                        'PendingPayment',
+                                                        'TxCost',
+                                                        'TxId',
+                                                        'Canceled',
+                                                        'InvalidAddress'])
 
 
 @private
