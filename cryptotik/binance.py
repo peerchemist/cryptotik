@@ -473,3 +473,27 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
         return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
                 "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
                 }
+
+    def get_market_ohlcv_data(self, market, interval, since=None, until=None):
+
+        if interval not in "1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M".split(', '):
+            raise APIError('Unsupported OHLCV interval.')
+
+        upstream = super().get_market_ohlcv_data(market,
+                                                 interval,
+                                                 since,
+                                                 until
+                                                 )
+        r = []
+
+        for ohlcv in upstream:
+            r.append({
+                'open': ohlcv[1],
+                'high': ohlcv[2],
+                'low': ohlcv[3],
+                'close': ohlcv[4],
+                'volume': ohlcv[5],
+                'time': self._tstamp_to_datetime(int(ohlcv[6]))
+            })
+
+        return r
