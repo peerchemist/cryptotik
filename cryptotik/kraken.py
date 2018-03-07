@@ -248,6 +248,15 @@ class Kraken(ExchangeWrapper):
                             'method': self.get_deposit_method(currency)
                             })
 
+    def get_open_positions(self, docalcs=False):
+        '''get open margin positions.
+        : docalcs = whether or not to include profit/loss calculations (optional.  default = false)
+        '''
+
+        return self.private_api(self.url + "private/OpenPositions",
+                                params={'docalcs': docalcs}
+                                )
+
     def get_open_orders(self):
         '''get open orders.'''
 
