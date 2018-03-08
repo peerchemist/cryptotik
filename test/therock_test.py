@@ -1,5 +1,6 @@
 import pytest
 from cryptotik import TheRock
+from cryptotik.exceptions import APIError
 from decimal import Decimal
 import time
 
@@ -8,7 +9,8 @@ private = pytest.mark.skipif(
     reason="needs --apikey option to run."
 )
 
-rock = TheRock()
+rock = TheRock(pytest.config.getoption("--apikey"), 
+            pytest.config.getoption("--secret"))
 
 
 def test_format_pair():
@@ -59,7 +61,6 @@ def test_get_market_trade_history():
 @private
 def test_get_balances(apikey, secret):
 
-    rock = rock(apikey, secret)
     balances = rock.get_balances()
 
     assert isinstance(balances, list)
@@ -68,7 +69,6 @@ def test_get_balances(apikey, secret):
 @private
 def test_get_deposit_address(apikey, secret):
     time.sleep(1)
-    rock = rock(apikey, secret)
 
     assert isinstance(rock.get_deposit_address("btc"), dict)
 
@@ -76,44 +76,37 @@ def test_get_deposit_address(apikey, secret):
 @private
 def test_get_withdraw_history(apikey, secret):
     time.sleep(1)
-    rock = rock(apikey, secret)
 
     assert isinstance(rock.get_withdraw_history("btc"), list)
 
-
-@pytest.mark.xfail
 @private
 def test_withdraw(apikey, secret):
     time.sleep(1)
     print('This is made to fail because of fake address')
-    rock = rock(apikey, secret)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(APIError):
         rock.withdraw("eth", 0.01, 'fake_address')
 
 
 @private
 def test_buy_limit(apikey, secret):
     time.sleep(1)
-    rock = rock(apikey, secret)
     print('This is made to fail because of small amount')
-    with pytest.raises(AssertionError):
+    with pytest.raises(APIError):
         rock.buy_limit("eth-btc", 0.0005, 0.0005)
 
 
 @private
 def test_sell_limit(apikey, secret):
     time.sleep(1)
-    rock = rock(apikey, secret)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(APIError):
         rock.sell_limit("eth-btc", 0.0005, 0.0005)
 
 
 @private
 def test_cancel_order(apikey, secret):
     time.sleep(1)
-    rock = rock(apikey, secret)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(APIError):
         rock.cancel_order('invalid', 'btc')
