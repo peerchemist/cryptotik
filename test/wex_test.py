@@ -7,7 +7,8 @@ private = pytest.mark.skipif(
     reason="needs --apikey option to run."
 )
 
-wex = Wex()
+wex = Wex(pytest.config.getoption("--apikey"), 
+            pytest.config.getoption("--secret"))
 
 
 def test_format_pair():
@@ -61,7 +62,6 @@ def test_get_market_trade_history():
 @private
 def test_get_balances(apikey, secret):
 
-    wex = Wex(apikey, secret)
     balances = wex.get_balances()
 
     assert isinstance(balances, dict)
@@ -70,8 +70,6 @@ def test_get_balances(apikey, secret):
 
 @private
 def test_get_deposit_address(apikey, secret):
-
-    wex = Wex(apikey, secret)
 
     try:
         with pytest.raises(ValueError):
@@ -83,16 +81,12 @@ def test_get_deposit_address(apikey, secret):
 @private
 def test_cancel_order(apikey, secret):
 
-    wex = Wex(apikey, secret)
-
     with pytest.raises(ValueError):
         wex.get_open_orders("ppc_btc")
 
 
 @private
 def test_buy_limit(apikey, secret):
-
-    wex = Wex(apikey, secret)
 
     with pytest.raises(ValueError):
         wex.buy_limit("ppc_btc", 0.05, 1)
@@ -101,16 +95,12 @@ def test_buy_limit(apikey, secret):
 @private
 def test_sell_limit(apikey, secret):
 
-    wex = Wex(apikey, secret)
-
     with pytest.raises(ValueError):
         wex.sell_limit("ltc_btc", 1, 0.25)
 
 
 @private
 def test_get_transaction_history(apikey, secret):
-
-    wex = Wex(apikey, secret)
 
     assert isinstance(wex.get_transaction_history(), dict)
 
@@ -120,7 +110,5 @@ def test_get_transaction_history(apikey, secret):
 def test_withdraw(apikey, secret):
 
     print('This is made to fail with <<api key dont have withdraw permission>>, so make sure your testing API key does not allow that.')
-    wex = Wex(apikey, secret)
-
     with pytest.raises(ValueError):
         wex.withdraw("ppc", 1, 'PpcEaT3Rd0NTsendftMKDAKr331DXgHe3L')
