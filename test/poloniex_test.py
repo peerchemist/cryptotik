@@ -171,7 +171,7 @@ def test_generate_new_address(apikey, secret):
 
     polo = Poloniex(apikey, secret, 20)
 
-    assert polo.generate_new_address("eth")["success"] == 1
+    assert polo.get_new_deposit_address("eth")["success"] == 1
 
 
 @private
@@ -212,7 +212,7 @@ def test_get_open_loan_offers(apikey, secret):
     '''test get_open_loan_offers'''
 
     polo = Poloniex(apikey, secret, 20)
-
+    
     assert isinstance(polo.get_open_loan_offers(), list)
 
 
@@ -221,12 +221,13 @@ def test_get_deposit_history(apikey, secret):
     '''test get_deposit_history'''
 
     polo = Poloniex(apikey, secret, 20)
-    deposit_history = polo.get_deposit_history()
+    with pytest.raises(APIError):
+        deposit_history = polo.get_deposit_history()
 
-    assert isinstance(deposit_history, list)
-    assert sorted(deposit_history[0].keys()) == sorted(['currency', 'address',
-                                               'amount', 'confirmations',
-                                               'txid', 'timestamp', 'status'])
+        assert isinstance(deposit_history, list)
+        assert sorted(deposit_history[0].keys()) == sorted(['currency', 'address',
+                                                'amount', 'confirmations',
+                                                'txid', 'timestamp', 'status'])
 
 
 @private
@@ -234,13 +235,14 @@ def test_get_withdrawal_history(apikey, secret):
     '''test get_deposit_history'''
 
     polo = Poloniex(apikey, secret, 20)
-    withdrawal_history = polo.get_withdrawal_history()
+    with pytest.raises(APIError):
+        withdrawal_history = polo.get_withdraw_history()
 
-    assert isinstance(withdrawal_history, list)
-    assert sorted(withdrawal_history[0].keys()) == sorted(['withdrawalNumber',
-                                                  'currency', 'address',
-                                                  'amount', 'fee', 'timestamp',
-                                                  'status', 'ipAddress'])
+        assert isinstance(withdrawal_history, list)
+        assert sorted(withdrawal_history[0].keys()) == sorted(['withdrawalNumber',
+                                                    'currency', 'address',
+                                                    'amount', 'fee', 'timestamp',
+                                                    'status', 'ipAddress'])
 
 
 @private
@@ -248,8 +250,8 @@ def test_buy_limit(apikey, secret):
     '''test buy'''
 
     polo = Poloniex(apikey, secret, 20)
-
-    assert polo.buy_limit("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    with pytest.raises(APIError):
+        assert polo.buy_limit("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
 
 
 @private
@@ -257,8 +259,8 @@ def test_sell_limit(apikey, secret):
     '''test sell'''
 
     polo = Poloniex(apikey, secret, 20)
-
-    assert polo.sell_limit("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    with pytest.raises(APIError):
+        assert polo.sell_limit("btc-ppc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
 
 
 @private
@@ -266,8 +268,8 @@ def test_buy_margin(apikey, secret):
     '''test buy'''
 
     polo = Poloniex(apikey, secret, 20)
-
-    assert polo.buy_margin("btc-eth", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    with pytest.raises(APIError):
+        assert polo.buy_margin("btc-eth", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
 
 
 @private
@@ -275,5 +277,5 @@ def test_sell_margin(apikey, secret):
     '''test sell'''
 
     polo = Poloniex(apikey, secret, 20)
-
-    assert polo.sell_margin("btc-ltc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
+    with pytest.raises(APIError):
+        assert polo.sell_margin("btc-ltc", 0.000001, 0.001) == {'error': 'Total must be at least 0.0001.'}
