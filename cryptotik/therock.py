@@ -57,7 +57,7 @@ class TheRock(ExchangeWrapper):
 
         try:
             if 'errors' in response.json().keys():
-                raise APIError(response.json()['errors']['message'])
+                raise APIError(response.json()['errors'][0]['message'])
         except KeyError:
             pass
 
