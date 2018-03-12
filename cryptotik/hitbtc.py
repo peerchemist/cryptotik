@@ -130,10 +130,11 @@ class Hitbtc(ExchangeWrapper):
         return self.api(self.url + "public/trades/" + self.format_pair(pair), 
                         params={'limit': limit})
 
-    def get_market_orders(self, pair):
+    def get_market_orders(self, pair, depth=100):
         '''return order book for the market'''
 
-        return self.api(self.url + "public/orderbook/" + self.format_pair(pair))
+        return self.api(self.url + "public/orderbook/" + self.format_pair(pair),
+                        params={'limit': depth})
 
     def get_market_sell_orders(self, pair):
 
@@ -288,9 +289,100 @@ class HitbtcNormalized(Hitbtc):
     def get_markets(self):
         
         upstream = super().get_markets()
+
         quotes = []
+
         for i in upstream:
-            quotes.append(i.replace('/', '-'))
+            for base in self.base_currencies:
+                if base in i:
+                    quotes.append(i.replace(base, '') + '-' + base)
 
         return quotes
+
+    def get_market_ticker(self, market):
+        '''
+        :return :
+            dict['ask': float, 'bid': float, 'last': float]
+            example: {'ask': float, 'bid': float, 'last': float}
+        '''
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['ask'],
+            'bid': ticker['bid'],
+            'last': ticker['last']
+        }
+
+    def get_market_trade_history(self, market, depth=100):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market, depth)
+        downstream = []
+
+        for data in upstream:
+
+            downstream.append({
+                'timestamp': data['timestamp'],
+                'is_sale': self._is_sale(data['side']),
+                'rate': data['price'],
+                'amount': data['quantity'],
+                'trade_id': data['id']
+            })
+
+        return downstream
+
+    def get_market_orders(self, market, depth=100):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+
+        upstream = super().get_market_orders(market, depth)
+
+        return {
+            'bids': [[i['price'], i['size']] for i in upstream['bid']],
+            'asks': [[i['price'], i['size']] for i in upstream['ask']]
+        }
+
+    def get_market_sell_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
+
+    def get_market_spread(self, market):
+        '''return first buy order and first sell order'''
+
+        order_book = self.get_market_orders(market)
+
+        ask = order_book['asks'][0][0]
+        bid = order_book['bids'][0][0]
+
+        return Decimal(ask) - Decimal(bid)
+
+    def get_market_depth(self, market):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(market, 1000)
+
+        return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
+                "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
+                }
+
+
+    
     

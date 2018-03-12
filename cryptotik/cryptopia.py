@@ -257,7 +257,7 @@ class CryptopiaNormalized(Cryptopia):
         upstream = super().get_markets()
         quotes = []
         for i in upstream:
-            quotes.append(i.replace('/', '-'))
+            quotes.append(i.lower().replace('/', '-'))
 
         return quotes
 

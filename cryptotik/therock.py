@@ -114,24 +114,26 @@ class TheRock(ExchangeWrapper):
 
         return self.api(self.url + "funds/" + self.format_pair(pair) + "/ticker")
 
-    def get_market_trade_history(self, pair, limit=10):
+    def get_market_trade_history(self, pair, depth=10):
         '''get market trade history'''
 
         return self.api(self.url + "funds/" + self.format_pair(pair) + "/trades" +
-                                "?per_page={}".format(limit))['trades']
+                                "?per_page={}".format(depth))['trades']
 
-    def get_market_orders(self, pair):
+    def get_market_orders(self, pair, depth=100):
         '''return order book for the market'''
 
-        return self.api(self.url + "funds/" + self.format_pair(pair) + "/orderbook")
+        orders = self.api(self.url + "funds/" + self.format_pair(pair) + "/orderbook")
+        return {'bids': orders['bids'][:depth],
+                'asks': orders['asks'][:depth]}
 
-    def get_market_sell_orders(self, pair):
+    def get_market_sell_orders(self, pair, depth=100):
 
-        return self.get_market_orders(pair)['asks']
+        return self.get_market_orders(pair, depth)['asks']
 
-    def get_market_buy_orders(self, pair):
+    def get_market_buy_orders(self, pair, depth=100):
 
-        return self.get_market_orders(pair)['bids']
+        return self.get_market_orders(pair, depth)['bids']
 
     def get_markets(self):
         '''Find supported markets on this exchange'''
@@ -316,7 +318,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
             'last': ticker['last']
         }
 
-    def get_market_trade_history(self, market):
+    def get_market_trade_history(self, market, depth=100):
         '''
         :return:
             list -> dict['timestamp': datetime.datetime,
@@ -326,7 +328,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market)
+        upstream = super().get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -341,7 +343,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
 
         return downstream
 
-    def get_market_orders(self, market):
+    def get_market_orders(self, market, depth=100):
         '''
         :return:
             dict['bids': list[price, quantity],
@@ -351,7 +353,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
         asks[0] should be first next to the spread
         '''
 
-        upstream = super().get_market_orders(market)
+        upstream = super().get_market_orders(market, depth)
 
         return {
             'bids': [[i['price'], i['amount']] for i in upstream['bids']],

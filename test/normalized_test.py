@@ -2,6 +2,7 @@ import pytest
 from decimal import Decimal
 import time
 import importlib
+import re
 from cryptotik.exceptions import APIError
 
 Exchange = pytest.config.getoption("--exchange")
@@ -17,11 +18,11 @@ def test_get_markets():
         -
     :return: 
         list -> str
-        example: ['LTC-EUR', 'PPC-BTC', 'LTC-USD']
+        example: ['ltc-eur', 'ppc-btc', 'ltc-usd']
     '''
 
     assert isinstance(exchange.get_markets(), list)
-    assert "LTC-BTC" in exchange.get_markets()
+    assert re.match("[\$a-z]{2,5}-[a-z]{2,5}", exchange.get_markets()[1])
     
 def test_get_market_ticker():
     '''test get_market_ticker'''

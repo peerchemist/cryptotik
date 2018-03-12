@@ -48,6 +48,7 @@ class Bitstamp(ExchangeWrapper):
     case = "lower"
     headers = headers
     _markets = 'btcusd, btceur, eurusd, xrpusd, xrpeur, xrpbtc, ltcusd, ltceur, ltcbtc, ethusd, etheur, ethbtc'.split(', ')
+    _markets_normalized = 'btc-usd, btc-eur, eur-usd, xrp-usd, xrp-eur, xrp-btc, ltc-usd, ltc-eur, ltc-btc, eth-usd, eth-eur, eth-btc'.split(', ')
     maker_fee, taker_fee = 0.002, 0.002
     quote_order = 0
     base_currencies = ['usd', 'eur', 'btc']
@@ -165,12 +166,13 @@ class Bitstamp(ExchangeWrapper):
 
         return self.get_market_orders(pair)['bids']
 
-    def get_market_trade_history(self, pair, since="hour"):
+    def get_market_trade_history(self, pair, depth=100, since="hour"):
         """get market trade history; since {minute, hour, day}"""
 
         pair = self.format_pair(pair)
 
-        return self.api("transactions/" + pair + "/?time={0}".format(since))
+        orders = self.api("transactions/" + pair + "/?time={0}".format(since))
+        return [i for i in orders][:depth]
 
     def get_market_volume(self, pair):
         '''return market volume [of last 24h]'''
@@ -367,7 +369,12 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
             'last': ticker['last']
         }
 
-    def get_market_trade_history(self, market):
+    def get_markets(self):
+        '''get all market pairs supported by the exchange'''
+
+        return self._markets_normalized
+
+    def get_market_trade_history(self, market, depth=100):
         '''
         :return:
             list -> dict['timestamp': datetime.datetime,
@@ -377,7 +384,7 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market)
+        upstream = super().get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
