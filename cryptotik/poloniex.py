@@ -618,9 +618,9 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
         ticker = super().get_market_ticker(market)
 
-        return {'ask': ticker['lowestAsk'],
-                'bid': ticker['highestBid'],
-                'last': ticker['last']
+        return {'ask': float(ticker['lowestAsk']),
+                'bid': float(ticker['highestBid']),
+                'last': float(ticker['last'])
                 }
 
     def get_market_trade_history(self, market, depth=100):

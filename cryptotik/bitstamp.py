@@ -364,9 +364,9 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
         ticker = super().get_market_ticker(market)
 
         return {
-            'ask': ticker['ask'],
-            'bid': ticker['bid'],
-            'last': ticker['last']
+            'ask': float(ticker['ask']),
+            'bid': float(ticker['bid']),
+            'last': float(ticker['last'])
         }
 
     def get_markets(self):

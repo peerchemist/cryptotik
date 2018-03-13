@@ -9,8 +9,9 @@ from cryptotik.exceptions import APIError
 Exchange = pytest.config.getoption("--exchange")
 ExchangeClass = getattr(importlib.import_module("cryptotik." + Exchange.lower()), Exchange + "Normalized")
 
-exchange = ExchangeClass(pytest.config.getoption("--apikey"), 
-            pytest.config.getoption("--secret"))
+exchange = ExchangeClass(pytest.config.getoption("--apikey"),
+                         pytest.config.getoption("--secret"))
+
 
 def test_get_markets():
     '''test get_markets'''
@@ -24,7 +25,8 @@ def test_get_markets():
 
     assert isinstance(exchange.get_markets(), list)
     assert re.match("[\$a-z]{2,5}-[a-z]{2,5}", exchange.get_markets()[1])
-    
+
+
 def test_get_market_ticker():
     '''test get_market_ticker'''
     '''
@@ -38,6 +40,9 @@ def test_get_market_ticker():
 
     assert isinstance(ticker, dict)
     assert sorted(ticker.keys()) == ['ask', 'bid', 'last']
+    for i in ticker.values():
+        assert isinstance(i, float)
+
 
 def test_get_market_orders():
     '''test get_market_orderbook'''

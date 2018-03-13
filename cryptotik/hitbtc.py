@@ -315,9 +315,9 @@ class HitbtcNormalized(Hitbtc):
         ticker = super().get_market_ticker(market)
 
         return {
-            'ask': ticker['ask'],
-            'bid': ticker['bid'],
-            'last': ticker['last']
+            'ask': float(ticker['ask']),
+            'bid': float(ticker['bid']),
+            'last': float(ticker['last'])
         }
 
     def get_market_trade_history(self, market, depth=100):

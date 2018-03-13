@@ -400,9 +400,9 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
         ticker = super().get_market_ticker(market)
 
         return {
-            'ask': ticker['askPrice'],
-            'bid': ticker['bidPrice'],
-            'last': ticker['lastPrice']
+            'ask': float(ticker['askPrice']),
+            'bid': float(ticker['bidPrice']),
+            'last': float(ticker['lastPrice'])
         }
 
     def get_market_trade_history(self, market, depth=100):
