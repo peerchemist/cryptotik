@@ -15,18 +15,18 @@ or latest development version:
 `pip install git+git://github.com/peerchemist/cryptotik.git`
 
 # Supported Exchanges
-| Exchange            | API  | Public Methods    | Private Methods    | Normalization| Tests |
-|---------------------|------|-------------------|--------------------|--------------|-------|
-| www.binance.com     | Done | Done              | Done               | TODO         | Done  |
-| [bitkonan.com](https://bitkonan.com/)        | Done | Done              | Done                 | TODO       | Done  |
-| www.bitstamp.net    | Done | Done              | Done               | TODO         | Done  |
-| [bittrex.com](https://bittrex.com/)         | Done | Done              | Done               | TODO       | Done  |
-| www.cryptopia.co.nz | Done | Done              | Done               | TODO         | Done  |
-| [hitbtc.com](https://hitbtc.com/)          | Done | Done              | Done                 | TODO       | Done  |
-| www.kraken.com      | Done | Done              | Done               | TODO         | Done  |
-| [poloniex.com](https://poloniex.com/)        | Done | Done              | Done               | TODO         | Done  |
-| [therocktrading.com](https://therocktrading.com/)  | Done | Done              | Done               | TODO         | Done  |
-| [wex.nz](https://wex.nz/)              | Done | Done              | Done               | TODO         | Done  |
+| Exchange            | API  | Public Methods    | Private Methods    | Normalized Private | Normalized Public | Tests |
+|---------------------|------|-------------------|--------------------|--------------------|-------------------|-------|
+| www.binance.com     | Done | Done              | Done               | TODO               | Done              | Done  |
+| [bitkonan.com](https://bitkonan.com/)        | Done | Done              | Done                 | TODO             | Done              | Done  |
+| www.bitstamp.net    | Done | Done              | Done               | TODO               | Done              | Done  |
+| [bittrex.com](https://bittrex.com/)         | Done | Done              | Done               | TODO             | Done              | Done  |
+| www.cryptopia.co.nz | Done | Done              | Done               | TODO               | Done              | Done  |
+| [hitbtc.com](https://hitbtc.com/)          | Done | Done              | Done                 | TODO             | Done              | Done  |
+| www.kraken.com      | Done | Done              | TODO               | TODO               | Done              | Done  |
+| [poloniex.com](https://poloniex.com/)        | Done | Done              | Done               | TODO               | Done              | Done  |
+| [therocktrading.com](https://therocktrading.com/)  | Done | Done              | Done               | TODO               | Done              | Done  |
+| [wex.nz](https://wex.nz/)              | Done | Done              | Done               | TODO               | Done              | Done  |
 
 
 ## Examples
