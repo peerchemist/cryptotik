@@ -70,7 +70,7 @@ def test_get_market_trade_history():
 
     assert isinstance(trade_history, list)
     assert len(trade_history) == 10
-    assert sorted(trade_history[0].keys()) == sorted(['a', 'p', 'q', 'f', 'l', 'T', 'm', 'M'])
+    assert sorted(trade_history[0].keys()) == sorted(['id', 'isBestMatch', 'isBuyerMaker', 'price', 'qty', 'time'])
 
 
 @private
@@ -103,16 +103,12 @@ def test_withdraw(apikey, secret):
 @pytest.mark.parametrize("pair", ['salt-eth', 'zec-btc'])
 def test_buy_market(apikey, secret, pair):
 
-    bnb = Binance(apikey, secret)
-
     assert isinstance(bnb.buy_market(pair, 1, test=True), dict)
 
 
 @private
 @pytest.mark.parametrize("pair", ['trx-btc', 'omg-eth'])
 def test_sell_market(apikey, secret, pair):
-
-    bnb = Binance(apikey, secret)
 
     assert isinstance(bnb.sell_market(pair, 1, test=True), dict)
 

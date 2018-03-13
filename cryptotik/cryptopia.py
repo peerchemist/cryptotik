@@ -6,16 +6,19 @@ import hashlib
 import time
 import base64
 import requests
-from cryptotik.common import headers, ExchangeWrapper
-from cryptotik.exceptions import APIError
+from datetime import datetime
 from decimal import Decimal
+from cryptotik.common import (headers, ExchangeWrapper,
+                              NormalizedExchangeWrapper)
+from cryptotik.exceptions import (InvalidBaseCurrencyError,
+                                  InvalidDelimiterError, APIError)
 
 
 class Cryptopia(ExchangeWrapper):
 
     url = 'https://www.cryptopia.co.nz/'
     name = 'cryptopia'
-    delimiter = "/"
+    delimiter = "_"
     headers = headers
     taker_fee, maker_fee = 0.00, 0.00
     quote_order = 0
@@ -24,6 +27,9 @@ class Cryptopia(ExchangeWrapper):
     @classmethod
     def format_pair(cls, pair):
         """format the pair argument to format understood by remote API."""
+
+        if "-" not in pair:
+            raise InvalidDelimiterError('Agreed upon delimiter is "-".')
 
         pair = pair.replace("-", cls.delimiter)
 
@@ -114,13 +120,8 @@ class Cryptopia(ExchangeWrapper):
     def get_market_ticker(self, pair):
         '''returns simple current market status report'''
 
-        r = self.api(self.url + "api/getMarket/" + self.format_pair(pair))
-        result={}
-        result['bid']=r['BidPrice']
-        result['ask']=r['AskPrice']
-        result['last']=r['LastPrice']
-        return result
-
+        return self.api(self.url + "api/getMarket/" + self.format_pair(pair))
+        
     def get_market_volume(self, pair):
         ''' return volume of last 24h'''
 
@@ -136,11 +137,8 @@ class Cryptopia(ExchangeWrapper):
     def get_market_orders(self, pair, depth=100):
         '''return order book for the market'''
 
-        result = self.api(self.url + "api/GetMarketOrders/" +
+        return self.api(self.url + "api/GetMarketOrders/" +
                           self.format_pair(pair) + "/" + str(depth))
-        result['asks'] = result.pop('Buy')
-        result['bids'] = result.pop('Sell')
-        return result
 
     def get_market_sell_orders(self, pair, depth=100):
 
@@ -149,26 +147,6 @@ class Cryptopia(ExchangeWrapper):
     def get_market_buy_orders(self, pair, depth=100):
 
         return self.get_market_orders(pair, depth)['bids']
-
-    def get_market_spread(self, pair):
-        '''return first buy order and first sell order'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-
-        ask = order_book["asks"][0]['Price']
-        bid = order_book["bids"][0]['Price']
-
-        return Decimal(ask) - Decimal(bid)
-
-    def get_market_depth(self, pair):
-        '''return sum of all bids and asks'''
-
-        order_book = self.get_market_orders(self.format_pair(pair))
-        order_book = self.get_market_orders(self.format_pair(pair))
-        asks = sum([Decimal(i['Volume']) for i in order_book['asks']])
-        bids = sum([Decimal(i['Volume']) for i in order_book['bids']])
-
-        return {"bids": bids, "asks": asks}
 
     def get_balances(self):
         
@@ -245,3 +223,117 @@ class CryptopiaNormalized(Cryptopia):
 
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(CryptopiaNormalized, self).__init__(apikey, secret, timeout, proxy)
+
+
+    @classmethod
+    def format_pair(self, market_pair):
+        
+        if "-" not in market_pair:
+            raise InvalidDelimiterError('Agreed upon delimiter is "-".')
+        market_pair = market_pair.upper()
+        quote, base = market_pair.split('-')
+
+        if base.lower() not in self.base_currencies:
+            raise InvalidBaseCurrencyError('''Expected input is quote-base, you have provided with {pair}'''.format(pair=market_pair))
+
+        return quote + self.delimiter + base
+
+    @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.utcfromtimestamp(timestamp)
+    
+    @staticmethod
+    def _is_sale(Type):
+
+        if Type == 'Sell':
+            return True
+        else:
+            return False
+
+    def get_markets(self):
+    
+        upstream = super().get_markets()
+        quotes = []
+        for i in upstream:
+            quotes.append(i.lower().replace('/', '-'))
+
+        return quotes
+
+    def get_market_ticker(self, market):
+
+        ticker = super().get_market_ticker(market)
+
+        return {
+            'ask': ticker['AskPrice'],
+            'bid': ticker['BidPrice'],
+            'last': ticker['LastPrice']
+        }
+
+    def get_market_trade_history(self, market, limit=100):
+        '''
+        :return:
+            list -> dict['timestamp': datetime.datetime,
+                        'is_sale': bool,
+                        'rate': float,
+                        'amount': float,
+                        'trade_id': any]
+        '''
+
+        upstream = super().get_market_trade_history(market, limit)
+        
+        downstream = []
+        for data in upstream:
+            downstream.append({
+                'timestamp': self._tstamp_to_datetime(data['Timestamp']),
+                'is_sale': self._is_sale(data['Type']),
+                'rate': data['Price'],
+                'amount': data['Amount'],
+                'trade_id': 'not available'
+            })
+        return downstream
+
+    def get_market_orders(self, market, depth=100):
+        '''
+        :return:
+            dict['bids': list[price, quantity],
+                 'asks': list[price, quantity]
+                ]
+        bids[0] should be first next to the spread
+        asks[0] should be first next to the spread
+        '''
+
+        upstream = super().get_market_orders(market, depth)
+
+        return {
+            'bids': [[i['Price'], i['Volume']] for i in upstream['Buy']],
+            'asks': [[i['Price'], i['Volume']] for i in upstream['Sell']]
+        }
+
+    def get_market_sell_orders(self, pair, depth=100):
+    
+        return self.get_market_orders(pair, depth)['asks']
+
+    def get_market_buy_orders(self, pair, depth=100):
+
+        return self.get_market_orders(pair, depth)['bids']
+    
+    def get_market_spread(self, pair):
+        '''return first buy order and first sell order'''
+
+        order_book = self.get_market_orders(pair)
+
+        ask = order_book["asks"][0][0]
+        bid = order_book["bids"][0][0]
+
+        return Decimal(ask) - Decimal(bid)
+
+    def get_market_depth(self, pair):
+        '''return sum of all bids and asks'''
+
+        order_book = self.get_market_orders(pair)
+        asks = sum([Decimal(i[1]) for i in order_book['asks']])
+        bids = sum([Decimal(i[1]) for i in order_book['bids']])
+
+        return {"bids": bids, "asks": asks}

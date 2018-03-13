@@ -378,9 +378,9 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
             'last': ticker['last']
         }
 
-    def get_market_trade_history(self, market):
+    def get_market_trade_history(self, market, depth=100):
 
-        upstream = super().get_market_trade_history(market)
+        upstream = super().get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
