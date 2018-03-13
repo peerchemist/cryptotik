@@ -18,7 +18,7 @@ or latest development version:
 | Exchange            | API  | Public Methods    | Private Methods    | Normalized Private | Normalized Public | Tests |
 |---------------------|------|-------------------|--------------------|--------------------|-------------------|-------|
 | www.binance.com     | Done | Done              | Done               | TODO               | Done              | Done  |
-| [bitkonan.com](https://bitkonan.com/)        | Done | Done              | Done                 | TODO             | Done              | Done  |
+| [bitkonan.com](https://bitkonan.com/)        | Done | Done              | TODO                 | TODO             | Done              | Done  |
 | www.bitstamp.net    | Done | Done              | Done               | TODO               | Done              | Done  |
 | [bittrex.com](https://bittrex.com/)         | Done | Done              | Done               | TODO             | Done              | Done  |
 | www.cryptopia.co.nz | Done | Done              | Done               | TODO               | Done              | Done  |
