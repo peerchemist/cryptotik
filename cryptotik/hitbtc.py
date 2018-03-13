@@ -294,7 +294,7 @@ class HitbtcNormalized(Hitbtc):
 
     def get_markets(self):
 
-        upstream = super().get_markets()
+        upstream = super(HitbtcNormalized, self).get_markets()
 
         quotes = []
 
@@ -312,7 +312,7 @@ class HitbtcNormalized(Hitbtc):
             example: {'ask': float, 'bid': float, 'last': float}
         '''
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(HitbtcNormalized, self).get_market_ticker(market)
 
         return {
             'ask': float(ticker['ask']),
@@ -330,7 +330,7 @@ class HitbtcNormalized(Hitbtc):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(HitbtcNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -355,7 +355,7 @@ class HitbtcNormalized(Hitbtc):
         asks[0] should be first next to the spread
         '''
 
-        upstream = super().get_market_orders(market, depth)
+        upstream = super(HitbtcNormalized, self).get_market_orders(market, depth)
 
         return {
             'bids': [[i['price'], i['size']] for i in upstream['bid']],

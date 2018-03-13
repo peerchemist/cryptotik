@@ -608,7 +608,7 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
         '''normalized Poloniex.get_markets'''
 
         m = []
-        for i in super().get_markets():
+        for i in super(PoloniexNormalized, self).get_markets():
             base, quote = i.split('_')
             m.append(quote.lower() + '-' + base.lower())
 
@@ -616,7 +616,7 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
     def get_market_ticker(self, market):
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(PoloniexNormalized, self).get_market_ticker(market)
 
         return {'ask': float(ticker['lowestAsk']),
                 'bid': float(ticker['highestBid']),
@@ -625,7 +625,7 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
     def get_market_trade_history(self, market, depth=100):
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(PoloniexNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -649,21 +649,21 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
         bids[0] should be first next to the spread
         asks[0] should be first next to the spread
         '''
-        return super().get_market_orders(market, depth)
+        return super(PoloniexNormalized, self).get_market_orders(market, depth)
 
     def get_market_sell_orders(self, market, depth=100):
         '''
         :return:
             list[price, quantity]
         '''
-        return super().get_market_orders(market, depth)['asks']
+        return super(PoloniexNormalized, self).get_market_orders(market, depth)['asks']
 
     def get_market_buy_orders(self, market, depth=100):
         '''
         :return:
             list[price, quantity]
         '''
-        return super().get_market_orders(market, depth)['bids']
+        return super(PoloniexNormalized, self).get_market_orders(market, depth)['bids']
 
     def get_market_depth(self, market):
         '''return sum of all bids and asks'''

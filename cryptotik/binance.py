@@ -379,7 +379,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
 
     def get_markets(self):
 
-        upstream = super().get_markets()
+        upstream = super(BinanceNormalized, self).get_markets()
 
         quotes = []
 
@@ -397,7 +397,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
             example: {'ask': float, 'bid': float, 'last': float}
         '''
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(BinanceNormalized, self).get_market_ticker(market)
 
         return {
             'ask': float(ticker['askPrice']),
@@ -415,7 +415,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(BinanceNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -440,7 +440,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
         asks[0] should be first next to the spread
         '''
 
-        upstream = super().get_market_orders(market, depth)
+        upstream = super(BinanceNormalized, self).get_market_orders(market, depth)
 
         return {
             'bids': [[i[0], i[1]] for i in upstream['bids']],
@@ -479,7 +479,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
         if interval not in "1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M".split(', '):
             raise APIError('Unsupported OHLCV interval.')
 
-        upstream = super().get_market_ohlcv_data(market,
+        upstream = super(BinanceNormalized, self).get_market_ohlcv_data(market,
                                                  interval,
                                                  since,
                                                  until

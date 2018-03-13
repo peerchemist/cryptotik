@@ -292,7 +292,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
 
     def get_markets(self):
 
-        upstream = super().get_markets()
+        upstream = super(TheRockNormalized, self).get_markets()
 
         quotes = []
 
@@ -310,7 +310,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
             example: {'ask': float, 'bid': float, 'last': float}
         '''
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(TheRockNormalized, self).get_market_ticker(market)
 
         return {
             'ask': ticker['ask'],
@@ -328,7 +328,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(TheRockNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -353,7 +353,7 @@ class TheRockNormalized(TheRock, NormalizedExchangeWrapper):
         asks[0] should be first next to the spread
         '''
 
-        upstream = super().get_market_orders(market, depth)
+        upstream = super(TheRockNormalized, self).get_market_orders(market, depth)
 
         return {
             'bids': [[i['price'], i['amount']] for i in upstream['bids']],

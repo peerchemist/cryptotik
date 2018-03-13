@@ -362,7 +362,7 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
         '''normalized Bittrex.get_markets'''
 
         m = []
-        for i in super().get_markets():
+        for i in super(BittrexNormalized, self).get_markets():
             base, quote = i.split('-')
             m.append(quote + '-' + base)
 
@@ -370,13 +370,13 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
 
     def get_market_ticker(self, market):
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(BittrexNormalized, self).get_market_ticker(market)
 
         return {k.lower(): v for k, v in ticker.items()}
 
     def get_market_trade_history(self, market, depth=100):
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(BittrexNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -401,7 +401,7 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
         asks[0] should be first next to the spread
         '''
 
-        orders = super().get_market_orders(market, depth)
+        orders = super(BittrexNormalized, self).get_market_orders(market, depth)
 
         return {
             'bids': [[i['Rate'], i['Quantity']] for i in orders['buy']],
@@ -414,7 +414,7 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
             list[price, quantity]
         '''
 
-        orders = super().get_market_sell_orders(market, depth)
+        orders = super(BittrexNormalized, self).get_market_sell_orders(market, depth)
 
         return [[i['Rate'], i['Quantity']] for i in orders]
 
@@ -424,7 +424,7 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
             list[price, quantity]
         '''
 
-        orders = super().get_market_buy_orders(market, depth)
+        orders = super(BittrexNormalized, self).get_market_buy_orders(market, depth)
 
         return [[i['Rate'], i['Quantity']] for i in orders]
 
@@ -461,7 +461,7 @@ class BittrexNormalized(Bittrex, NormalizedExchangeWrapper):
         if interval not in ['1m', '5m', '30m', '1h', '1d']:
             raise APIError('Unsupported OHLCV interval.')
 
-        upstream = super().get_market_ohlcv_data(market,
+        upstream = super(BittrexNormalized, self).get_market_ohlcv_data(market,
                                                  self._format_interval(interval))
         r = []
 

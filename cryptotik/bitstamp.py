@@ -361,7 +361,7 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
             example: {'ask': float, 'bid': float, 'last': float}
         '''
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(BitstampNormalized, self).get_market_ticker(market)
 
         return {
             'ask': float(ticker['ask']),
@@ -384,7 +384,7 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(BitstampNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -409,7 +409,7 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
         asks[0] should be first next to the spread
         '''
 
-        upstream = super().get_market_orders(market)
+        upstream = super(BitstampNormalized, self).get_market_orders(market)
 
         return {
             'bids': [[i[0], i[1]] for i in upstream['bids']],
@@ -427,7 +427,7 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
 
-        order_book = super().get_market_orders(market)
+        order_book = super(BitstampNormalized, self).get_market_orders(market)
 
         ask = order_book['asks'][0][0]
         bid = order_book['bids'][0][0]

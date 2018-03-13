@@ -357,7 +357,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
 
     def get_markets(self):
 
-        upstream = super().get_markets()
+        upstream = super(KrakenNormalized, self).get_markets()
 
         quotes = []
 
@@ -375,7 +375,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             example: {'ask': float, 'bid': float, 'last': float}
         '''
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(KrakenNormalized, self).get_market_ticker(market)
 
         return {
             'ask': ticker['a'][0],
@@ -393,7 +393,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(KrakenNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -418,7 +418,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
         asks[0] should be first next to the spread
         '''
 
-        upstream = super().get_market_orders(market, depth)
+        upstream = super(KrakenNormalized, self).get_market_orders(market, depth)
 
         return {
             'bids': [[i[0], i[1]] for i in upstream['bids']],
@@ -436,7 +436,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
     def get_market_spread(self, market):
         '''return first buy order and first sell order'''
 
-        order_book = super().get_market_orders(market, 1)
+        order_book = super(KrakenNormalized, self).get_market_orders(market, 1)
 
         ask = order_book['asks'][0][0]
         bid = order_book['bids'][0][0]

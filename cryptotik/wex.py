@@ -364,13 +364,13 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
 
     def get_markets(self):
 
-        upstream = super().get_markets()
+        upstream = super(WexNormalized, self).get_markets()
 
         return [i.replace('_', ('-')) for i in upstream if "et_" not in i]
 
     def get_market_ticker(self, market):
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(WexNormalized, self).get_market_ticker(market)
 
         return {
             'ask': ticker['sell'],
@@ -380,7 +380,7 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
 
     def get_market_trade_history(self, market, depth=100):
 
-        upstream = super().get_market_trade_history(market, depth)
+        upstream = super(WexNormalized, self).get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
@@ -397,7 +397,7 @@ class WexNormalized(Wex, NormalizedExchangeWrapper):
 
     def get_market_orders(self, market, depth=100):
 
-        return super().get_market_orders(market, depth)
+        return super(WexNormalized, self).get_market_orders(market, depth)
 
     def get_market_sell_orders(self, market, depth=100):
 

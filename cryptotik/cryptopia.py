@@ -224,10 +224,9 @@ class CryptopiaNormalized(Cryptopia):
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(CryptopiaNormalized, self).__init__(apikey, secret, timeout, proxy)
 
-
     @classmethod
     def format_pair(self, market_pair):
-        
+
         if "-" not in market_pair:
             raise InvalidDelimiterError('Agreed upon delimiter is "-".')
         market_pair = market_pair.upper()
@@ -254,7 +253,7 @@ class CryptopiaNormalized(Cryptopia):
 
     def get_markets(self):
     
-        upstream = super().get_markets()
+        upstream = super(CryptopiaNormalized, self).get_markets()
         quotes = []
         for i in upstream:
             quotes.append(i.lower().replace('/', '-'))
@@ -263,7 +262,7 @@ class CryptopiaNormalized(Cryptopia):
 
     def get_market_ticker(self, market):
 
-        ticker = super().get_market_ticker(market)
+        ticker = super(CryptopiaNormalized, self).get_market_ticker(market)
 
         return {
             'ask': ticker['AskPrice'],
@@ -281,7 +280,7 @@ class CryptopiaNormalized(Cryptopia):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market, limit)
+        upstream = super(CryptopiaNormalized, self).get_market_trade_history(market, limit)
         
         downstream = []
         for data in upstream:
@@ -304,7 +303,7 @@ class CryptopiaNormalized(Cryptopia):
         asks[0] should be first next to the spread
         '''
 
-        upstream = super().get_market_orders(market, depth)
+        upstream = super(CryptopiaNormalized, self).get_market_orders(market, depth)
 
         return {
             'bids': [[i['Price'], i['Volume']] for i in upstream['Buy']],
