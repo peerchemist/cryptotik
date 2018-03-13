@@ -344,7 +344,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             'last': ticker['c'][0]
         }
 
-    def get_market_trade_history(self, market):
+    def get_market_trade_history(self, market, depth=100):
         '''
         :return:
             list -> dict['timestamp': datetime.datetime,
@@ -354,7 +354,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market)
+        upstream = super().get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:

@@ -181,7 +181,7 @@ class Poloniex(ExchangeWrapper):
     def get_markets(self):
         '''return all supported markets.'''
 
-        return [i for i in self.get_market_ticker("all")]
+        return [i for i in self.api({"command": 'returnTicker', "currencyPair": 'all'})]
 
     def get_market_ticker(self, pair):
         '''Returns the ticker for all markets'''
@@ -623,9 +623,9 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
                 'last': ticker['last']
                 }
 
-    def get_market_trade_history(self, market):
+    def get_market_trade_history(self, market, depth=100):
 
-        upstream = super().get_market_trade_history(market)
+        upstream = super().get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:

@@ -117,13 +117,13 @@ class Binance(ExchangeWrapper):
 
         return self.api(self.url + "api/v1/ticker/24hr", params)
 
-    def get_market_trade_history(self, pair, limit=500):
+    def get_market_trade_history(self, pair, depth=500):
         '''get market trade history
         https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#recent-trades-list
         '''
 
         return self.api(self.url + "api/v1/trades",
-                        params=(('symbol', self.format_pair(pair)), ('limit', limit),))
+                        params=(('symbol', self.format_pair(pair)), ('limit', depth),))
 
     def get_market_ohlcv_data(self, pair, interval, since=None,
                               until=None, limit=500):
@@ -405,7 +405,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
             'last': ticker['lastPrice']
         }
 
-    def get_market_trade_history(self, market):
+    def get_market_trade_history(self, market, depth=100):
         '''
         :return:
             list -> dict['timestamp': datetime.datetime,
@@ -415,7 +415,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
                         'trade_id': any]
         '''
 
-        upstream = super().get_market_trade_history(market)
+        upstream = super().get_market_trade_history(market, depth)
         downstream = []
 
         for data in upstream:
