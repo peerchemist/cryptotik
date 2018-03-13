@@ -388,7 +388,3 @@ class HitbtcNormalized(Hitbtc):
         return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
                 "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
                 }
-
-
-    
-    
