@@ -392,8 +392,8 @@ class BitstampNormalized(Bitstamp, NormalizedExchangeWrapper):
             downstream.append({
                 'timestamp': self._tstamp_to_datetime(int(data['date'])),
                 'is_sale': self._is_sale(data['type']),
-                'rate': data['price'],
-                'amount': data['amount'],
+                'rate': float(data['price']),
+                'amount': float(data['amount']),
                 'trade_id': data['tid']
             })
 

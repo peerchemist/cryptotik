@@ -9,6 +9,7 @@ from cryptotik.common import (headers, ExchangeWrapper,
                               NormalizedExchangeWrapper)
 from cryptotik.exceptions import (InvalidBaseCurrencyError,
                                   InvalidDelimiterError, APIError)
+import dateutil.parser
 
 
 class Hitbtc(ExchangeWrapper):
@@ -260,7 +261,6 @@ class HitbtcNormalized(Hitbtc):
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(HitbtcNormalized, self).__init__(apikey, secret, timeout, proxy)
 
-
     @classmethod
     def format_pair(self, market_pair):
         """
@@ -279,6 +279,12 @@ class HitbtcNormalized(Hitbtc):
         return quote + self.delimiter + base
 
     @staticmethod
+    def _iso_string_to_datetime(ts):
+        '''convert ISO timestamp to unix timestamp'''
+
+        return dateutil.parser.parse(ts)
+
+    @staticmethod
     def _is_sale(Type):
 
         if Type == 'sell':
@@ -287,7 +293,7 @@ class HitbtcNormalized(Hitbtc):
             return False
 
     def get_markets(self):
-        
+
         upstream = super().get_markets()
 
         quotes = []
@@ -330,10 +336,10 @@ class HitbtcNormalized(Hitbtc):
         for data in upstream:
 
             downstream.append({
-                'timestamp': data['timestamp'],
+                'timestamp': self._iso_string_to_datetime(data['timestamp']),
                 'is_sale': self._is_sale(data['side']),
-                'rate': data['price'],
-                'amount': data['quantity'],
+                'rate': float(data['price']),
+                'amount': float(data['quantity']),
                 'trade_id': data['id']
             })
 

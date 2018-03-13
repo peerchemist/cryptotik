@@ -633,8 +633,8 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
             downstream.append({
                 'timestamp': self._string_to_datetime(data['date']),
                 'is_sale': is_sale(data['type']),
-                'rate': data['rate'],
-                'amount': data['amount'],
+                'rate': float(data['rate']),
+                'amount': float(data['amount']),
                 'trade_id': data['globalTradeID']
             })
 

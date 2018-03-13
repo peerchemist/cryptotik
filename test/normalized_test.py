@@ -3,6 +3,7 @@ from decimal import Decimal
 import time
 import importlib
 import re
+from datetime import datetime
 from cryptotik.exceptions import APIError
 
 Exchange = pytest.config.getoption("--exchange")
@@ -57,7 +58,7 @@ def test_get_market_orders():
     assert isinstance(market_orders["asks"], list)
     assert isinstance(market_orders["asks"][0], list)
     assert len(market_orders["asks"][0]) == 2
-    
+
 
 def test_get_market_trade_history():
     '''test get_market_trade_history'''
@@ -78,6 +79,11 @@ def test_get_market_trade_history():
     assert len(trade_history) == 10
     assert isinstance(trade_history[0], dict)
     assert sorted(trade_history[0].keys()) == ['amount', 'is_sale', 'rate', 'timestamp', 'trade_id']
+    assert isinstance(trade_history[0]['amount'], float)
+    assert isinstance(trade_history[0]['is_sale'], bool)
+    assert isinstance(trade_history[0]['rate'], float)
+    assert isinstance(trade_history[0]['timestamp'], datetime)
+
 
 def test_get_market_depth():
     '''test get_market_depth'''

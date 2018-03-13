@@ -423,8 +423,8 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
             downstream.append({
                 'timestamp': self._tstamp_to_datetime(data['time']),
                 'is_sale': self._is_sale(data['isBuyerMaker']),
-                'rate': data['price'],
-                'amount': data['qty'],
+                'rate': float(data['price']),
+                'amount': float(data['qty']),
                 'trade_id': data['id']
             })
 
