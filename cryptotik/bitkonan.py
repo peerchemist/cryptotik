@@ -207,7 +207,7 @@ class Bitkonan(ExchangeWrapper):
         raise NotImplementedError
 
     def buy_limit(self, pair, rate, amount):
-        '''submit spot buy order'''
+        '''submit limit buy order'''
 
         return self.private_api('order/new', params={
                                 'pair': self.format_pair(pair),
@@ -217,8 +217,29 @@ class Bitkonan(ExchangeWrapper):
                                 'limit': rate
                                 })
 
+    def buy_stop(self, pair, rate, amount):
+        '''submit stop buy order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'BUY',
+                                'type': 'STOP',
+                                'amount': amount,
+                                'stop': rate
+                                })
+
+    def buy_market(self, pair, amount):
+        '''submit market buy order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'BUY',
+                                'type': 'MARKET',
+                                'amount': amount,
+                                })
+
     def sell_limit(self, pair, rate, amount):
-        '''submit spot sell order'''
+        '''submit limit sell order'''
 
         return self.private_api('order/new', params={
                                 'pair': self.format_pair(pair),
@@ -226,6 +247,26 @@ class Bitkonan(ExchangeWrapper):
                                 'type': 'LIMIT',
                                 'amount': amount,
                                 'limit': rate
+                                })
+    def sell_stop(self, pair, rate, amount):
+        '''submit stop sell order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'SELL',
+                                'type': 'STOP',
+                                'amount': amount,
+                                'stop': rate
+                                })
+
+    def sell_market(self, pair, amount):
+        '''submit market sell order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'SELL',
+                                'type': 'MARKET',
+                                'amount': amount,
                                 })
 
     def cancel_order(self, order_id):
