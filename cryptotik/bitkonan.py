@@ -42,7 +42,7 @@ class Bitkonan(ExchangeWrapper):
     delimiter = "/"
     case = "lower"
     headers = headers
-    _markets = 'btc-usd', 'ltc-usd'
+    _markets = ['btc-usd', 'ltc-usd']
     maker_fee, taker_fee = 0.0029, 0.0029
     quote_order = 0
     base_currencies = ['usd', 'eur']
