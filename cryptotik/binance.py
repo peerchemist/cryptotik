@@ -485,11 +485,11 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
 
         for ohlcv in upstream:
             r.append({
-                'open': ohlcv[1],
-                'high': ohlcv[2],
-                'low': ohlcv[3],
-                'close': ohlcv[4],
-                'volume': ohlcv[5],
+                'open': float(ohlcv[1]),
+                'high': float(ohlcv[2]),
+                'low': float(ohlcv[3]),
+                'close': float(ohlcv[4]),
+                'volume': float(ohlcv[5]),
                 'time': self._tstamp_to_datetime(int(ohlcv[6]))
             })
 
