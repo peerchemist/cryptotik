@@ -471,7 +471,8 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
                 "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
                 }
 
-    def get_market_ohlcv_data(self, market, interval, since=None, until=None):
+    def get_market_ohlcv_data(self, market, interval, since=None,
+                              until=datetime.now().timestamp()):
         '''
         : since - UNIX timestamp
         : until - UNIX timestamp
