@@ -382,7 +382,7 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
 
         for i in upstream:
             for base in self.base_currencies:
-                if base in i:
+                if i.endswith(base):
                     quotes.append(i.replace(base, '') + '-' + base)
 
         return quotes
