@@ -472,14 +472,18 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
                 }
 
     def get_market_ohlcv_data(self, market, interval, since=None, until=None):
+        '''
+        : since - UNIX timestamp
+        : until - UNIX timestamp
+        '''
 
         if interval not in "1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M".split(', '):
             raise APIError('Unsupported OHLCV interval.')
 
         upstream = super(BinanceNormalized, self).get_market_ohlcv_data(market,
                                                  interval,
-                                                 since,
-                                                 until
+                                                 since*1000,
+                                                 until*1000
                                                  )
         r = []
 
