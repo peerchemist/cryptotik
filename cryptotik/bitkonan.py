@@ -5,16 +5,19 @@
 import requests
 from decimal import Decimal
 import time
+import hmac
+import hashlib
 from cryptotik.common import headers, ExchangeWrapper
 from cryptotik.exceptions import APIError
 
 
 class Bitkonan(ExchangeWrapper):
 
-    def __init__(self, apikey=None, timeout=None, proxy=None):
+    def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
 
-        if apikey:
-            self._apikey = apikey
+        if apikey and secret:
+            self.apikey = apikey
+            self.secret = secret.encode("utf-8")
 
         if proxy:
             assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
@@ -35,10 +38,11 @@ class Bitkonan(ExchangeWrapper):
     name = 'bitkonan'
     url = 'https://www.bitkonan.com/'
     api_url = url + 'api/'
+    private_api_url = api_url + 'private/'
     delimiter = "/"
     case = "lower"
     headers = headers
-    _markets = 'btc-usd', 'ltc-usd'
+    _markets = ['btc-usd', 'ltc-usd']
     maker_fee, taker_fee = 0.0029, 0.0029
     quote_order = 0
     base_currencies = ['usd', 'eur']
@@ -55,7 +59,8 @@ class Bitkonan(ExchangeWrapper):
         return self._nonce
 
     def get_base_currencies(self):
-        raise NotImplementedError
+        
+        return self.base_currencies
 
     @classmethod
     def format_pair(cls, pair):
@@ -69,7 +74,9 @@ class Bitkonan(ExchangeWrapper):
             return pair
 
     def _verify_response(self, response):
-        raise NotImplementedError
+        
+        if 'errors' in response.json().keys():
+            raise APIError(response.json()['errors'])
 
     def _generate_signature(self):
         raise NotImplementedError
@@ -89,13 +96,35 @@ class Bitkonan(ExchangeWrapper):
 
         return result.json()
 
-    def private_api(self, command):
+    def private_api(self, command, params=None):
         '''handles private api methods'''
 
-        if not self._apikey:
+        if not self.apikey:
             raise ValueError("A Key, Secret and customer_id required!")
 
-        raise NotImplementedError
+        tstamp = str(int(time.time()))
+        msg = (self.apikey + tstamp).encode('utf-8')
+        sign = hmac.new(self.secret, 
+                        msg, 
+                        hashlib.sha256).hexdigest()
+        data = {'key': self.apikey,
+                'timestamp': tstamp,
+                'sign': sign}
+        if params:
+            for k, v in params.items():
+                data[k] = v
+        
+        try:
+            response = self.api_session.post(self.private_api_url + command, headers=headers, 
+                                params=data, timeout=self.timeout, proxies=self.proxy)
+
+            response.raise_for_status()
+            
+        except requests.exceptions.HTTPError as e:
+            print(e)
+
+        self._verify_response(response)
+        return response.json()['data']
 
     def get_markets(self):
         '''get all market pairs supported by the exchange'''
@@ -169,8 +198,8 @@ class Bitkonan(ExchangeWrapper):
 
     def get_balances(self, coin=None):
         '''Returns the values relevant to the specified <coin> parameter.'''
-
-        raise NotImplementedError
+        
+        return self.private_api('balance')
 
     def get_deposit_address(self, coin=None):
         '''get deposit address'''
@@ -178,27 +207,82 @@ class Bitkonan(ExchangeWrapper):
         raise NotImplementedError
 
     def buy_limit(self, pair, rate, amount):
-        '''submit spot buy order'''
+        '''submit limit buy order'''
 
-        raise NotImplementedError
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'BUY',
+                                'type': 'LIMIT',
+                                'amount': amount,
+                                'limit': rate
+                                })
+
+    def buy_stop(self, pair, rate, amount):
+        '''submit stop buy order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'BUY',
+                                'type': 'STOP',
+                                'amount': amount,
+                                'stop': rate
+                                })
+
+    def buy_market(self, pair, amount):
+        '''submit market buy order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'BUY',
+                                'type': 'MARKET',
+                                'amount': amount,
+                                })
 
     def sell_limit(self, pair, rate, amount):
-        '''submit spot sell order'''
+        '''submit limit sell order'''
 
-        raise NotImplementedError
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'SELL',
+                                'type': 'LIMIT',
+                                'amount': amount,
+                                'limit': rate
+                                })
+    def sell_stop(self, pair, rate, amount):
+        '''submit stop sell order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'SELL',
+                                'type': 'STOP',
+                                'amount': amount,
+                                'stop': rate
+                                })
+
+    def sell_market(self, pair, amount):
+        '''submit market sell order'''
+
+        return self.private_api('order/new', params={
+                                'pair': self.format_pair(pair),
+                                'side': 'SELL',
+                                'type': 'MARKET',
+                                'amount': amount,
+                                })
 
     def cancel_order(self, order_id):
         '''cancel order by <order_id>'''
 
-        raise NotImplementedError
+        return self.private_api('order/cancel', params={'id': order_id})
 
     def cancel_all_orders(self):
-        raise NotImplementedError
+        
+        for order in self.get_open_orders():
+            self.cancel_order(order['id'])
 
     def get_open_orders(self, pair=None):
         '''Get open orders.'''
 
-        raise NotImplementedError
+        return self.private_api('orders')
 
     def get_order(self, order_id):
         '''get order information'''
@@ -210,10 +294,10 @@ class Bitkonan(ExchangeWrapper):
 
         raise NotImplementedError
 
-    def get_transaction_history(self):
+    def get_transaction_history(self, limit = 100):
         '''Returns the history of transactions.'''
 
-        raise NotImplementedError
+        return self.private_api('transactions', params={'limit': limit})
 
     def get_deposit_history(self, coin=None):
         '''get deposit history'''
