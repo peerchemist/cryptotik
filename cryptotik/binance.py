@@ -482,8 +482,8 @@ class BinanceNormalized(Binance, NormalizedExchangeWrapper):
 
         upstream = super(BinanceNormalized, self).get_market_ohlcv_data(market,
                                                  interval,
-                                                 since*1000,
-                                                 until*1000
+                                                 int(since*1000),
+                                                 int(until*1000)
                                                  )
         r = []
 
