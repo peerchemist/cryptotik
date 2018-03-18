@@ -171,15 +171,12 @@ class Binance(ExchangeWrapper):
 
         return self.get_market_orders(pair, depth)['bids']
 
-    def get_markets(self, filter=None):
+    def get_markets(self):
         '''Find supported markets on this exchange,
             use <filter> if needed'''
 
         r = self.api(self.url + "api/v1/ticker/allPrices", params=())
-        pairs = [i["symbol"].lower() for i in r]
-        if filter:
-            pairs = [p for p in pairs if filter in p]
-        return pairs
+        return [i["symbol"].lower() for i in r]
 
     def get_market_volume(self, pair):
         ''' return volume of last 24h'''
