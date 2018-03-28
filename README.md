@@ -12,7 +12,7 @@ Main goal of cryptotik is to deliver unified common interface to some of the mos
 
 or latest development version:
 
-`pip install git+git://github.com/peerchemist/cryptotik.git`
+`pip install git+git://github.com/indiciumfund/cryptotik.git`
 
 # Supported Exchanges
 | Exchange            | API  | Public Methods    | Private Methods    | Normalized Private | Normalized Public | Tests |
@@ -31,8 +31,8 @@ or latest development version:
 
 ## Examples
 
-Right now library supports: Wex.nz, Poloniex.com, Bitstamp.com, Kraken.com Bittrex.com, Binance, TheRockTrading, HitBtc with elementary support for Bitkonan and Livecoin.
-Library supports other useful features like wrapper around Coinmarketcap.com public API.
+Right now library supports: Wex.nz, Poloniex.com, Bitstamp.com, Kraken.com Bittrex.com, Binance, TheRockTrading, HitBtc, Bitkonan with elementary support for Livecoin.
+Library supports other useful features like wrapper around Coinmarketcap.com's public API.
 
 `from cryptotik import Wex, Bittrex, Poloniex`
 
@@ -55,6 +55,8 @@ and will yield similar results. However parsing and interpreting them is left to
 `Poloniex().get_market_order_book("btc-nxt")`
 
 `Bittrex().get_market_depth("btc-maid")`
+
+`Binance().get_market_ticker('etc-eth')`
 
 ## Private API methods (the ones that require authentication)
 
@@ -103,7 +105,7 @@ ____________________________________________________________
 
 ## Contributing
 
-1. Fork it (https://github.com/peerchemist/cryptotik/fork)
+1. Fork it (https://github.com/indiciumfund/cryptotik/fork)
 2. Study how it's implemented
 3. Create your feature branch (`git checkout -b my-new-feature`)
 4. Commit your changes (`git commit -am 'Add some feature'`)
