@@ -88,7 +88,7 @@ class ExchangeWrapper:
         '''
         :params:
             -
-        :return: 
+        :return:
             list -> str
             example: ['bcheur', 'bchusd', 'bchxbt']
         '''
@@ -99,7 +99,7 @@ class ExchangeWrapper:
         '''
         :params:
             pair: str
-        :return: 
+        :return:
             dict['ask': float, 'bid': float, 'last': float]
             example: {'ask': float, 'bid': float, 'last': float}
         '''
