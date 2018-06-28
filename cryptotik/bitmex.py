@@ -51,6 +51,9 @@ class Bitmex(ExchangeWrapper):
         self._nonce = max(int(time.time()), nonce)
         return self._nonce
 
+    def get_base_currencies(self):
+        raise NotImplementedError
+
     @classmethod
     def format_pair(cls, pair):
         """format the pair argument to format understood by remote API."""
@@ -147,6 +150,12 @@ class Bitmex(ExchangeWrapper):
                 'volume24h': q['volume24h'],
                 'vwap': q['vwap']
                 }
+
+    def get_market_volume(self, pair):
+        '''get the market volume'''
+
+        return self.get_market_ticker(self.format_pair(pair),
+                                      )['volume24h']
 
     def get_market_orders(self, pair, depth=100):
         """returns market order book on selected pair."""
