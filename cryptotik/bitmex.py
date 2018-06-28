@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import hashlib
+import hmac
 from decimal import Decimal
 import time
 from cryptotik.common import is_sale
@@ -92,31 +94,32 @@ class Bitmex(ExchangeWrapper):
         self._verify_response(result)
         return result.json()
 
-    def _generate_signature(self):
+    def _generate_signature(self, url, params, nonce):
 
-        # For example, in psuedocode (and in real code below):
-        #
-        # verb=POST
-        # url=/api/v1/order
-        # nonce=1416993995705
-        # data={"symbol":"XBTZ14","quantity":1,"price":395.01}
-        # signature = HEX(HMAC_SHA256(secret, 'POST/api/v1/order1416993995705{"symbol":"XBTZ14","quantity":1,"price":395.01}'))
-        raise NotImplementedError
+        # request type + path + str(nonce) + data
+        message = 'POST/api/v1' + url + str(nonce) + requests.compat.urlencode(params)
 
-    def private_api(self, params):
+        signature = hmac.new(bytes(self.secret, 'utf8'),
+                             bytes(message, 'utf8'),
+                             digestmod=hashlib.sha256).hexdigest()
+        return signature
+
+    def private_api(self, url, params):
         '''handles private api methods'''
 
-        params["nonce"] = self.get_nonce()
-        encoded_params = requests.compat.urlencode(params)
-
+        expires = int(round(time.time()) + 5)  # 5s grace period in case of clock skew
         self.headers.update({
-            "Key": self.apikey,
-            "Sign": self._generate_signature(encoded_params)
+            'api-expires': str(expires),
+            'api-key': self.apikey,
+            'api-signature': self._generate_signature(url, params,
+                                                      self.get_nonce())
         })
 
         try:
-            result = self.api_session.post(self.trade_url, data=params, headers=headers,
-                                           timeout=self.timeout, proxies=self.proxy)
+            result = self.api_session.post(self.url, data=params,
+                                           headers=headers,
+                                           timeout=self.timeout,
+                                           proxies=self.proxy)
 
             result.raise_for_status()
 
@@ -180,7 +183,7 @@ class Bitmex(ExchangeWrapper):
     def get_market_trade_history(self, pair, count=100):
         """get market trade history"""
 
-        params = {'symbol': self.format_pair(pair),
+        params = {'symbol': Bitmex.format_pair(pair),
                   'count': count
                   }
 
