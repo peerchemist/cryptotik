@@ -40,9 +40,6 @@ class Bitmex(ExchangeWrapper):
     base_currencies = ['xbt']
     quote_order = 0
 
-    def get_base_currencies(self):
-        raise NotImplementedError
-
     def get_nonce(self):
         '''return nonce integer'''
 
