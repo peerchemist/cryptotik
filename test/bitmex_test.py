@@ -86,7 +86,7 @@ def test_generate_signature():
               "orderQty": 98}
     expires = 1518064238
 
-    sig = bitmex._generate_signature(url, params, expires)
+    sig = bitmex._generate_signature(url, params, expires, 'POST')
 
     assert sig == "1749cd2ccae4aa49048ae09f0b95110cee706e0944e6a14ad0b3a8cb45bd336b"
 
