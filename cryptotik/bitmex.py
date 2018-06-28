@@ -17,8 +17,8 @@ class Bitmex(ExchangeWrapper):
                  testnet=False):
 
         if apikey and secret:
-            self.apikey = apikey.encode('utf-8')
-            self.secret = secret.encode('utf-8')
+            self.apikey = apikey
+            self.secret = secret
 
         if proxy:
             assert proxy.startswith('https'), {'Error': 'Only https proxies supported.'}
