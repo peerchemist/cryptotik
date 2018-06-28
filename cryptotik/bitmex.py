@@ -3,6 +3,7 @@
 import requests
 import hashlib
 import hmac
+import json
 from decimal import Decimal
 import time
 from cryptotik.common import is_sale
@@ -94,10 +95,10 @@ class Bitmex(ExchangeWrapper):
         self._verify_response(result)
         return result.json()
 
-    def _generate_signature(self, url, params, nonce):
+    def _generate_signature(self, url, params, expires):
 
         # request type + path + str(nonce) + data
-        message = 'POST/api/v1' + url + str(nonce) + requests.compat.urlencode(params)
+        message = 'POST/api/v1' + url + str(expires) + str(json.dumps(params)).replace(" ", "")
 
         signature = hmac.new(bytes(self.secret, 'utf8'),
                              bytes(message, 'utf8'),
@@ -112,7 +113,7 @@ class Bitmex(ExchangeWrapper):
             'api-expires': str(expires),
             'api-key': self.apikey,
             'api-signature': self._generate_signature(url, params,
-                                                      self.get_nonce())
+                                                      expires)
         })
 
         try:
