@@ -8,7 +8,8 @@ headers = {    # common HTTPS headers
     'Accept-Encoding': 'identity',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
-    "Content-type": "application/x-www-form-urlencoded"
+    'Content-type': 'application/x-www-form-urlencoded',
+    'User-Agent': 'cryptotik'
     }
 
 
