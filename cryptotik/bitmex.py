@@ -187,6 +187,16 @@ class Bitmex(ExchangeWrapper):
         return self.api("/trade" + "?" +
                         requests.compat.urlencode(params))
 
+    def get_funding_history(self, pair, count=10):
+        '''get market funding history'''
+
+        params = {'symbol': self.format_pair(pair),
+                  'count': count
+                  }
+
+        return self.api("/funding" + "?" +
+                        requests.compat.urlencode(params))
+
     def get_balances(self):
         '''
         Returns information about the user’s current balance, API-key privileges,
