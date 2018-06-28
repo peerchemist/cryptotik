@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import abc
-import six
 
 headers = {    # common HTTPS headers
     'Accept': 'application/json',
@@ -13,8 +12,7 @@ headers = {    # common HTTPS headers
     }
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ExchangeWrapper:
+class ExchangeWrapper(abc.ABCMeta):
 
     def __init__(self, apikey, secret, timeout):
         self.apikey = apikey
@@ -205,7 +203,6 @@ class ExchangeWrapper:
         raise NotImplementedError
 
 
-@six.add_metaclass(abc.ABCMeta)
 class NormalizedExchangeWrapper(ExchangeWrapper):
 
     @abc.abstractmethod

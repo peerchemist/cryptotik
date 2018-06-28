@@ -6,8 +6,8 @@ setup(name='cryptotik',
       url='https://github.com/peerchemist/cryptotik',
       author='Peerchemist',
       author_email='peerchemist@protonmail.ch',
-      license='BSD',
+      license='BSD-3',
       packages=['cryptotik'],
-      install_requires=['requests', 'six', 'python-dateutil'],
-      tests_require=['pytest'],
-      zip_safe=False)
+      install_requires=['requests', 'python-dateutil'],
+      tests_require=['pytest']
+      )
