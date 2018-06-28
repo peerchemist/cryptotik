@@ -95,17 +95,17 @@ class Bitmex(ExchangeWrapper):
         self._verify_response(result)
         return result.json()
 
-    def _generate_signature(self, url, params, expires):
+    def _generate_signature(self, url, params, expires, http_method):
 
         # request type + path + str(nonce) + data
-        message = 'POST/api/v1' + url + str(expires) + str(json.dumps(params)).replace(" ", "")
+        message = http_method + '/api/v1' + url + str(expires) + str(json.dumps(params)).replace(" ", "")
 
         signature = hmac.new(bytes(self.secret, 'utf8'),
                              bytes(message, 'utf8'),
                              digestmod=hashlib.sha256).hexdigest()
         return signature
 
-    def private_api(self, url, params):
+    def private_api(self, url, params, http_method):
         '''handles private api methods'''
 
         expires = int(round(time.time()) + 5)  # 5s grace period in case of clock skew
@@ -113,14 +113,15 @@ class Bitmex(ExchangeWrapper):
             'api-expires': str(expires),
             'api-key': self.apikey,
             'api-signature': self._generate_signature(url, params,
-                                                      expires)
+                                                      expires,
+                                                      http_method)
         })
 
         try:
-            result = self.api_session.post(self.url, data=params,
-                                           headers=headers,
-                                           timeout=self.timeout,
-                                           proxies=self.proxy)
+            result = self.api_session.request(http_method, self.url, data=params,
+                                              headers=headers,
+                                              timeout=self.timeout,
+                                              proxies=self.proxy)
 
             result.raise_for_status()
 
@@ -201,13 +202,11 @@ class Bitmex(ExchangeWrapper):
         return self.api("/funding" + "?" +
                         requests.compat.urlencode(params))
 
-    def get_balances(self):
-        '''
-        Returns information about the user’s current balance, API-key privileges,
-        the number of open orders and Server Time.
-        '''
+    def get_balances(self, coin):
+        '''Returns information about the user’s current balance'''
 
-        raise NotImplementedError
+        raise self.private_api('/user/margin', {'currency': coin},
+                               http_method='GET')
 
     def get_deposit_address(self, coin=None):
         '''get deposit address'''
