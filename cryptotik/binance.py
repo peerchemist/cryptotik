@@ -224,14 +224,14 @@ class Binance(ExchangeWrapper):
 
         return self.private_api(self.url + "/wapi/v3/depositAddress.html",
                                 params={'asset': currency.upper()},
-                                http_method='GET') 
+                                http_method='GET')
 
     def get_open_orders(self, pair=None):
         '''get open orders for <pair>
            or all open orders if called without an argument.'''
 
         if pair:
-            return self.private_api(self.url + "/api/v3/openOrders", 
+            return self.private_api(self.url + "/api/v3/openOrders",
                                     params={'symbol': pair.upper()})
         return self.private_api(self.url + "/api/v3/openOrders")
 
