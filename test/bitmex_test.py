@@ -94,7 +94,9 @@ def test_generate_signature():
 @private
 def test_get_balances(apikey, secret):
 
-    balances = bitmex.get_balances()
+    bitmex = Bitmex(apikey=apikey, secret=secret)
+
+    balances = bitmex.get_balances('xbt')
 
     assert isinstance(balances, dict)
 

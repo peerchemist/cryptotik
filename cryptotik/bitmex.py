@@ -97,8 +97,15 @@ class Bitmex(ExchangeWrapper):
 
     def _generate_signature(self, url, params, expires, http_method):
 
+        parsed_url = requests.compat.urlparse(url)
+        path = parsed_url.path
+        if parsed_url.query:
+            path = path + '?' + parsed_url.query
+
         # request type + path + str(nonce) + data
-        message = http_method + '/api/v1' + url + str(expires) + str(json.dumps(params)).replace(" ", "")
+        message = http_method + path + str(expires)
+
+        message += str(json.dumps(params)).replace(" ", "")
 
         signature = hmac.new(bytes(self.secret, 'utf8'),
                              bytes(message, 'utf8'),
@@ -108,17 +115,19 @@ class Bitmex(ExchangeWrapper):
     def private_api(self, url, params, http_method):
         '''handles private api methods'''
 
+        call_url = self.url + url + "?" + requests.compat.urlencode(params)
+
         expires = int(round(time.time()) + 5)  # 5s grace period in case of clock skew
         self.headers.update({
             'api-expires': str(expires),
             'api-key': self.apikey,
-            'api-signature': self._generate_signature(url, params,
+            'api-signature': self._generate_signature(call_url, params,
                                                       expires,
                                                       http_method)
         })
 
         try:
-            result = self.api_session.request(http_method, self.url, data=params,
+            result = self.api_session.request(http_method, call_url, data=params,
                                               headers=headers,
                                               timeout=self.timeout,
                                               proxies=self.proxy)
@@ -205,7 +214,7 @@ class Bitmex(ExchangeWrapper):
     def get_balances(self, coin):
         '''Returns information about the user’s current balance'''
 
-        raise self.private_api('/user/margin', {'currency': coin},
+        raise self.private_api('/user/margin', {'currency': coin.upper()},
                                http_method='GET')
 
     def get_deposit_address(self, coin=None):
