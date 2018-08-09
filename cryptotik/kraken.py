@@ -319,6 +319,27 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
     def __init__(self, apikey=None, secret=None, timeout=None, proxy=None):
         super(KrakenNormalized, self).__init__(apikey, secret, timeout, proxy)
 
+    _names = {  # kraken has unique quote names, this will normalize it
+        'EOS': 'EOS',
+        'DASH': 'DASH',
+        'BCH': 'BCH',
+        'XETC': 'ETC',
+        'XETH': 'ETH',
+        'XLTC': 'LTC',
+        'XXBT': 'XBT',
+        'XXMR': 'XMR',
+        'XXRP': 'XRP',
+        'XZEC': 'ZEC',
+        'XMLN': 'MLN',
+        'XREP': 'REP',
+        'XXLM': 'XLM',
+        'ZEUR': 'EUR',
+        'ZUSD': 'USD',
+        'ZCAD': 'CAD',
+        'ZGBP': 'GBP',
+        'ZJPY': 'JPY'
+    }
+
     @classmethod
     def format_pair(self, market_pair):
         """
@@ -382,6 +403,12 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             'bid': ticker['b'][0],
             'last': ticker['c'][0]
         }
+
+    def get_balances(self):
+
+        ticker = super(KrakenNormalized, self).get_balances()
+
+        return {self._names[k]: v for k, v in ticker.items()}
 
     def get_market_trade_history(self, market, depth=100):
         '''
