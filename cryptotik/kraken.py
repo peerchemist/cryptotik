@@ -189,47 +189,47 @@ class Kraken(ExchangeWrapper):
 
         return result[0]['address']
 
-    def buy_limit(self, pair, price, quantity, leverage=None):
+    def buy_limit(self, pair, price, amount, leverage=None):
         '''creates buy limit order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'buy', 'ordertype': 'limit',
-                                        'price': price, 'volume': quantity,
+                                        'price': price, 'volume': amount,
                                         'leverage': leverage
                                         })
 
-    def buy_market(self, pair, price, quantity, leverage=None):
-        '''creates buy market order for <pair> at <price> for <quantity>'''
+    def buy_market(self, pair, amount, leverage=None):
+        '''creates buy market order for <pair> and <amount>'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'buy', 'ordertype': 'market',
-                                        'volume': quantity,
+                                        'volume': amount,
                                         'leverage': leverage
                                         })
 
-    def sell_limit(self, pair, price, quantity, leverage=None):
+    def sell_limit(self, pair, price, amount, leverage=None):
         '''creates sell order for <pair> at <price> for <quantity>'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'sell', 'ordertype': 'limit',
-                                        'price': price, 'volume': quantity,
+                                        'price': price, 'volume': amount,
                                         'leverage': leverage
                                         })
 
-    def sell_market(self, pair, price, quantity, leverage=None):
-        '''creates sell market order for <pair> at <price> for <quantity>'''
+    def sell_market(self, pair, amount, leverage=None):
+        '''creates sell market order for <pair> and <amount>'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'sell', 'ordertype': 'market',
-                                        'volume': quantity,
+                                        'volume': amount,
                                         'leverage': leverage
                                         })
 
-    def sell_stop_loss(self, pair, price, quantity, leverage=None):
+    def sell_stop_loss(self, pair, price, amount, leverage=None):
         '''creates sell stop_loss order for <pair> triggered at <price>,
         stop is executed at market.'''
 
@@ -238,11 +238,11 @@ class Kraken(ExchangeWrapper):
                                         'type': 'sell',
                                         'ordertype': 'stop-loss',
                                         'price': price,
-                                        'volume': quantity,
+                                        'volume': amount,
                                         'leverage': leverage
                                         })
 
-    def buy_stop_loss(self, pair, price, quantity, leverage=None):
+    def buy_stop_loss(self, pair, price, amount, leverage=None):
         '''creates buy stop_loss order for <pair> triggered at <price>,
         stop is executed at market.'''
 
@@ -251,7 +251,7 @@ class Kraken(ExchangeWrapper):
                                         'type': 'buy',
                                         'ordertype': 'stop-loss',
                                         'price': price,
-                                        'volume': quantity,
+                                        'volume': amount,
                                         'leverage': leverage
                                         })
 
