@@ -478,3 +478,30 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
         return {"bids": sum([Decimal(i[0]) * Decimal(i[1]) for i in order_book["bids"]]),
                 "asks": sum([Decimal(i[1]) for i in order_book["asks"]])
                 }
+
+    def get_market_ohlcv_data(self, market, interval=1, since=1):
+        '''
+        : since - UNIX timestamp
+        '''
+
+        if str(interval.rstrip('m')) not in "1, 5, 15, 30, 60, 240, 1440, 10080, 21600".split(', '):
+            raise APIError('Unsupported interval.')
+
+        upstream = super(KrakenNormalized, self
+                         ).get_market_ohlcv_data(market,
+                                                 interval,
+                                                 int(since)
+                                                 )
+        r = []
+
+        for ohlcv in upstream[next(iter(upstream))]:
+            r.append({
+                'open': float(ohlcv[1]),
+                'high': float(ohlcv[2]),
+                'low': float(ohlcv[3]),
+                'close': float(ohlcv[4]),
+                'volume': float(ohlcv[6]),
+                'time': self._tstamp_to_datetime(int(ohlcv[0]))
+            })
+
+        return r
