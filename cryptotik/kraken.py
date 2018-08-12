@@ -484,16 +484,18 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
         : since - UNIX timestamp
         '''
 
+        # kraken only takes minutes so convert it all in minutes
+
         if interval.endswith('m'):
-            interval = interval.rstrip('m')
+            interval = str(interval).rstrip('m')
 
-        if interval.endswith('d'):
-            interval = str(int(interval.rstrip('d')) * 1440)
+        elif interval.endswith('d'):
+            interval = int(interval.rstrip('d')) * 1440
 
-        if interval.endswith('h'):  # kraken only takes minutes
-            interval = str(int(interval.rstrip('h')) * 60)
+        elif interval.endswith('h'):
+            interval = int(interval.rstrip('h')) * 60
 
-        if interval not in "1, 5, 15, 30, 60, 240, 1440, 10080, 21600".split(', '):
+        if str(interval) not in "1, 5, 15, 30, 60, 240, 1440, 10080, 21600".split(', '):
             raise APIError('Unsupported interval.')
 
         upstream = super(KrakenNormalized, self
