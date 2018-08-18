@@ -189,13 +189,13 @@ class Kraken(ExchangeWrapper):
 
         return result[0]['address']
 
-    def buy_limit(self, pair, price, amount, leverage=None):
-        '''creates buy limit order for <pair> at <price> for <quantity>'''
+    def buy_limit(self, pair, rate, amount, leverage=None):
+        '''creates buy limit order for <pair> at <rate> for <quantity>'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'buy', 'ordertype': 'limit',
-                                        'price': price, 'volume': amount,
+                                        'price': rate, 'volume': amount,
                                         'leverage': leverage
                                         })
 
@@ -209,13 +209,13 @@ class Kraken(ExchangeWrapper):
                                         'leverage': leverage
                                         })
 
-    def sell_limit(self, pair, price, amount, leverage=None):
-        '''creates sell order for <pair> at <price> for <quantity>'''
+    def sell_limit(self, pair, rate, amount, leverage=None):
+        '''creates sell order for <pair> at <rate> for <quantity>'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'sell', 'ordertype': 'limit',
-                                        'price': price, 'volume': amount,
+                                        'price': rate, 'volume': amount,
                                         'leverage': leverage
                                         })
 
@@ -229,40 +229,40 @@ class Kraken(ExchangeWrapper):
                                         'leverage': leverage
                                         })
 
-    def sell_stop_loss(self, pair, price, amount, leverage=None):
-        '''creates sell stop_loss order for <pair> triggered at <price>,
+    def sell_stop_loss(self, pair, rate, amount, leverage=None):
+        '''creates sell stop_loss order for <pair> triggered at <rate>,
         stop is executed at market.'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'sell',
                                         'ordertype': 'stop-loss',
-                                        'price': price,
+                                        'price': rate,
                                         'volume': amount,
                                         'leverage': leverage
                                         })
 
-    def buy_stop_loss(self, pair, price, amount, leverage=None):
-        '''creates buy stop_loss order for <pair> triggered at <price>,
+    def buy_stop_loss(self, pair, rate, amount, leverage=None):
+        '''creates buy stop_loss order for <pair> triggered at <rate>,
         stop is executed at market.'''
 
         return self.private_api(self.url + 'private/AddOrder',
                                 params={'pair': self.format_pair(pair),
                                         'type': 'buy',
                                         'ordertype': 'stop-loss',
-                                        'price': price,
+                                        'price': rate,
                                         'volume': amount,
                                         'leverage': leverage
                                         })
 
     def withdraw(self, currency, amount, withdrawal_key_name):
-        '''withdraw <currency> <amount> to <withdrawal_key_name>, 
+        '''withdraw <currency> <amount> to <withdrawal_key_name>,
                 which has to be set up on your account'''
 
-        return self.private_api(self.url + 'private/Withdraw', 
-                            params={'asset': currency.upper(),
+        return self.private_api(self.url + 'private/Withdraw',
+                                params={'asset': currency.upper(),
                                 'key': withdrawal_key_name, 'amount': amount
-                            })
+                                 })
 
     def get_withdraw_history(self, currency):
         '''Retrieves withdrawal history for <currency>'''
@@ -516,3 +516,12 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
             })
 
         return r
+
+    def buy_limit(self, pair, rate, amount, leverage=None):
+        '''creates buy limit order for <pair> at <price> for <quantity>'''
+
+        return self.private_api(self.url + 'private/AddOrder',
+                                params={'pair': self.format_pair(pair),
+                                        'type': 'buy', 'ordertype': 'limit',
+                                        'price': rate, 'volume': amount
+                                        })
