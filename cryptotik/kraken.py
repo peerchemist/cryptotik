@@ -320,6 +320,7 @@ class KrakenNormalized(Kraken, NormalizedExchangeWrapper):
         super(KrakenNormalized, self).__init__(apikey, secret, timeout, proxy)
 
     _names = {  # kraken has unique quote names, this will normalize it
+        'GNO': 'GNO',
         'EOS': 'EOS',
         'DASH': 'DASH',
         'BCH': 'BCH',
