@@ -360,10 +360,13 @@ class Poloniex(ExchangeWrapper):
     def get_deposit_address(self, coin=None):
         """get deposit addresses"""
 
-        if coin:
-            return self.private_api({'command': 'returnDepositAddresses'})[coin.upper()]
-        else:
-            return self.private_api({'command': 'returnDepositAddresses'})[coin.upper()]
+        try:
+            self.private_api({'command': 'returnDepositAddresses'}
+                             )[coin.upper()]
+        # if there is no address for the <coin>
+        # try to generate one
+        except KeyError:
+            return self.get_new_deposit_address(coin.upper())
 
     def get_open_orders(self, pair="all"):
         """get your open orders for [pair='all']"""
