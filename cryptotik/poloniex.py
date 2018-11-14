@@ -361,8 +361,8 @@ class Poloniex(ExchangeWrapper):
         """get deposit addresses"""
 
         try:
-            self.private_api({'command': 'returnDepositAddresses'}
-                             )[coin.upper()]
+            return self.private_api({'command': 'returnDepositAddresses'}
+                                    )[coin.upper()]
         # if there is no address for the <coin>
         # try to generate one
         except KeyError:
