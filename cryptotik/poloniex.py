@@ -7,9 +7,11 @@ from cryptotik.exceptions import (InvalidBaseCurrencyError,
                                   APIError,
                                   OutdatedBaseCurrenciesError)
 from cryptotik.common import is_sale
-import datetime, time
+import datetime
+import time
 import requests
-import hmac, hashlib
+import hmac
+import hashlib
 from decimal import Decimal
 
 
@@ -196,7 +198,7 @@ class Poloniex(ExchangeWrapper):
                                  until=int(time.time())):
         """Requests trade history for >pair<, of <depth> from >since< to >until<
         selected timeframe expressed in seconds (unix time)
-        Each request is limited to 50000 trades or 1 year.
+        Each request is limited to 50000 trades or 1 month.
         If called without arguments, it will request last 200 trades for the pair."""
 
         query = {"command": "returnTradeHistory",
@@ -235,12 +237,48 @@ class Poloniex(ExchangeWrapper):
         start = self._to_timestamp(self._subtract_one_month(datetime.datetime.now()))
         return self.get_market_trade_history(self.format_pair(pair), since=int(start))
 
+    def get_chart_data(self,
+                       pair: str,
+                       period: int,
+                       start: int=0,
+                       until: int=int(time.time())
+                       ) -> list:
+        """
+        Returns candlestick chart data.
+        Required GET parameters are "currencyPair", "period" (candlestick period in seconds;
+        valid values are 300, 900, 1800, 7200, 14400, and 86400), "start", and "end".
+        "Start" and "end" are given in UNIX timestamp format and used to specify the date range
+        for the data returned. Sample output:
+            [
+                {
+                    "date": 1405699200,
+                    "high": 0.0045388,
+                    "low": 0.00403001,
+                    "open": 0.00404545,
+                    "close": 0.00427592,
+                    "volume": 44.11655644,
+                    "quoteVolume": 10259.29079097,
+                    "weightedAverage": 0.00430015
+                },
+                ...
+                ]
+        """
+
+        query = {"command": "returnChartData",
+                 "currencyPair": self.format_pair(pair),
+                 "period": str(period),
+                 "start": str(start),
+                 "until": str(until)
+                 }
+
+        return self.api(query)
+
     def get_loans(self, coin):
         '''return loan offers for coin'''
 
         loans = self.api({"command": 'returnLoanOrders',
                          "currency": self.format_pair(coin)
-                         })
+                          })
 
         return {"demands": loans["demands"], "offers": loans["offers"]}
 
@@ -585,6 +623,12 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
         super(PoloniexNormalized, self).__init__(apikey, secret, timeout, proxy)
 
     @staticmethod
+    def _tstamp_to_datetime(timestamp):
+        '''convert unix timestamp to datetime'''
+
+        return datetime.datetime.fromtimestamp(timestamp)
+
+    @staticmethod
     def _string_to_datetime(string):
         '''convert datetime string to datetime object'''
 
@@ -684,3 +728,34 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
         bid = order_book["bids"][0][0]
 
         return Decimal(ask) - Decimal(bid)
+
+    def get_market_ohlcv_data(self,
+                              market: str,
+                              interval: int,
+                              since: int=0,
+                              until: int=int(time.time())
+                              ) -> list:
+        '''
+        : since - UNIX timestamp
+        : until - UNIX timestamp
+        '''
+
+        upstream = super(PoloniexNormalized, self
+                         ).get_chart_data(market,
+                                          interval,
+                                          since,
+                                          until
+                                          )
+        r = []
+
+        for ohlcv in upstream:
+            r.append({
+                'volume': ohlcv['volume'],
+                'close': ohlcv['close'],
+                'high': ohlcv['high'],
+                'low': ohlcv['low'],
+                'open': ohlcv['open'],
+                'time': self._tstamp_to_datetime(ohlcv['date'])
+            })
+
+        return r
