@@ -651,6 +651,21 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
         return base.upper() + self.delimiter + quote.upper()  # for poloniex quote comes second
 
+    @staticmethod
+    def _format_interval(interval):
+
+        d = {"5m": 300,
+             "15m": 900,
+             "30m": 1800,
+             "1h": 7200,
+             "2h": 14400,
+             "1d": 86400}
+
+        try:
+            return d[interval]
+        except KeyError:
+            return {'error': 'Invalid interval.'}
+
     def get_markets(self):
         '''normalized Poloniex.get_markets'''
 
@@ -742,7 +757,7 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
         upstream = super(PoloniexNormalized, self
                          ).get_chart_data(market,
-                                          interval,
+                                          self._format_interval(interval),
                                           since,
                                           until
                                           )
