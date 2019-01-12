@@ -409,12 +409,16 @@ class Poloniex(ExchangeWrapper):
     def get_open_orders(self, pair="all"):
         """get your open orders for [pair='all']"""
 
-        orders = self.private_api({'command': 'returnOpenOrders',
-                                   'currencyPair': self.format_pair(pair)})
-
         if pair == "all":
+
+            orders = self.private_api({'command': 'returnOpenOrders',
+                                       'currencyPair': pair})
             return {k: v for k, v in orders.items() if v}
+
         else:
+            orders = self.private_api({'command': 'returnOpenOrders',
+                                       'currencyPair': self.format_pair(pair)}
+                                       )
             return orders
 
     def cancel_all_orders(self):
