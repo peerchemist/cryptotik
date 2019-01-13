@@ -95,7 +95,10 @@ class Bitmex(ExchangeWrapper):
         self._verify_response(result)
         return result.json()
 
-    def _generate_signature(self, url, params, expires, http_method):
+    def _generate_signature(self, url: str,
+                            params: dict,
+                            expires: int,
+                            http_method: str) -> str:
 
         parsed_url = requests.compat.urlparse(url)
         path = parsed_url.path
@@ -112,7 +115,10 @@ class Bitmex(ExchangeWrapper):
                              digestmod=hashlib.sha256).hexdigest()
         return signature
 
-    def private_api(self, url, params, http_method):
+    def private_api(self,
+                    url: str,
+                    params: dict,
+                    http_method: str):
         '''handles private api methods'''
 
         call_url = self.url + url + "?" + requests.compat.urlencode(params)
@@ -127,7 +133,8 @@ class Bitmex(ExchangeWrapper):
         })
 
         try:
-            result = self.api_session.request(http_method, call_url, data=params,
+            result = self.api_session.request(http_method, call_url,
+                                              data=params,
                                               headers=headers,
                                               timeout=self.timeout,
                                               proxies=self.proxy)
