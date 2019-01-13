@@ -264,6 +264,50 @@ class Binance(ExchangeWrapper):
                                         },
                                 http_method='POST')
 
+    def stop_loss(self,
+                  pair: str,
+                  stop_price: float,
+                  quantity: float,
+                  test: bool=False):
+        '''stop_loss order'''
+
+        api_endpoint = "api/v3/order"
+        if test:
+            api_endpoint += '/test'
+
+        return self.private_api(self.url + api_endpoint,
+                                params={'symbol': self.format_pair(pair),
+                                        'side': "SELL",
+                                        'type': "STOP_LOSS",
+                                        'quantity': quantity,
+                                        'stopPrice': stop_price
+                                        },
+                                http_method='POST')
+
+    def stop_loss_limit(self,
+                        pair: str,
+                        price: float,
+                        stop_price: float,
+                        quantity: float,
+                        time_in_force: str="GTC",
+                        test: bool=False):
+        '''stop_loss_limit order'''
+
+        api_endpoint = "api/v3/order"
+        if test:
+            api_endpoint += '/test'
+
+        return self.private_api(self.url + api_endpoint,
+                                params={'symbol': self.format_pair(pair),
+                                        'side': "SELL",
+                                        'type': "STOP_LOSS_LIMIT",
+                                        'quantity': quantity,
+                                        'stopPrice': stop_price,
+                                        'price': price,
+                                        'timeInForce': time_in_force,
+                                        },
+                                http_method='POST')
+
     def withdraw(self, coin, amount, address, name=None, address_tag=None):
         '''withdraw <coin> <amount> to <address> with <address_tag> if needed
         : name is description of the address.'''
