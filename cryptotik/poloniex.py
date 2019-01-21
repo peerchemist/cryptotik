@@ -759,6 +759,9 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
         : until - UNIX timestamp
         '''
 
+        if interval not in "5m, 15m, 30m, 1h, 2h, 1d".split(', '):
+            raise APIError('Unsupported OHLCV interval.')
+
         upstream = super(PoloniexNormalized, self
                          ).get_chart_data(market,
                                           self._format_interval(interval),
