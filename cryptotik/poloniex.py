@@ -620,6 +620,32 @@ class Poloniex(ExchangeWrapper):
                                  'toAccount': toac
                                  })
 
+    def get_trade_history(self,
+                          pair: str="all",
+                          limit: int=500,
+                          since: int=int(time.time() - 2.419e+6),
+                          until=int(time.time())
+                          ) -> list:
+        """
+        Returns your trade history for a given market, specified by the <pair> POST parameter.
+        You may specify "all" as the <pair> to receive your trade history for all markets.
+        You may optionally specify a range via <since> and/or <until> POST parameters, given in UNIX timestamp format;
+        if you do not specify a range, it will be limited to one day. You may optionally limit the number of entries returned using the <limit> parameter,
+        up to a maximum of 10,000. If the <limit> parameter is not specified, no more than 500 entries will be returned.
+        """
+
+        query = {"command": "returnTradeHistory",
+                 "currencyPair": self.format_pair(pair)}
+
+        if since > time.time():
+            raise APIError("AYYY LMAO start time is in the future, take it easy.")
+
+        if since is not None:
+            query.update({"start": str(since),
+                          "end": str(until)}
+                         )
+        return self.api(query)
+
 
 class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
