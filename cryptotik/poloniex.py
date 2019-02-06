@@ -369,12 +369,16 @@ class Poloniex(ExchangeWrapper):
 
         return self.private_api({'command': 'returnMarginAccountSummary'})
 
-    def get_margin_position(self, pair=None):
+    def get_margin_position(self, pair='all'):
         """get margin position for <pair> or for all pairs"""
 
-        if pair:
+        if pair is not 'all':
             return self.private_api({'command': 'getMarginPosition',
                                      'currencyPair': self.format_pair(pair)
+                                     })
+        else:
+            return self.private_api({'command': 'getMarginPosition',
+                                     'currencyPair': 'all'
                                      })
 
         return self.private_api({'command': 'getMarginPosition'})
