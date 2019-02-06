@@ -811,3 +811,22 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
             })
 
         return r
+
+    def get_margin_position(self, market: str='all') -> dict:
+
+        upstream = super().get_margin_position(market)
+
+        r = {}
+
+        for m, p in upstream.items():
+            r[m] = {
+                    'amount': float(p['amount']),
+                    'base_price': float(p['basePrice']),
+                    'lending_fees': float(p['lendingFees']),
+                    'liquidation_price': float(p['liquidationPrice']),
+                    'pl': float(p['pl']),
+                    'total': float(p['total']),
+                    'type': p['type']
+                    }
+
+        return r
