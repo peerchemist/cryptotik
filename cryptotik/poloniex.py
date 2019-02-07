@@ -830,3 +830,12 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
                     }
 
         return r
+
+    def get_margin_account_summary(self) -> dict:
+
+        upstream = super().get_margin_account_summary()
+
+        for k, v in upstream.items():
+            upstream[k] = float(v)
+
+        return upstream
