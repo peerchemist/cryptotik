@@ -685,6 +685,14 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
         return base.upper() + self.delimiter + quote.upper()  # for poloniex quote comes second
 
+    @classmethod
+    def reverse_format_pair(self, market_pair: str) -> str:
+        """format the pair, but in reverse"""
+
+        base, quote = market_pair.split('_')
+
+        return base.lower() + "-" + quote.lower()
+
     @staticmethod
     def _format_interval(interval):
 
@@ -816,20 +824,31 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
 
         upstream = super().get_margin_position(market)
 
-        r = {}
+        if market is "all":
 
-        for m, p in upstream.items():
-            r[m] = {
-                    'amount': float(p['amount']),
-                    'base_price': float(p['basePrice']),
-                    'lending_fees': float(p['lendingFees']),
-                    'liquidation_price': float(p['liquidationPrice']),
-                    'pl': float(p['pl']),
-                    'total': float(p['total']),
-                    'type': p['type']
-                    }
+            r = {}
 
-        return r
+            for m, p in upstream.items():
+                r[self.reverse_format_pair(m)] = {
+                        'amount': float(p['amount']),
+                        'base_price': float(p['basePrice']),
+                        'lending_fees': float(p['lendingFees']),
+                        'liquidation_price': float(p['liquidationPrice']),
+                        'pl': float(p['pl']),
+                        'total': float(p['total']),
+                        'type': p['type']
+                        }
+
+            return r
+
+        else:
+            for k, v in upstream.items():
+                try:
+                    upstream[k] = float(v)
+                except ValueError:
+                    pass
+
+            return upstream
 
     def get_margin_account_summary(self) -> dict:
 
