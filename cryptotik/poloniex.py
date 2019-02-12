@@ -699,8 +699,8 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
         d = {"5m": 300,
              "15m": 900,
              "30m": 1800,
-             "1h": 7200,
-             "2h": 14400,
+             "1h": 3600,
+             "2h": 7200,
              "1d": 86400}
 
         try:
