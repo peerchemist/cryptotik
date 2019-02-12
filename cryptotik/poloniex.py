@@ -789,7 +789,7 @@ class PoloniexNormalized(Poloniex, NormalizedExchangeWrapper):
     def get_market_ohlcv_data(self,
                               market: str,
                               interval: int,
-                              since: int=0,
+                              since: int=int(time.time() - 2.419e+6),
                               until: int=int(time.time())
                               ) -> list:
         '''
