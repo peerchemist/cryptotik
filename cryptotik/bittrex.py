@@ -277,7 +277,7 @@ class Bittrex(ExchangeWrapper):
         balances = self.private_api(self.url + "account" + "/getbalances",
                                     params={})["result"]
 
-        return [i for i in balances if i["Balance"] > 0]
+        return [i for i in balances if i["Balance"] is not None]
 
     def get_deposit_address(self, coin):
         """retrieve or generate an address for <coin>.
