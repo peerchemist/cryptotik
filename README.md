@@ -27,12 +27,11 @@ or latest development version:
 | www.kraken.com      | Done | Done              | Done               | TODO               | Done              | Done  |
 | [poloniex.com](https://poloniex.com/)        | Done | Done              | Done               | TODO               | Done              | Done  |
 | [therocktrading.com](https://therocktrading.com/)  | Done | Done              | Done               | TODO               | Done              | Done  |
-| [wex.nz](https://wex.nz/)              | Done | Done              | Done               | TODO               | Done              | Done  |
 
 
 ## Examples
 
-Right now library supports: Wex.nz, Poloniex.com, Bitstamp.com, Kraken.com Bittrex.com, Binance, TheRockTrading, HitBtc, Bitkonan with elementary support for Livecoin.
+Right now library supports: Poloniex.com, Bitstamp.com, Kraken.com Bittrex.com, Binance, TheRockTrading, HitBtc, Bitkonan with elementary support for Livecoin.
 Library supports other useful features like wrapper around Coinmarketcap.com's public API.
 
 `from cryptotik import Wex, Bittrex, Poloniex`
@@ -43,15 +42,11 @@ You only need to learn commands once, for example `get_markets` will work anywhe
 
 `Poloniex().get_markets()`
 
-`Wex().get_markets()`
-
 `Binance().get_markets()`
 
 and will yield similar results. However parsing and interpreting them is left to user.
 
 ## More examples
-
-`Wex().get_market_ticker("ppc-btc")`
 
 `Poloniex().get_market_order_book("btc-nxt")`
 
@@ -78,14 +73,6 @@ Same goes for Bittrex:
 
 `btrx.withdraw(<coin>, <amount>, <address>)`
 
-And Wex:
-
-`wex = Wex(yourkey, yoursecret)`
-
-`Wex.get_balances()`
-
-`Wex.withdraw(<coin>, <amount>, <address>)`
-
 ----------------------------------------------------------
 
 # Running tests
@@ -97,10 +84,6 @@ And Wex:
 
 ## Poloniex
 `pytest poloniex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
-
-## Wex
-
-`pytest wex_test.py --apikey=<APIKEY> --secret=<APISECRET>`
 
 ____________________________________________________________
 
