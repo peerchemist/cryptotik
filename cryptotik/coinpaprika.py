@@ -4,6 +4,7 @@ from cryptotik.common import headers
 from cryptotik.exceptions import APIError
 import requests
 import time
+from datetime import datetime
 from typing import Union
 
 
@@ -87,14 +88,14 @@ class CoinPaprika:
             path="/coins/{}/markets".format(coin_id), params={"quote": quote}
         )
 
-    def get_market_ticker(self, coin_id: str, quote: str) -> dict:
+    def get_coin_ohlcv(self, coin_id: str, quote: str) -> list:
         """Open/High/Low/Close values with volume and market_cap"""
 
         return self.fetch(
             path="/coins/{}/ohlcv/today".format(coin_id), params={"quote": quote}
         )
 
-    def get_market_ohlcv_data(
+    def get_coin_ohlcv_data(
         self,
         coin_id: str,
         quote: str,
@@ -109,3 +110,54 @@ class CoinPaprika:
             path="/coins/{}/ohlcv/historical".format(coin_id),
             params={"quote": quote, "start": since, "end": until, "limit": limit},
         )
+
+
+class CoinPaprikaNormalized(CoinPaprika):
+    def __init__(self, timeout=None, proxy=None):
+        super().__init__(timeout, proxy)
+
+    @staticmethod
+    def _iso_string_to_datetime(ts):
+        """convert ISO timestamp to unix timestamp"""
+
+        return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S%fZ")
+
+    def get_market_ohlcv_data_actual(self, coin_id: str, quote: str) -> dict:
+
+        ohlcv = super().get_coin_ohlcv(coin_id, quote.upper())[0]
+
+        return {
+            "volume": ohlcv["volume"],
+            "close": ohlcv["close"],
+            "high": ohlcv["high"],
+            "low": ohlcv["low"],
+            "open": ohlcv["open"],
+            "time": self._iso_string_to_datetime(ohlcv["time_close"]),
+        }
+
+    def get_market_ohlcv_data(
+        self,
+        coin_id: str,
+        quote: str,
+        since: int,
+        until: int = int(time.time()),
+        limit: int = 366,
+    ) -> list:
+
+        ohlcv = super().get_coin_ohlcv_data(coin_id, quote.upper(), since, until, limit)
+
+        r = []
+
+        for i in ohlcv:
+            r.append(
+                {
+                    "volume": i["volume"],
+                    "close": i["close"],
+                    "high": i["high"],
+                    "low": i["low"],
+                    "open": i["open"],
+                    "time": self._iso_string_to_datetime(i["time_close"]),
+                }
+            )
+
+        return r
