@@ -1,7 +1,6 @@
 
 from cryptotik.poloniex import Poloniex, PoloniexNormalized
 from cryptotik.bittrex import Bittrex, BittrexNormalized
-from cryptotik.wex import Wex, WexNormalized
 from cryptotik.therock import TheRock, TheRockNormalized
 from cryptotik.hitbtc import Hitbtc, HitbtcNormalized
 from cryptotik.bitstamp import Bitstamp, BitstampNormalized
