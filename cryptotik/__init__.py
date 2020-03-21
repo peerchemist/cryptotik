@@ -7,5 +7,4 @@ from cryptotik.bitstamp import Bitstamp, BitstampNormalized
 from cryptotik.binance import Binance, BinanceNormalized
 from cryptotik.bitkonan import Bitkonan
 from cryptotik.kraken import Kraken, KrakenNormalized
-from cryptotik.cryptopia import Cryptopia, CryptopiaNormalized
 from cryptotik.coinmarketcap import CoinMarketCap
