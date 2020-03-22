@@ -1,4 +1,6 @@
-# cryptotik
+
+# This library has been deprecated, I have no intention of continuing it's development.
+
 Standardized common API for several cryptocurrency exchanges.
 Cryptotik is python3 compatible collection of cryptocurrency exchange wrappers.
 Main goal of cryptotik is to deliver unified common interface to some of the most popular cryptocurrency exchanges, cryptotik accomplishes that by standardizing names of the methods and expected inputs and outputs.
